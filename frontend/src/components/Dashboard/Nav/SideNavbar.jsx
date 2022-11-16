@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import styled from "styled-components";
+import { UserContext } from "../../../context/User";
+import PatientMenu from './PatientMenu'
+import DoctorMenu from './DoctorMenu'
 
 const SideNavbar = ({showMenu, setShowMenu, signOut, username}) => {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth)
+
+  const { userInfo } = useContext(UserContext)
 
   useEffect(() => {
     window.addEventListener("resize", () => {
@@ -13,7 +18,6 @@ const SideNavbar = ({showMenu, setShowMenu, signOut, username}) => {
       window.removeEventListener("resize", () => setScreenWidth(window.innerWidth));
     };
   }, [screenWidth]);
-
 
   return (
     <Wrapper style={{
@@ -27,10 +31,11 @@ const SideNavbar = ({showMenu, setShowMenu, signOut, username}) => {
       }
 
       <PagesList>
-        <li className="active">Overview</li>
-        <li>Doctors</li>
-        <li>Appointments</li>
-        <li>Profile</li>
+        {
+          userInfo.role === 'patient' ? 
+            <PatientMenu /> :
+            <DoctorMenu />
+        }
       </PagesList>
 
       <footer className="username">
@@ -48,6 +53,7 @@ const Wrapper = styled.nav`
   top: 0;
   left: 0;
   height: 100vh;
+  box-shadow: 0 5px 25px -10px #2525252e;
   z-index: 1;
 
   width: 275px;
@@ -63,6 +69,7 @@ const Wrapper = styled.nav`
   @media (max-width: 860px) {
     width: 200px;
     padding: 100px 1.5rem 1.5rem;
+    box-shadow: 0 115px 25px -10px #2525252e;
     
     .username{
       width: 100%;
@@ -79,7 +86,7 @@ const Wrapper = styled.nav`
         font-size: 14px;
         cursor: pointer;
         color: #2d59eb;
-        font-weight: 800;
+        font-weight: 600;
       }
     }
   }
@@ -91,6 +98,7 @@ const CloseOverlay = styled.div`
   left: 100%;
   width: 100vw;
   height: 100vh;
+  background-color: #0e1a4338;
 `
 
 const PagesList = styled.ul`
@@ -143,7 +151,6 @@ const PagesList = styled.ul`
         width: 115%;
         top: -4%;
         left: -13px;
-        border-radius: 10px;
       }
     }
   }

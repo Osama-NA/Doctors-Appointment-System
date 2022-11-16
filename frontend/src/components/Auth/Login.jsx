@@ -68,7 +68,7 @@ const Login = () => {
       userInfo.token = data.token;
       setUserInfo(userInfo);
 
-      navigate(`/dashboard/${role}`);
+      navigate(`/dashboard/${role}/overview`)
     } else {
       alert(data.error);
     }

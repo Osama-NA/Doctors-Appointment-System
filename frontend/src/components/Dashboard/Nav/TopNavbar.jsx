@@ -25,7 +25,7 @@ const TopNavbar = () => {
   return (
     <Wrapper>
       <Logo>
-        <div onClick={() => navigate("/dashboard")}>
+        <div onClick={() => navigate(`/dashboard/${userInfo.role}/overview`)}>
           <LogoIcon />
           <h1 style={{ marginLeft: "15px" }} className="font20 extraBold">
             FindDoc
@@ -73,6 +73,7 @@ const Wrapper = styled.header`
   z-index: 0;
   
   @media (max-width: 860px){
+    box-shadow: 0 5px 25px -10px #2525252e;
     background-color: #fff;
   }
 `;
@@ -103,6 +104,7 @@ const User = styled.div`
   margin: 0rem 0.75rem;
   background-color: #fff;
   border-radius: 10px;
+  box-shadow: 0 5px 25px -10px #2525252e;
   z-index: 2;
 
   .menu-btn{
@@ -126,6 +128,11 @@ const User = styled.div`
       line-height: 0;
       font-weight: 600;
       color: #2d59eb;
+      transition: all .1s ease;
+
+      &:hover{
+        color: #2248c5;
+      }
     }
   }
   .image {
@@ -148,6 +155,7 @@ const User = styled.div`
     margin: 0rem 1.5rem;
     background-color: transparent;
     min-width: 80px;
+    box-shadow: none;
   
     .menu-btn{
       cursor: pointer;

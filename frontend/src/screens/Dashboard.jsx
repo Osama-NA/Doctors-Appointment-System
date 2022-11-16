@@ -1,4 +1,4 @@
-import React, {useEffect, useContext, useState, useCallback} from "react";
+import React, {useEffect, useContext, useCallback} from "react";
 import styled from "styled-components";
 import { Routes, Route } from "react-router-dom";
 import { UserContext } from "../context/User";
@@ -48,11 +48,8 @@ const Dashboard = () => {
       }
       
       setUserInfo(data.user)
-      navigate(`/dashboard/${data.user.role}`)
     }
-
-    navigate(`/dashboard/${userInfo.role}`)
-  }, [navigate, setUserInfo, userInfo.id, userInfo.role, userInfo.token])
+  }, [navigate, setUserInfo, userInfo.id, userInfo.token])
 
   useEffect(() => {
     if(!isAuthenticatedUser()){
@@ -66,8 +63,8 @@ const Dashboard = () => {
     <Wrapper>
       <TopNavbar />
       <Routes>
-          <Route path="/patient" element={<Patient />} />
-          <Route path="/doctor" element={<Doctor />} />
+          <Route path="/patient/*" element={<Patient />} />
+          <Route path="/doctor/*" element={<Doctor />} />
       </Routes>
     </Wrapper>
   )
@@ -81,4 +78,16 @@ const Wrapper = styled.div`
   min-height: 100vh;
   background-color: #ECEFF5;
   z-index: 0;
+
+  .pages-wrapper{
+    width: 100%;
+    padding: 140px 2.5rem 135px 310px;
+    z-index: 1;
+  }
+
+  @media (max-width: 860px){
+    .pages-wrapper{
+      padding: 115px 1.5rem;
+    }
+  }
 `

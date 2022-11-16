@@ -100,7 +100,7 @@ const Register = () => {
       userInfo.token = data.token
       setUserInfo(userInfo)
 
-      navigate('/dashboard')
+      navigate(`/dashboard/${role}/overview`)
     }else{
       alert(data.error);
     }
@@ -181,8 +181,8 @@ const Register = () => {
 export default Register;
 
 const ImagePreview = styled.img`
-  max-width: 200px;
+  max-width: 150px;
   height: 100%;
   margin-bottom: 1.25rem;
-  border-radius: 10px;
+  border-radius: 50%;
 `
