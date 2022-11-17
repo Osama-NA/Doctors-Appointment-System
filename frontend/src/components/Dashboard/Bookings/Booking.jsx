@@ -1,49 +1,39 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
 import Button from "../../Buttons/Button";
-import Date from "./Date";
-import Reschedule from "./Reschedule";
+import Date from "../Appointments/Date";
 
-const Appointment = () => {
-  const [showBookAppointment, setShowBookAppointment] = useState(false);
+const Booking = () => {
+    return (
+      <>
+        <Wrapper className="booking">
+          <img src={Img} alt="" />
+  
+          <div className="info">
+            <h2>Kamala Emmanuelle</h2>
+            <p>
+              Lorem ipsum dol amet, consectetur adipiscing sum dol amet,
+              consectetur adipiscing sum dol amet, consectetur adipiscing elit,
+              sed do eiusmod tempor incididunt.
+            </p>
+  
+            <Date allowReschedule={false} />
+            <ButtonsWrapper>
+              <Button
+                type="primary"
+                text="Confirm"
+                action={() => alert(1)}
+              />
+              <Button type="danger" text="Decline" action={() => alert(2)} />
+            </ButtonsWrapper>
+          </div>
+        </Wrapper>
+      </>
+    );
+  };
 
-  return (
-    <>
-      <Wrapper className="appointment">
-        <img src={Img} alt="" />
-
-        <div className="info">
-          <h2>Kamala Emmanuelle</h2>
-          <p>
-            Lorem ipsum dol amet, consectetur adipiscing sum dol amet,
-            consectetur adipiscing sum dol amet, consectetur adipiscing elit,
-            sed do eiusmod tempor incididunt.
-          </p>
-
-          <Date setShowBookAppointment={setShowBookAppointment} allowReschedule={true} />
-          <ButtonsWrapper>
-            <Button
-              type="primary"
-              text="Join Appointment"
-              action={() => alert(1)}
-            />
-            <Button type="secondary" text="Cancel" action={() => alert(2)} />
-          </ButtonsWrapper>
-        </div>
-      </Wrapper>
-
-      {
-        showBookAppointment&&
-        <Reschedule 
-           setShow={setShowBookAppointment} 
-        />
-      }
-    </>
-  );
-};
-
-export default Appointment;
+export default Booking
 
 const Wrapper = styled.div`
   display: flex;

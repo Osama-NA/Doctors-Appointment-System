@@ -2,20 +2,18 @@ import React, { useContext } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/User";
-import Appointment from "./Appointment";
+import Review from "../../Elements/Review";
 
-const Appointments = () => {
+const Reviews = () => {
   const navigate = useNavigate();
 
   const { userInfo } = useContext(UserContext);
 
   return (
-    <Wrapper role={userInfo.role}>
+    <Wrapper>
       <Header>
-        <h2>Recent Appointments</h2>
-        <button
-          onClick={() => navigate(`/dashboard/${userInfo.role}/appointments`)}
-        >
+        <h2>Reviews</h2>
+        <button onClick={() => navigate(`/dashboard/doctor/reviews`)}>
           view all
         </button>
       </Header>
@@ -23,24 +21,36 @@ const Appointments = () => {
       <div className="flex flexColumn">
         {true ? (
           <>
-            <Appointment />
-            <Appointment />
+            <Review
+              name={userInfo.username}
+              reviewBy="Morgaine Uchenna"
+              review={`The services that I receive from ${userInfo.username} is excellent. 
+            Dr. ${userInfo.username} and the staff are friendly and ensure that I am 
+            properly informed about my health and care.`}
+              rate={3}
+            />
+            <Review
+              name={userInfo.username}
+              reviewBy="Morgaine Uchenna"
+              review={`The services that I receive from ${userInfo.username} is excellent. `}
+              rate={3}
+            />
           </>
         ) : (
-          <p className="no-results">No recent appointments found</p>
+          <p className="no-results">You do not have any reviews yet</p>
         )}
       </div>
     </Wrapper>
   );
 };
 
-export default Appointments;
+export default Reviews;
 
 const Wrapper = styled.div`
-  width: ${({role}) => role==='doctor' ? '33vw' : '100%'};
+  width: 33vw;
+  max-width: 500px;
   min-width: 425px;
-  max-width: ${({role}) => role==='doctor' ? '500px' : '600px'};
-  min-height: ${({role}) => role==='doctor' ? '550px' : '600px'};
+  min-height: 275px;
   background-color: #fff;
   padding: 1.25rem 1.5rem;
   margin: 0.75rem 0;
@@ -48,16 +58,14 @@ const Wrapper = styled.div`
   box-shadow: 0 10px 25px -15px #2525252e;
 
   @media (max-width: 1200px) {
-    width: ${({role}) => role==='doctor' ? '550px' : '100%'};
-    min-height: ${({role}) => role==='doctor' ? '275px' : '600px'};
-    margin: 0.25rem 0 0;
+    width: 550px;
   }
   @media (max-width: 860px) {
     width: 100%;
-    max-width: ${({role}) => role==='doctor' ? '400px' : '500px'};
+    max-width: 400px;
     min-width: 275px;
     padding: 1rem 1.25rem;
-    margin: 0.25rem auto .5rem;
+    margin: 0.25rem auto;
 
     .no-results {
       font-size: 12px;
@@ -71,6 +79,7 @@ const Header = styled.header`
   justify-content: space-between;
   width: 100%;
   align-items: center;
+  margin-bottom: 0.75rem;
 
   h2 {
     font-size: 20px;

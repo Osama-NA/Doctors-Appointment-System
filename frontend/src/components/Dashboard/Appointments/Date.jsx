@@ -1,17 +1,24 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { UserContext } from "../../../context/User";
 
-const Date = ({setShowBookAppointment}) => {
+const Date = ({ setShowBookAppointment, allowReschedule }) => {
+  const { userInfo } = useContext(UserContext);
   return (
     <Wrapper>
       <p>03/02/2022 | 12:00 PM</p>
 
-      <div className="reschedule" onClick={() => setShowBookAppointment(true)}>
-        <p>reschedule</p>
-        <FontAwesomeIcon icon={faPenToSquare} />
-      </div>
+      {userInfo.role === "doctor" && allowReschedule && (
+        <div
+          className="reschedule"
+          onClick={() => setShowBookAppointment(true)}
+        >
+          <p>reschedule</p>
+          <FontAwesomeIcon icon={faPenToSquare} />
+        </div>
+      )}
     </Wrapper>
   );
 };
@@ -44,8 +51,8 @@ const Wrapper = styled.div`
   }
 
   @media (max-width: 860px) {
-    margin: 0 0 .75rem;
-  
+    margin: 0 0 0.75rem;
+
     .reschedule {
       svg {
         font-size: 12px;

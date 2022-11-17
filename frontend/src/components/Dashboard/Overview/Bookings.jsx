@@ -2,20 +2,18 @@ import React, { useContext } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/User";
-import Appointment from "./Appointment";
+import Booking from "./Booking";
 
-const Appointments = () => {
+const Bookings = () => {
   const navigate = useNavigate();
 
   const { userInfo } = useContext(UserContext);
 
   return (
-    <Wrapper role={userInfo.role}>
+    <Wrapper>
       <Header>
-        <h2>Recent Appointments</h2>
-        <button
-          onClick={() => navigate(`/dashboard/${userInfo.role}/appointments`)}
-        >
+        <h2>New Bookings</h2>
+        <button onClick={() => navigate(`/dashboard/doctor/bookings`)}>
           view all
         </button>
       </Header>
@@ -23,41 +21,41 @@ const Appointments = () => {
       <div className="flex flexColumn">
         {true ? (
           <>
-            <Appointment />
-            <Appointment />
+            <Booking />
+            <Booking />
+            <Booking />
           </>
         ) : (
-          <p className="no-results">No recent appointments found</p>
+          <p className="no-results">No new bookings found</p>
         )}
       </div>
     </Wrapper>
   );
 };
 
-export default Appointments;
+export default Bookings;
 
 const Wrapper = styled.div`
-  width: ${({role}) => role==='doctor' ? '33vw' : '100%'};
+  width: 33vw;
+  max-width: 500px;
   min-width: 425px;
-  max-width: ${({role}) => role==='doctor' ? '500px' : '600px'};
-  min-height: ${({role}) => role==='doctor' ? '550px' : '600px'};
+  min-height: 275px;
   background-color: #fff;
   padding: 1.25rem 1.5rem;
   margin: 0.75rem 0;
+  margin-bottom: 1rem;
   border-radius: 10px;
   box-shadow: 0 10px 25px -15px #2525252e;
 
   @media (max-width: 1200px) {
-    width: ${({role}) => role==='doctor' ? '550px' : '100%'};
-    min-height: ${({role}) => role==='doctor' ? '275px' : '600px'};
-    margin: 0.25rem 0 0;
+    width: 550px;
   }
   @media (max-width: 860px) {
     width: 100%;
-    max-width: ${({role}) => role==='doctor' ? '400px' : '500px'};
+    max-width: 400px;
     min-width: 275px;
     padding: 1rem 1.25rem;
-    margin: 0.25rem auto .5rem;
+    margin: 0.25rem auto .75rem;
 
     .no-results {
       font-size: 12px;

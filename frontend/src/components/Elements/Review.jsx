@@ -4,7 +4,7 @@ import ReviewStars from './ReviewStars'
 
 const Review = ({name, reviewBy, rate, review}) => {
   return (
-    <Wrapper>
+    <Wrapper className='review'>
       <ReviewHeader>
         <h3>{reviewBy}</h3>
         <ReviewStars rate={rate}/>
