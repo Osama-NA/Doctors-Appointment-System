@@ -1,33 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
 import Button from "../../Buttons/Button";
 import Date from "./Date";
+import Reschedule from "./Reschedule";
 
 const Appointment = () => {
+  const [showBookAppointment, setShowBookAppointment] = useState(false);
+
   return (
-    <Wrapper className="appointment">
-      <img src={Img} alt="" />
+    <>
+      <Wrapper className="appointment">
+        <img src={Img} alt="" />
 
-      <div className="info">
-        <h2>Kamala Emmanuelle</h2>
-        <p>
-          Lorem ipsum dol amet, consectetur adipiscing sum dol amet, consectetur
-          adipiscing sum dol amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt.
-        </p>
+        <div className="info">
+          <h2>Kamala Emmanuelle</h2>
+          <p>
+            Lorem ipsum dol amet, consectetur adipiscing sum dol amet,
+            consectetur adipiscing sum dol amet, consectetur adipiscing elit,
+            sed do eiusmod tempor incididunt.
+          </p>
 
-        <Date />
-        <ButtonsWrapper>
-          <Button
-            type="primary"
-            text="Join Appointment"
-            action={() => alert(1)}
-          />
-          <Button type="secondary" text="Cancel" action={() => alert(2)} />
-        </ButtonsWrapper>
-      </div>
-    </Wrapper>
+          <Date setShowBookAppointment={setShowBookAppointment} />
+          <ButtonsWrapper>
+            <Button
+              type="primary"
+              text="Join Appointment"
+              action={() => alert(1)}
+            />
+            <Button type="secondary" text="Cancel" action={() => alert(2)} />
+          </ButtonsWrapper>
+        </div>
+      </Wrapper>
+
+      {
+        showBookAppointment&&
+        <Reschedule 
+           setShow={setShowBookAppointment} 
+        />
+      }
+    </>
   );
 };
 
@@ -63,7 +75,7 @@ const Wrapper = styled.div`
   @media (max-width: 860px) {
     padding: 1.25rem 0;
     flex-direction: column;
-  
+
     img {
       width: 60px;
       height: 60px;
@@ -71,8 +83,8 @@ const Wrapper = styled.div`
 
     .info {
       padding-left: 0;
-      padding-top: .5rem;
-  
+      padding-top: 0.5rem;
+
       h2 {
         font-size: 18px;
         line-height: 22px;
@@ -92,8 +104,8 @@ const ButtonsWrapper = styled.div`
   button:nth-child(1) {
     margin-right: 0.5rem;
   }
-  
-  @media (max-width: 860px){
+
+  @media (max-width: 860px) {
     button:nth-child(1) {
       margin-right: 0.35rem;
     }

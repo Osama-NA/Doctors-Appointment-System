@@ -16,13 +16,13 @@ const Review = ({name, reviewBy, rate, review}) => {
 
 const Wrapper = styled.div`
     width: 100%;
-    margin-bottom: 1.5rem;
+    margin-bottom: .75rem;
     border-radius: 12.5px;
-    padding: .75rem 1rem;
+    padding: 1rem 1.25rem;
     background-color: rgb(0 124 255 / 10%);
 
     p{
-        font-size: 13px;
+        font-size: 16px;
         line-height: 21px;
         padding-top: .5rem;
     }
@@ -31,16 +31,14 @@ const Wrapper = styled.div`
       margin-bottom: 0;
     }
 
-    @media (max-width: 660px) {
-      margin-bottom: 1.25rem;
-    }
-    @media (max-width: 460px) {
+    @media (max-width: 860px) {
       border-radius: 10px;
-      padding: .6rem .85rem;
+      margin-bottom: .5rem;
+      padding: .75rem 1rem;
 
       p{
-          font-size: 11px;
-          line-height: 19px;
+          font-size: 12px;
+          line-height: 18px;
           padding-top: .25rem;
       }
     }
@@ -58,10 +56,10 @@ const ReviewHeader = styled.div`
   .review-stars{
     padding-top: .15rem;
   }
-  @media (max-width: 460px) {
+  @media (max-width: 860px) {
     h3{
-      font-size: 16px;
-      line-height: 24px;
+      font-size: 14px;
+      line-height: 22px;
     }
     .review-stars{
       padding-top: .1rem;

@@ -11,7 +11,12 @@ const Reviews = ({setShowReviews, name, reviews}) => {
       
       <Container>
         <Header>
-          <h1>{name}'s Reviews</h1>
+          <h1>
+            {name.split(' ').length > 2 ? 
+              name.split(' ')[0] + ' '+ name.split(' ')[1] : 
+              name.split(' ')[0]
+            }'s Reviews
+          </h1>
           <button 
             className='font13'
             onClick={() => setShowReviews(false)}
@@ -51,20 +56,16 @@ const Reviews = ({setShowReviews, name, reviews}) => {
 export default Reviews
 
 const Wrapper = styled.div`
-  display: grid;
-  place-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  padding: 0 2rem;
-  background-color: rgb(8, 25, 51, .4);
+position: fixed;
+top: 0;
+left: 0;
+width: 100vw;
+height: 100vh;
+background-color: #0b15361f;
+display: grid;
+place-items: center;
+padding: 0 1.5rem;
   z-index: 1000;
-
-  @media (max-width: 460px) {
-    padding: 0 1rem;
-  }
 `
 
 const CloseOverlay = styled.div`
@@ -73,33 +74,34 @@ const CloseOverlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: -1;
 `
 
 const Container = styled.div`
   width: 100%;
-  max-width: 600px;
+  max-width: 550px;
   height: 650px;
-  border-radius: 20px;
+  border-radius: 10px;
   background-color: #fff;
-  padding: 2rem;
-  z-index: 2;
+  box-shadow: 0 5px 25px -10px #2525252e;
+  padding: 1.25rem 1.5rem;
   overflow: hidden;
   
   @media (max-width: 960px) {
     max-width: 550px;
     height: 600px;
   }
+  @media (max-width: 860px) {
+    padding: 1rem 1.25rem;
+  }
   @media (max-width: 660px) {
     max-width: 450px;
     height: 500px;
-    padding: 1.6rem 1.75rem;
   }
   @media (max-width: 460px) {
     min-height: 500px;
     height: 100%;
     max-height: 550px;
-    padding: 1.5rem;
   }
 `
 
@@ -110,8 +112,8 @@ const Header = styled.header`
   width: 100%;
 
   h1{
-    font-size: 22px;
-    line-height: 30px;
+    font-size: 20px;
+    line-height: 28px;
   }
   button{
     cursor: pointer;
@@ -131,26 +133,16 @@ const Header = styled.header`
     }
   }
 
-  @media (max-width: 660px) {
+  @media (max-width: 860px) {
     h1{
-      font-size: 20px;
-      line-height: 28px;
+      font-size: 16px;
+      line-height: 24px;
     }
     button{
-      padding: 0 15px;
+      font-size: 12px;
+      padding: 0 12.5px;
       height: 30px;
       border-radius: 7.5px;
-    }
-  }
-  @media (max-width: 460px) {
-    h1{
-      font-size: 18px;
-      line-height: 26px;
-    }
-    button{
-      font-size: 11px;
-      padding: 0 12.5px;
-      height: 27.5px;
     }
   }
 `

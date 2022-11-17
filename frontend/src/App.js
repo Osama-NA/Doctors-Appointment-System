@@ -6,6 +6,8 @@ import Landing from "./screens/Landing.jsx";
 import Auth from "./screens/Auth.jsx";
 import Dashboard from "./screens/Dashboard.jsx";
 import { UserContextProvider } from "./context/User";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 export default function App() {
   return (
@@ -18,16 +20,18 @@ export default function App() {
           rel="stylesheet"
         />
       </Helmet>
-
-      <UserContextProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/*" element={<Landing />}></Route>
-                <Route path="/auth/*" element={<Auth />}></Route>
-                <Route path="/dashboard/*" element={<Dashboard />}></Route>
-              </Routes>
-            </BrowserRouter>
-      </UserContextProvider>
+      
+      <LocalizationProvider dateAdapter={AdapterMoment}>
+        <UserContextProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/*" element={<Landing />}></Route>
+              <Route path="/auth/*" element={<Auth />}></Route>
+              <Route path="/dashboard/*" element={<Dashboard />}></Route>
+            </Routes>
+          </BrowserRouter>
+        </UserContextProvider>
+      </LocalizationProvider>
     </>
   );
 }

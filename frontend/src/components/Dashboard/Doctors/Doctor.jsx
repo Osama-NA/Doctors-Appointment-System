@@ -1,24 +1,46 @@
-import React from "react";
+import React, {useState} from "react";
 import styled from "styled-components";
 import Button from "../../Buttons/Button";
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
+import BookAppointment from './BookAppointment'
+import Reviews from "../../Elements/Reviews";
 
 const Doctor = ({ speciality, title }) => {
-  return (
-    <Wrapper>
-      <img alt="" src={Img}></img>
-      <h2>{title}</h2>
-      <p>{speciality}</p>
+  const [showBookAppointment, setShowBookAppointment] = useState(false)
+  const [showReviews, setShowReviews] = useState(false)
 
-      <ButtonsWrapper>
-        <Button
-          type="primary"
-          text="Book Appointment"
-          action={() => alert(1)}
+  return (
+    <>
+      <Wrapper>
+        <img alt="" src={Img}></img>
+        <h2>{title}</h2>
+        <p>{speciality}</p>
+
+        <ButtonsWrapper>
+          <Button
+            type="primary"
+            text="Book Appointment"
+            action={() => setShowBookAppointment(true)}
+          />
+          <Button type="secondary" text="Reviews" action={() => setShowReviews(true)} />
+        </ButtonsWrapper>
+      </Wrapper>
+
+      {
+        showBookAppointment &&
+        <BookAppointment  
+          setShow={setShowBookAppointment}
         />
-        <Button type="secondary" text="Reviews" action={() => alert(2)} />
-      </ButtonsWrapper>
-    </Wrapper>
+      }
+      {
+        showReviews &&
+        <Reviews 
+          setShowReviews={setShowReviews}
+          name={title}
+          reviews={[{}, {}]}
+        />
+      }
+    </>
   );
 };
 

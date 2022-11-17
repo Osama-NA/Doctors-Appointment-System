@@ -1,90 +1,96 @@
 import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
 import { UserContext } from "../../../context/User";
-import Input from './Input'
-import ProfilePicture from './ProfilePicture'
+import Input from "./Input";
+import ProfilePicture from "./ProfilePicture";
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
 import Button from "../../Buttons/Button";
+import ConfirmUpdate from "./ConfirmUpdate";
 
 const defaultInput = {
-  email: '',
-  username: '',
-  password: '',
-  speciality: ''
-}
+  email: "",
+  username: "",
+  password: "",
+  speciality: "",
+};
 
 const Profile = () => {
-  const [input, setInput] = useState(defaultInput)
-  const [imageFile, setImageFile] = useState(null)
-  const [imageSrc, setImageSrc] = useState(Img)
+  const [ShowConfirmUpdate, setShowConfirmUpdate] = useState(false);
+  const [input, setInput] = useState(defaultInput);
+  const [imageFile, setImageFile] = useState(null);
+  const [imageSrc, setImageSrc] = useState(Img);
 
-  const { userInfo } = useContext(UserContext)
+  const { userInfo } = useContext(UserContext);
 
-  const handleInput = e => {
-    setInput({...input, [e.target.name]: e.target.value }) 
+  const handleInput = (e) => {
+    setInput({ ...input, [e.target.name]: e.target.value });
+  };
+
+  const handleUpdate = e => {
+    e.preventDefault()
+
+    setShowConfirmUpdate(true)
   }
 
   useEffect(() => {
-    if(imageFile){
-      setImageSrc(URL.createObjectURL(imageFile))
-    
-      return () => URL.revokeObjectURL(imageFile)
-    }else{
-      setImageSrc(Img)
+    if (imageFile) {
+      setImageSrc(URL.createObjectURL(imageFile));
+
+      return () => URL.revokeObjectURL(imageFile);
+    } else {
+      setImageSrc(userInfo.profileImage ? userInfo.profileImage : Img);
     }
-  }, [imageFile])
+  }, [imageFile, userInfo.profileImage]);
 
   useEffect(() => {
-    let updatedInput = userInfo
-    updatedInput.password = ''
-    setInput(updatedInput)
-  }, [userInfo])
+    if(userInfo.password){
+      let updatedInput = userInfo;
+      updatedInput.password = "";
+      setInput(updatedInput);
+    }
+  }, [userInfo]);
 
   return (
-    <Wrapper>
-      <h1>Profile</h1>
+    <>
+      <Wrapper>
+        <h1>Profile</h1>
 
-      <Container>
+        <Container onSubmit={handleUpdate}>
           <label>Profile picture</label>
-          <ProfilePicture 
-            imageSrc={imageSrc}
-            setImageFile={setImageFile}
-          />
+          <ProfilePicture imageSrc={imageSrc} setImageFile={setImageFile} />
 
-          <Input 
-            label='Email'
-            type='email'
+          <Input
+            label="Email"
+            type="text"
             value={input.email}
-            onChange={e => handleInput(e)}
+            onChange={(e) => handleInput(e)}
           />
-          <Input 
-            label='Username'
-            type='text'
+          <Input
+            label="Username"
+            type="text"
             value={input.username}
-            onChange={e => handleInput(e)}
+            onChange={(e) => handleInput(e)}
           />
-          <Input 
-            label='Password'
-            type='password'
+          <Input
+            label="Password"
+            type="password"
             value={input.password}
-            onChange={e => handleInput(e)}
+            onChange={(e) => handleInput(e)}
           />
-          {
-            userInfo.role === 'doctor' &&
-            <Input 
-              label='Speciality'
-              type='text'
+          {userInfo.role === "doctor" && (
+            <Input
+              label="Speciality"
+              type="text"
               value={input.speciality}
-              onChange={e => handleInput(e)}
+              onChange={(e) => handleInput(e)}
             />
-          }
-          <Button 
-            text='Update'
-            type='primary'
-            action={() => alert('update')}
-          />
+          )}
+          <Button text="Update" type="primary"  />
         </Container>
-    </Wrapper>
+      </Wrapper>
+
+      {ShowConfirmUpdate && <ConfirmUpdate setShow={setShowConfirmUpdate} />}
+    </>
   );
 };
 
@@ -109,26 +115,26 @@ const Container = styled.form`
   width: 100%;
   max-width: 600px;
   background-color: #fff;
-  padding: 1.25rem 1.5rem .5rem;
+  padding: 1.25rem 1.5rem 0.5rem;
   margin: 0.75rem auto;
   border-radius: 10px;
   box-shadow: 0 10px 25px -15px #2525252e;
 
-  label{
+  label {
     font-weight: 600;
   }
-  input{
-    background-color: #ECEFF5;
+  input {
+    background-color: #eceff5;
     border: none;
     outline: none;
-    padding: .75rem 1.25rem;
+    padding: 0.75rem 1.25rem;
     font-size: 16px;
     border-radius: 5px;
     margin-bottom: 1.25rem;
   }
-  button{
+  button {
     align-self: flex-end;
-    margin: .25rem 0 1rem;
+    margin: 0.25rem 0 1rem;
   }
   .no-results {
     text-align: center;
@@ -139,16 +145,16 @@ const Container = styled.form`
     padding: 1rem 1.25rem;
     margin: 0.25rem auto;
 
-    label{
+    label {
       font-size: 12px;
     }
-    input{
+    input {
       font-size: 12px;
-      padding: .6rem 1rem;
+      padding: 0.6rem 1rem;
       margin-bottom: 1rem;
     }
-    button{
-      margin: .25rem 0 .25rem;
+    button {
+      margin: 0.25rem 0 0.25rem;
     }
     .no-results {
       font-size: 12px;

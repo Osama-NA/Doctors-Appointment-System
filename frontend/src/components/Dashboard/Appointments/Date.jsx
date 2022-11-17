@@ -3,12 +3,12 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 
-const Date = () => {
+const Date = ({setShowBookAppointment}) => {
   return (
     <Wrapper>
       <p>03/02/2022 | 12:00 PM</p>
 
-      <div className="reschedule">
+      <div className="reschedule" onClick={() => setShowBookAppointment(true)}>
         <p>reschedule</p>
         <FontAwesomeIcon icon={faPenToSquare} />
       </div>
