@@ -47,28 +47,27 @@ const CloseOverlay = styled.div`
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
-  max-width: 500px;
   background-color: #fff;
-  border-radius: 17.5px;
+  border-radius: 15px;
   z-index: 2;
   overflow: hidden;
 
   p{
     font-size: 16px;
-    line-height: 26px;
+    line-height: 24px;
     font-weight: 600;
     padding-right: 1.5rem;
-    padding: 1.25rem 1.75rem;
+    padding: 1rem 1.5rem;
   }
   .close-btn{
     cursor: pointer;
     display: grid;
     place-items: center;
     background-color: #2d59eb;
-    border-radius: 17.5px;
+    border-radius: 15px;
     transition: all .2s ease;
 
-    padding: 1.25rem 1.75rem;
+    padding: 1rem 1.5rem;
 
     svg{
         color: #fff;
@@ -82,44 +81,21 @@ const Container = styled.div`
     }
   }
 
-  @media (max-width: 660px) {
-    max-width: 435px;
-    border-radius: 15px;
-  
-    p{
-      font-size: 14px;
-      line-height: 24px;
-      padding-right: 1.25rem;
-      padding: 1rem 1.5rem;
-    }
-    .close-btn{
-      border-radius: 15px;
-  
-      padding: 1rem 1.5rem;
-  
-      svg{
-          font-size: 18px;
-      }
-    }
-  }
-
-  @media (max-width: 460px) {
-    max-width: 375px;
-    border-radius: 12.5px;
+  @media (max-width: 860px) {
+    border-radius: 10px;
   
     p{
       font-size: 12px;
-      line-height: 22px;
+      line-height: 20px;
       padding-right: 1.25rem;
       padding: .75rem 1.25rem;
     }
     .close-btn{
-      border-radius: 12.5px;
-  
-      padding: .75rem 1.25rem;
+      border-radius: 10px;
+      padding: .75rem 1rem;
   
       svg{
-          font-size: 16px;
+          font-size: 18px;
       }
     }
   }

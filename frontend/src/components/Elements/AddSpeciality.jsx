@@ -1,13 +1,50 @@
-import React, { useState, useContext } from "react";
+import React, {useState, useContext} from "react";
 import styled from "styled-components";
+import { post } from "../../utils/fetch";
 import { UserContext } from "../../context/User";
 import Input from "../Dashboard/Profile/Input";
 import Button from "../Buttons/Button";
+import { ProgressBar } from "react-loader-spinner";
 
 const AddSpeciality = ({setShow}) => {
-  const { userInfo } = useContext(UserContext);
+  const { userInfo, setUserInfo } = useContext(UserContext);
 
+  const [loading, setLoading] = useState(false);
   const [speciality, setSpeciality] = useState('')
+
+  const addSpeciality = async () => {
+    if(speciality.length < 5){
+      alert('Please add a speciality')
+      return
+    }
+
+    setLoading(true)
+
+    const data = await post(process.env.REACT_APP_API_HOST + "dashboard/add-speciality", {
+      speciality,
+      doctor_id: userInfo._id,
+    });
+
+    
+    setSpeciality('')
+    setLoading(false)
+
+    if(data.status === 'ok'){
+      alert('Speciality added successfully')
+      let newUserInfo = userInfo
+      newUserInfo.speciality = data.speciality
+      setUserInfo(newUserInfo)
+      
+      setShow(false)
+    }
+    else{
+      alert(data.error)
+
+      if(data.status === 'continue'){
+        setShow(false)
+      }
+    }
+  }
 
   return (
     <Wrapper>
@@ -19,8 +56,18 @@ const AddSpeciality = ({setShow}) => {
             type="text"
             value={speciality}
             onChange={e => setSpeciality(e.target.value)}
+            required={true}
         />
-        <Button text="Continue" type="primary" action={() => setShow(false)}  />
+        <Button text="Continue" type="primary" action={addSpeciality} disabled />
+
+        <Loader>
+          <ProgressBar
+            height="60"
+            visible={loading}
+            borderColor="#000"
+            barColor="#2d59eb"
+          />
+        </Loader>
       </Container>
     </Wrapper>
   )
@@ -41,6 +88,7 @@ const Wrapper = styled.div`
 `
 
 const Container = styled.div`
+  position: relative;
   width: 600px;
   display: flex;
   flex-direction: column;
@@ -105,3 +153,17 @@ const Container = styled.div`
     }
   }
 `;
+
+const Loader = styled.div`
+  position: absolute;
+  bottom: -4.5rem;
+  left: 44%;
+  
+  @media (max-width: 860px){
+    bottom: -4rem;
+    left: 41%;
+  }
+  @media (max-width: 460px){
+    left: 39%;
+  }
+`

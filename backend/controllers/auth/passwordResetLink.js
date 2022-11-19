@@ -21,7 +21,6 @@ const passwordResetLink = async (req, res) => {
     const payload = {email, id};
     const token = jwt.sign(payload, secret, { expiresIn: TOKEN_EXPIRY_TIME});
 
-    console.log(secret)
     const link = getPasswordResetLink(req, id, token);
     
     const response = sendResetLinkToUser(email, link);

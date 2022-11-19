@@ -4,36 +4,42 @@ import Img from "../../../assets/img/dashboard/profile-img.jpg";
 import Button from "../../Buttons/Button";
 import Date from "../Appointments/Date";
 
-const Booking = () => {
-    return (
-      <>
-        <Wrapper className="booking">
-          <img src={Img} alt="" />
-  
-          <div className="info">
-            <h2>Kamala Emmanuelle</h2>
-            <p>
-              Lorem ipsum dol amet, consectetur adipiscing sum dol amet,
-              consectetur adipiscing sum dol amet, consectetur adipiscing elit,
-              sed do eiusmod tempor incididunt.
-            </p>
-  
-            <Date allowReschedule={false} />
+const Booking = ({ booking, cancelBooking, role, confirmBooking }) => {
+  return (
+    <>
+      <Wrapper className="booking">
+        <img
+          src={booking.user.profileImage ? booking.user.profileImage : Img}
+          alt=""
+        />
+
+        <div className="info">
+          <h2>{booking.user.username}</h2>
+          <p>Appointment reason: {booking.reason}</p>
+
+          <Date allowReschedule={false} date={booking.date} />
+
+          {role === "patient" ? (
             <ButtonsWrapper>
               <Button
-                type="primary"
-                text="Confirm"
-                action={() => alert(1)}
+                type="danger"
+                text="Cancel Appointment"
+                action={cancelBooking}
               />
-              <Button type="danger" text="Decline" action={() => alert(2)} />
             </ButtonsWrapper>
-          </div>
-        </Wrapper>
-      </>
-    );
-  };
+          ) : (
+            <ButtonsWrapper>
+              <Button type="primary" text="Confirm" action={confirmBooking} />
+              <Button type="danger" text="Decline" action={cancelBooking} />
+            </ButtonsWrapper>
+          )}
+        </div>
+      </Wrapper>
+    </>
+  );
+};
 
-export default Booking
+export default Booking;
 
 const Wrapper = styled.div`
   display: flex;

@@ -2,10 +2,11 @@ const mongoose = require('mongoose');
 
 const Appointment = new mongoose.Schema(
     {
-        appointment_for: {type: String, required: true},
-        appointment_by: {type: String, required: true},
-        appointment_date: {type: String, required: true},
-        note: {type: String}
+        booked_for: {type: String, required: true},
+        booked_by: {type: String, required: true},
+        date: {type: String, required: true},
+        reason: {type: String, required: true},
+        confirmed: {type: Boolean, required: true}
     },{
         collection: 'appointment'
     }

@@ -4,11 +4,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { UserContext } from "../../../context/User";
 
-const Date = ({ setShowBookAppointment, allowReschedule }) => {
+const Date = ({ setShowBookAppointment, allowReschedule, date }) => {
   const { userInfo } = useContext(UserContext);
   return (
     <Wrapper>
-      <p>03/02/2022 | 12:00 PM</p>
+      <p>{date}</p>
 
       {userInfo.role === "doctor" && allowReschedule && (
         <div

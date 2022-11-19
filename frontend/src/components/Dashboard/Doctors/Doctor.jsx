@@ -5,16 +5,16 @@ import Img from "../../../assets/img/dashboard/profile-img.jpg";
 import BookAppointment from './BookAppointment'
 import Reviews from "../../Elements/Reviews";
 
-const Doctor = ({ speciality, title }) => {
+const Doctor = ({ doctor }) => {
   const [showBookAppointment, setShowBookAppointment] = useState(false)
   const [showReviews, setShowReviews] = useState(false)
 
   return (
     <>
       <Wrapper>
-        <img alt="" src={Img}></img>
-        <h2>{title}</h2>
-        <p>{speciality}</p>
+        <img alt="" src={doctor.profileImage ? doctor.profileImage : Img}></img>
+        <h2>{doctor.username}</h2>
+        <p>{doctor.speciality}</p>
 
         <ButtonsWrapper>
           <Button
@@ -30,13 +30,15 @@ const Doctor = ({ speciality, title }) => {
         showBookAppointment &&
         <BookAppointment  
           setShow={setShowBookAppointment}
+          doctorId={doctor._id}
         />
       }
+      
       {
         showReviews &&
         <Reviews 
           setShowReviews={setShowReviews}
-          name={title}
+          name={doctor.username}
           reviews={[{}, {}]}
         />
       }
@@ -61,7 +63,9 @@ const Wrapper = styled.li`
   img {
     border-radius: 50%;
     width: 75px;
-    height: 75px;
+    min-height: 75px;
+    max-height: 75px;
+    object-fit: contain;
     box-shadow: 0 3px 20px -12px rgb(0 0 0 / 0.125);
   }
 
@@ -100,7 +104,8 @@ const Wrapper = styled.li`
 
     img {
       width: 60px;
-      height: 60px;
+      min-height: 60px;
+      max-height: 60px;
     }
     h2 {
       font-size: 18px;

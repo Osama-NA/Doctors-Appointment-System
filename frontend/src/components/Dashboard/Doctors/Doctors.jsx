@@ -1,33 +1,50 @@
-import React from 'react'
+import React, {useState, useEffect, useCallback} from 'react'
 import styled from "styled-components";
 import DoctorsSearch from './DoctorsSearch'
 import Doctor from './Doctor'
+import { get } from "../../../utils/fetch";
 
 const Doctors = () => {
+  const [doctors, setDoctors] = useState([])
+  const [filteredDoctors, setFilteredDoctors] = useState([])
+
+  const getDoctors = useCallback(async () => {
+    const data = await get(process.env.REACT_APP_API_HOST + "dashboard/doctors")
+
+    if(data.status === 'ok'){
+      setDoctors(data.doctors)
+    }else{
+      alert('Failed to fetch doctors')
+    }
+  }, [])
+
+  useEffect(() => {
+    setFilteredDoctors(doctors)
+  }, [doctors])
+
+  useEffect(() => {
+    getDoctors()
+    
+    return () => setDoctors([])
+  }, [getDoctors])
+
   return (
     <div>
       <Header>
         <h1>Doctors</h1>
-        <DoctorsSearch />
+        <DoctorsSearch doctors={doctors} setFilteredDoctors={setFilteredDoctors} />
       </Header>
 
       <DoctorsList>
-        <Doctor 
-          title='Kamala Emmanuelle'
-          speciality='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.'
-        />
-        <Doctor 
-          title='Kamala Emmanuelle'
-          speciality='Lorem ipsumit ametadipit, d tempor incididunt.por idunt.'
-        />
-        <Doctor 
-          title='Kamala Emmanuelle'
-          speciality='Lorem ipsum dol amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.'
-        />
-        <Doctor 
-          title='Kamala Emmanuelle'
-          speciality='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunnt.'
-        />
+        {
+          filteredDoctors.length > 0 ? 
+          filteredDoctors.map(doctor => {
+            return <Doctor 
+              key={doctor._id}
+              doctor={doctor}
+            /> 
+          }): <p className="no-results">No results found</p>
+        }
       </DoctorsList>
     </div>
   )
@@ -63,6 +80,16 @@ const DoctorsList = styled.ul`
   flex-wrap: wrap;
   margin: 1.5rem auto;
   
+  .no-results{
+    width: 100%;
+  }
+
+  @media (max-width: 860px){
+    .no-results{
+      font-size: 12px;
+      text-align: center;
+    }
+  }
   @media (max-width: 620px){
     margin: 1rem auto;
   }

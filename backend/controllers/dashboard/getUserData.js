@@ -1,5 +1,6 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const specialityModel = require("../../models/speciality.model");
 const userModel = require("../../models/user.model");
 
 const getUserData = async (req, res) => {
@@ -8,13 +9,24 @@ const getUserData = async (req, res) => {
     const secret = process.env.JWT_SECRET_TOKEN;
 
     if(!token || !id){
-        console.log(id)
         return res.json({ status: 'error', error: 'Missing data' })
     }
 
     try{
         jwt.verify(token, secret);
-        const user = await userModel.findOne({_id: id})
+        let user = await userModel.findOne({_id: id})
+        let doctor = undefined
+
+        if(user.role === 'doctor'){
+            const speciality = await specialityModel.findOne({ doctor_id: id });
+            
+            doctor = {
+                ...user._doc,
+                speciality: speciality ? speciality.speciality : ''
+            }
+        }
+
+        user = doctor ? doctor : user
 
         return res.json({ status: 'ok', user })
     }catch(error){

@@ -1,10 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
-const DoctorsSearch = () => {
+const DoctorsSearch = ({setFilteredDoctors, doctors}) => {
   const [searchInput, setSearchInput] = useState("");
+
+  useEffect(() => {
+    let filtered = doctors.filter(doctor => {
+      let name = doctor.username.toLowerCase()
+      let speciality = doctor.speciality.toLowerCase()
+      let input = searchInput.toLowerCase()
+
+      return name.includes(input) || speciality.includes(input)
+    })
+    
+    setFilteredDoctors(filtered)
+  }, [doctors, searchInput, setFilteredDoctors])
 
   return (
     <Wrapper>

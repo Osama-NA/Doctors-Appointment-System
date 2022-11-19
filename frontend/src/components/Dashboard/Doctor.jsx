@@ -1,5 +1,6 @@
-import React, {useState} from "react";
+import React, {useState, useContext, useEffect} from "react";
 import { Routes, Route } from "react-router-dom";
+import { UserContext } from "../../context/User";
 import Overview from './Overview/Overview'
 import Doctors from './Doctors/Doctors'
 import Appointments from './Appointments/Appointments'
@@ -9,7 +10,16 @@ import Reviews from './Reviews/Reviews'
 import AddSpeciality from '../Elements/AddSpeciality';
 
 const Doctor = () => {
-  const [showAddSpeciality, setShowAddSpeciality] = useState(true)
+  const [showAddSpeciality, setShowAddSpeciality] = useState(false)
+
+  const { userInfo } = useContext(UserContext)
+
+  useEffect(() => {
+    if(userInfo.speciality === ''){
+      setShowAddSpeciality(true)
+    }
+
+  }, [userInfo.speciality])
   
   return (
     <div className='pages-wrapper'>

@@ -1,19 +1,64 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useContext} from "react";
 import styled from "styled-components";
 import TextField from "@mui/material/TextField";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import Button from "../../Buttons/Button";
+import { UserContext } from "../../../context/User";
+import { ProgressBar } from "react-loader-spinner";
+import { post } from "../../../utils/fetch";
+import SuccessMessage from '../../Elements/SuccessMessage'
 
-const BookAppointment = ({ setShow }) => {
-  const [date, setDate] = useState();
+const BookAppointment = ({ setShow, doctorId }) => {
+  const { userInfo } = useContext(UserContext);
+
+  const [loading, setLoading] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [date, setDate] = useState(null);
   const [message, setMessage] = useState();
+  const [displayedDate, setDisplayedDate] = useState()
 
-  useEffect(() => {
-    console.log(date?.format('MMMM Do YYYY, h:mm:ss a'));
-    console.log(date?._d);
-  }, [date]);
+  const handleBooking = () => {
+    if(!date || !message){
+      alert('Please fill in the required fields')
+      return
+    }
+
+    let formatedDate = date._d.toString()
+
+    if(formatedDate === 'Invalid Date'){
+      alert('Please select a valid date')
+      return
+    }
+
+    formatedDate = getFormatedDate(formatedDate)
+    
+    bookAppointment(formatedDate)
+  }
+
+  const bookAppointment = async (formatedDate) => {
+    setLoading(true)
+    
+    const data = await post(process.env.REACT_APP_API_HOST + "dashboard/book-appointment", {
+      reason: message,
+      date: formatedDate,
+      bookedDoctor: doctorId,
+      bookedBy: userInfo._id
+    })
+    
+    setLoading(false)
+    setMessage('')
+    setDate(null)
+
+    if(data.status === 'ok'){
+      setDisplayedDate(formatedDate)
+      setShowSuccessMessage(true)
+    }else{
+      alert(data.error)
+    }
+  }
 
   return (
+    <>
     <Wrapper>
       <CloseOverlay onClick={() => setShow(false)}></CloseOverlay>
 
@@ -22,8 +67,9 @@ const BookAppointment = ({ setShow }) => {
         <textarea value={message} onChange={e => setMessage(e.target.value)} required />
         <label>Select appointment date</label>
         <DateTimePicker
-          renderInput={(props) => <TextField {...props} />}
+          renderInput={(props) => <TextField {...props}  />}
           value={date}
+          minDate={new Date()}
           onChange={(newValue) => setDate(newValue)}
         />
         <Buttons>
@@ -35,15 +81,49 @@ const BookAppointment = ({ setShow }) => {
             <Button 
                 text='Confirm Booking'
                 type='primary'
-                action={() => alert('Booking')}
+                action={handleBooking}
             />
         </Buttons>
+
+        <Loader>
+          <ProgressBar
+            height="60"
+            visible={loading}
+            borderColor="#000"
+            barColor="#2d59eb"
+          />
+        </Loader>
       </Container>
     </Wrapper>
+
+    {
+      showSuccessMessage&&
+      <SuccessMessage 
+        setShow={setShow}
+        message={'Appointment successfully booked at ' + displayedDate}
+      />
+    }
+    </>
   );
 };
 
 export default BookAppointment;
+
+const getFormatedDate = input => {
+  let formatedDate = input.substring(0, 24)
+
+  if(Number(formatedDate.substring(16, 18)) > 12){
+    let part1 = formatedDate.substring(0, 16)
+    let part2 = Number(formatedDate.substring(16, 18)) - 12
+    let part3 = formatedDate.substring(18, 24)
+    part2 = part2 < 10 ? `0${part2}` : part2
+    formatedDate = part1 + part2 + part3 + ' PM' 
+  }else{
+    formatedDate += ' AM'
+  }
+  
+  return formatedDate
+} 
 
 const Wrapper = styled.div`
   position: fixed;
@@ -67,6 +147,7 @@ const CloseOverlay = styled.div`
 `;
 
 const Container = styled.div`
+  position: relative;
   width: 450px;
   display: flex;
   flex-direction: column;
@@ -115,5 +196,19 @@ const Buttons = styled.div`
 
   .secondary{
     margin-right: .5rem;
+  }
+`
+
+const Loader = styled.div`
+  position: absolute;
+  bottom: -4.5rem;
+  left: 44%;
+  
+  @media (max-width: 860px){
+    bottom: -4rem;
+    left: 38%;
+  }
+  @media (max-width: 460px){
+    left: 36%;
   }
 `

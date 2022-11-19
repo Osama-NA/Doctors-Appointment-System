@@ -13,6 +13,10 @@ const PatientMenu = () => {
         path='/dashboard/patient/doctors'
       />
       <MenuItem
+        page="Bookings"
+        path='/dashboard/patient/bookings'
+      />
+      <MenuItem
         page="Appointments"
         path='/dashboard/patient/appointments'
       />
