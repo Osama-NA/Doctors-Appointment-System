@@ -79,15 +79,15 @@ const Register = () => {
     setLoading(true)
 
     const { email, username, password } = formData;
-
-    const profileImage = await getImageUrlFromCloudinary(imageFile)
+    
+    const profileImage = imageFile ?  await getImageUrlFromCloudinary(imageFile) : null
 
     const data = await post(process.env.REACT_APP_API_HOST + "auth/register", {
       role,
       email,
       username,
       password,
-      profileImage: profileImage ? profileImage : null
+      profileImage
     });
 
     setLoading(false)

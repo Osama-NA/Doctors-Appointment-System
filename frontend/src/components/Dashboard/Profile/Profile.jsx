@@ -6,19 +6,24 @@ import ProfilePicture from "./ProfilePicture";
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
 import Button from "../../Buttons/Button";
 import ConfirmUpdate from "./ConfirmUpdate";
+import SuccessMessage from "../../Elements/SuccessMessage";
+import { ProgressBar } from "react-loader-spinner";
+import { post } from "../../../utils/fetch";
 
 const defaultInput = {
-  email: "",
   username: "",
-  password: "",
   speciality: "",
 };
 
 const Profile = () => {
+  const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [ShowConfirmUpdate, setShowConfirmUpdate] = useState(false);
   const [input, setInput] = useState(defaultInput);
   const [imageFile, setImageFile] = useState(null);
   const [imageSrc, setImageSrc] = useState(Img);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const { userInfo } = useContext(UserContext);
 
@@ -26,11 +31,28 @@ const Profile = () => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
-  const handleUpdate = e => {
-    e.preventDefault()
+  const getPasswordResetLink = async () => {
+    setLoading(true)
 
-    setShowConfirmUpdate(true)
+    const data = await post(
+      process.env.REACT_APP_API_HOST + "auth/password-reset-link",
+      { email: userInfo.email }
+    );
+    
+    setLoading(false);
+
+    if (data.status === "ok") {
+      setSuccessMessage('A password reset link has been sent to your email.')
+      setShowSuccessMessage(true)
+    } else {
+      alert(data.error);
+    }
   }
+
+  const handleUpdate = (e) => {
+    e.preventDefault();
+    setShowConfirmUpdate(true)
+  };
 
   useEffect(() => {
     if (imageFile) {
@@ -43,12 +65,11 @@ const Profile = () => {
   }, [imageFile, userInfo.profileImage]);
 
   useEffect(() => {
-    if(userInfo.password){
+    if (userInfo.password) {
       let updatedInput = userInfo;
-      updatedInput.password = "";
       setInput(updatedInput);
     }
-  }, [userInfo]);
+  }, [userInfo, refresh]);
 
   return (
     <>
@@ -60,21 +81,9 @@ const Profile = () => {
           <ProfilePicture imageSrc={imageSrc} setImageFile={setImageFile} />
 
           <Input
-            label="Email"
-            type="text"
-            value={input.email}
-            onChange={(e) => handleInput(e)}
-          />
-          <Input
             label="Username"
             type="text"
             value={input.username}
-            onChange={(e) => handleInput(e)}
-          />
-          <Input
-            label="Password"
-            type="password"
-            value={input.password}
             onChange={(e) => handleInput(e)}
           />
           {userInfo.role === "doctor" && (
@@ -85,11 +94,38 @@ const Profile = () => {
               onChange={(e) => handleInput(e)}
             />
           )}
-          <Button text="Update" type="primary"  />
+          <p className="password-reset" onClick={getPasswordResetLink}>Get password reset link</p>
+          <Button text="Update" type="primary" />
+          
+        <Loader>
+          <ProgressBar
+            height="60"
+            visible={loading}
+            borderColor="#000"
+            barColor="#2d59eb"
+          />
+        </Loader>
         </Container>
       </Wrapper>
 
-      {ShowConfirmUpdate && <ConfirmUpdate setShow={setShowConfirmUpdate} />}
+      {ShowConfirmUpdate && (
+        <ConfirmUpdate
+          setShow={setShowConfirmUpdate}
+          input={{...input, img: imageFile}}
+          refresh={refresh}
+          setRefresh={setRefresh}
+          setShowSuccessMessage={setShowSuccessMessage}
+          setSuccessMessage={setSuccessMessage}
+          setLoading={setLoading}
+          setImageFile={setImageFile}
+        />
+      )}
+      {showSuccessMessage && (
+        <SuccessMessage
+          setShow={setShowSuccessMessage}
+          message={successMessage}
+        />
+      )}
     </>
   );
 };
@@ -110,6 +146,7 @@ const Wrapper = styled.div`
 `;
 
 const Container = styled.form`
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -136,6 +173,16 @@ const Container = styled.form`
     align-self: flex-end;
     margin: 0.25rem 0 1rem;
   }
+  .password-reset{
+    cursor: pointer;
+    font-weight: 600;
+    color: #2d59eb;
+    transition: all .25s ease;
+
+    &:hover{
+      color: #2248c5;
+    }
+  }
   .no-results {
     text-align: center;
   }
@@ -145,7 +192,7 @@ const Container = styled.form`
     padding: 1rem 1.25rem;
     margin: 0.25rem auto;
 
-    label {
+    label, .no-results, .password-reset {
       font-size: 12px;
     }
     input {
@@ -156,8 +203,19 @@ const Container = styled.form`
     button {
       margin: 0.25rem 0 0.25rem;
     }
-    .no-results {
-      font-size: 12px;
-    }
   }
 `;
+
+const Loader = styled.div`
+  position: absolute;
+  bottom: -4.5rem;
+  left: 44%;
+  
+  @media (max-width: 860px){
+    bottom: -4rem;
+    left: 42%;
+  }
+  @media (max-width: 460px){
+    left: 40%;
+  }
+`

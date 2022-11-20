@@ -2,7 +2,7 @@ import React from 'react'
 import styled from "styled-components";
 import Button from "../Buttons/Button";
 
-const ConfirmTab = ({promptText, action, type, cta, setShow}) => {
+const ConfirmTab = ({promptText, action, type, cta, setShow, cancelText, secondaryAction}) => {
   return (
     <Wrapper>
       <CloseOverlay onClick={() => setShow(false)}></CloseOverlay>
@@ -11,9 +11,12 @@ const ConfirmTab = ({promptText, action, type, cta, setShow}) => {
         <p>{promptText}</p>
         <Buttons>
             <Button 
-                text='Cancel'
+                text={cancelText ? cancelText : 'Cancel'}
                 type='secondary'
-                action={() => setShow(false)}
+                action={() => {
+                  setShow(false)
+                  secondaryAction()
+                }}
             />
             <Button 
                 text={cta}

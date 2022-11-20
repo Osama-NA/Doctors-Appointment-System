@@ -1,10 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { UserContext } from "../../../context/User";
 import styled from "styled-components";
 import Input from "./Input";
 import Button from "../../Buttons/Button";
+import { getImageUrlFromCloudinary } from "../../../utils/cloudinary";
+import { post } from "../../../utils/fetch";
 
-const ConfirmUpdate = ({ setShow }) => {
+const ConfirmUpdate = ({ setImageFile, setSuccessMessage, setLoading, setShow, input, refresh, setRefresh, setShowSuccessMessage }) => {
   const [password, setPassword] = useState("");
+
+  const { setUserInfo } = useContext(UserContext);
+
+  const handleConfirm = async () => {
+    if(password.trim().length === 0){
+      alert('Please enter your password')
+      return
+    }
+    
+    setLoading(true)
+
+    let newInfo = {
+      id: input._id,
+      username: input.username,
+      speciality: input.speciality,
+      confirmPassword: password,
+    };
+
+    if (typeof input.img === "object" && input.img !== null) {
+      newInfo.profileImage = await getImageUrlFromCloudinary(input.img);
+    }
+
+    const data = await post(
+      process.env.REACT_APP_API_HOST + "dashboard/update-user",
+      newInfo
+    );
+
+    if (data.status === "ok") {
+      setImageFile(null)
+      setUserInfo(data.user)
+      setSuccessMessage('Profile successfully updated')
+      setShowSuccessMessage(true);
+      setRefresh(!refresh);
+    } else {
+      alert(data.error);
+    }
+    setLoading(false)
+    setShow(false)
+  };
 
   return (
     <Wrapper>
@@ -12,22 +54,18 @@ const ConfirmUpdate = ({ setShow }) => {
 
       <Container>
         <Input
-          label="Password"
+          label="Enter the password to update your profile"
           type="password"
           value={password}
-          onChange={(e) => setPassword(e)}
+          onChange={(e) => setPassword(e.target.value)}
         />
         <Buttons>
-            <Button 
-                text='Cancel'
-                type='secondary'
-                action={() => setShow(false)}
-            />
-            <Button 
-                text='Confirm'
-                type='primary'
-                action={() => alert('Update')}
-            />
+          <Button
+            text="Cancel"
+            type="secondary"
+            action={() => setShow(false)}
+          />
+          <Button text="Confirm" type="primary" action={handleConfirm} />
         </Buttons>
       </Container>
     </Wrapper>
@@ -106,7 +144,7 @@ const Buttons = styled.div`
   display: flex;
   justify-content: flex-end;
 
-  .secondary{
-    margin-right: .5rem;
+  .secondary {
+    margin-right: 0.5rem;
   }
-`
+`;

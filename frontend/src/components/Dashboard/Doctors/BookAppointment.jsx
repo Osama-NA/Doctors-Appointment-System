@@ -111,14 +111,22 @@ export default BookAppointment;
 
 const getFormatedDate = input => {
   let formatedDate = input.substring(0, 24)
+  let day = formatedDate.substring(0, 16)
+  let hour = Number(formatedDate.substring(16, 18))
+  let minutesSeconds = formatedDate.substring(18, 24)
 
-  if(Number(formatedDate.substring(16, 18)) > 12){
-    let part1 = formatedDate.substring(0, 16)
-    let part2 = Number(formatedDate.substring(16, 18)) - 12
-    let part3 = formatedDate.substring(18, 24)
-    part2 = part2 < 10 ? `0${part2}` : part2
-    formatedDate = part1 + part2 + part3 + ' PM' 
-  }else{
+  if(hour === 12){
+    formatedDate = day + hour + minutesSeconds + ' PM' 
+  }
+  else if(hour > 12){
+    hour = hour - 12
+    hour = hour < 10 ? `0${hour}` : hour
+    formatedDate = day + hour + minutesSeconds + ' PM' 
+  }
+  else if(hour === 0){
+    formatedDate = day + '12' + minutesSeconds + ' AM' 
+  }
+  else{
     formatedDate += ' AM'
   }
   

@@ -18,9 +18,8 @@ export default function TopNavbar({ auth }) {
 
   useEffect(() => {
     window.addEventListener("scroll", () => setY(window.scrollY));
-    return () => {
-      window.removeEventListener("scroll", () => setY(window.scrollY));
-    };
+    
+    return () => window.removeEventListener("scroll", () => setY());
   }, [y]);
 
   return (

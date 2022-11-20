@@ -1,12 +1,12 @@
-import React, {useContext} from 'react'
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { UserContext } from "../../../context/User";
-import Appointments from './Appointments';
-import Bookings from './Bookings';
-import Reviews from './Reviews';
+import Appointments from "./Appointments";
+import Bookings from "./Bookings";
+import Reviews from "./Reviews";
 
 const Overview = () => {
-  const { userInfo } = useContext(UserContext)
+  const { userInfo } = useContext(UserContext);
 
   return (
     <Wrapper>
@@ -14,8 +14,11 @@ const Overview = () => {
 
       <Container>
         {
-          userInfo.role === 'doctor' &&
-          <div className='group'>
+          userInfo.role === "patient" ? 
+          <div className="patient-bookings">
+            <Bookings />
+          </div> :
+          <div className="group">
             <Bookings />
             <Reviews />
           </div>
@@ -23,40 +26,48 @@ const Overview = () => {
         <Appointments />
       </Container>
     </Wrapper>
-  )
-}
+  );
+};
 
-export default Overview
+export default Overview;
 
 const Wrapper = styled.div`
-  h1{
+  h1 {
     text-align: center;
     font-size: 24px;
   }
-  
-  @media (max-width: 860px){
-    h1{
+
+  @media (max-width: 860px) {
+    h1 {
       font-size: 18px;
     }
   }
-`
+`;
 
 const Container = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
-  
 
-  .group{
+  .patient-bookings{
     margin-right: 1rem;
   }
-  
-  @media (max-width: 1200px){
+  .group {
+    margin-right: 1rem;
+  }
+
+  @media (max-width: 1200px) {
     align-items: center;
     flex-direction: column-reverse;
-    
-    .group{
+
+    .group, .patient-bookings {
       margin-right: 0;
     }
   }
-`
+
+  @media (max-width: 860px) {
+    .patient-bookings{
+      width: 100%;
+    }
+  }
+`;

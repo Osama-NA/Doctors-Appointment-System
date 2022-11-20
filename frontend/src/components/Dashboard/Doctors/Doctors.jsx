@@ -39,7 +39,7 @@ const Doctors = () => {
         {
           filteredDoctors.length > 0 ? 
           filteredDoctors.map(doctor => {
-            return <Doctor 
+            return doctor.speciality && <Doctor 
               key={doctor._id}
               doctor={doctor}
             /> 

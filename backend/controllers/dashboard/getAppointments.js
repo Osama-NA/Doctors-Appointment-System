@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const userModel = require("../../models/user.model");
 const appointmentModel = require("../../models/appointment.model");
 
-const getBookings = async (req, res) => {
+const getAppointments = async (req, res) => {
     const token = req.headers['x-access-token'];
     const secret = process.env.JWT_SECRET_TOKEN;
     const { id, role } = req.query;
@@ -14,36 +14,36 @@ const getBookings = async (req, res) => {
 
     try{
         jwt.verify(token, secret);
-        let bookings = []
+        let appointments = []
         let users = await userModel.find()
 
         if(role === 'doctor'){
-            bookings = await appointmentModel.find({booked_for: id, confirmed: false});
-            bookings = bookings.map( booking => {
-                let bookedBy = users.filter(user => user.id === booking.booked_by)[0];
+            appointments = await appointmentModel.find({booked_for: id, confirmed: true});
+            appointments = appointments.map( appointment => {
+                let bookedBy = users.filter(user => user.id === appointment.booked_by)[0];
                 
                 return {
-                    ...booking._doc,
+                    ...appointment._doc,
                     user: bookedBy
                 }
             })
         }else{
-            bookings = await appointmentModel.find({booked_by: id, confirmed: false});
+            appointments = await appointmentModel.find({booked_by: id, confirmed: true});
 
-            bookings = bookings.map( booking => {
-                let bookedFor = users.filter(user => user.id === booking.booked_for)[0];
+            appointments = appointments.map( appointment => {
+                let bookedFor = users.filter(user => user.id === appointment.booked_for)[0];
 
                 return {
-                    ...booking._doc,
+                    ...appointment._doc,
                     user: bookedFor
                 }
             })
         }
 
-        return res.json({ status: 'ok', bookings })
+        return res.json({ status: 'ok', appointments })
     }catch(error){
         return res.json({ status: 'error', error: 'Invalid token' })
     }
 };
 
-module.exports = getBookings;
+module.exports = getAppointments;

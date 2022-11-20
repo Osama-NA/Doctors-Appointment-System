@@ -1,24 +1,111 @@
-import React from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import styled from "styled-components";
 import Appointment from "./Appointment";
+import { UserContext } from "../../../context/User";
+import { post, get } from "../../../utils/fetch";
+import SuccessMessage from "../../Elements/SuccessMessage";
 
 const Appointments = () => {
-  return (
-    <Wrapper>
-      <h1>Appointments</h1>
+  const { userInfo } = useContext(UserContext);
 
-      <Container>
-        {true ? (
-          <>
-            <Appointment />
-            <Appointment />
-            <Appointment />
-          </>
-        ) : (
-          <p className="no-results">No recent appointments found</p>
-        )}
-      </Container>
-    </Wrapper>
+  const [refresh, setRefresh] = useState(false);
+  const [appointments, setAppointments] = useState([]);
+  const [rescheduledDate, setRescheduledDate] = useState();
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const getAppointmens = useCallback(async () => {
+    const data = await get(
+      process.env.REACT_APP_API_HOST +
+        "dashboard/appointments?id=" +
+        userInfo._id +
+        "&role=" +
+        userInfo.role
+    );
+
+    if (data.status === "ok") {
+      setAppointments(data.appointments);
+    } else {
+      alert("Failed to fetch appointments");
+    }
+  }, [userInfo._id, userInfo.role]);
+
+  useEffect(() => {
+    getAppointmens();
+
+    return () => setAppointments([]);
+  }, [getAppointmens, refresh]);
+
+  const cancelAppointment = async (appointmentId) => {
+    const data = await post(
+      process.env.REACT_APP_API_HOST + "dashboard/delete-appointment",
+      {
+        token: localStorage.getItem("token"),
+        appointment_id: appointmentId,
+      }
+    );
+
+    if (data.status === "ok") {
+      setShowSuccessMessage(true);
+      setSuccessMessage("Appointment successfully canceled");
+      setRefresh(!refresh);
+    } else {
+      alert(data.error);
+    }
+  };
+
+  const rescheduleAppointment = async (appointmentId) => {
+    const data = await post(
+      process.env.REACT_APP_API_HOST + "dashboard/reschedule-appointment",
+      {
+        token: localStorage.getItem("token"),
+        appointment_id: appointmentId,
+        date: rescheduledDate
+      }
+    );
+
+    if (data.status === "ok") {
+      setShowSuccessMessage(true);
+      setSuccessMessage("Appointment successfully rescheduled");
+      setRefresh(!refresh);
+    } else {
+      alert(data.error);
+    }
+  };
+
+  return (
+    <>
+      <Wrapper>
+        <h1>Appointments</h1>
+
+        <Container>
+          {appointments.length > 0 ? (
+            appointments.map((appointment) => {
+              return (
+                <Appointment
+                  key={appointment._id}
+                  appointment={appointment}
+                  cancelBooking={() => cancelAppointment(appointment._id)}
+                  role={userInfo.role}
+                  setRescheduledDate={setRescheduledDate}
+                  rescheduleAppointment={() => rescheduleAppointment(appointment._id)}
+                  rescheduledDate={rescheduledDate}
+                />
+              );
+            })
+          ) : (
+            <p className="no-results">No recent appointments found</p>
+          )}
+        </Container>
+      </Wrapper>
+      
+      {showSuccessMessage && (
+        <SuccessMessage
+          setShow={setShowSuccessMessage}
+          message={successMessage}
+        />
+      )}
+    </>
   );
 };
 

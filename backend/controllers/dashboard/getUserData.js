@@ -27,7 +27,7 @@ const getUserData = async (req, res) => {
         }
 
         user = doctor ? doctor : user
-
+        
         return res.json({ status: 'ok', user })
     }catch(error){
         return res.json({ status: 'error', error: 'Invalid token' })

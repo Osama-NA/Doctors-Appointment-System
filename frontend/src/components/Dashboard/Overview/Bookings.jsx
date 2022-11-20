@@ -10,7 +10,7 @@ const Bookings = () => {
   const { userInfo } = useContext(UserContext);
 
   return (
-    <Wrapper>
+    <Wrapper role={userInfo.role}>
       <Header>
         <h2>New Bookings</h2>
         <button onClick={() => navigate(`/dashboard/doctor/bookings`)}>
@@ -39,7 +39,7 @@ const Wrapper = styled.div`
   width: 33vw;
   max-width: 500px;
   min-width: 425px;
-  min-height: 275px;
+  min-height: ${({role}) => role==='doctor' ? '275px' : '600px'};
   background-color: #fff;
   padding: 1.25rem 1.5rem;
   margin: 0.75rem 0;
@@ -49,6 +49,7 @@ const Wrapper = styled.div`
 
   @media (max-width: 1200px) {
     width: 550px;
+    min-height: 275px;
   }
   @media (max-width: 860px) {
     width: 100%;

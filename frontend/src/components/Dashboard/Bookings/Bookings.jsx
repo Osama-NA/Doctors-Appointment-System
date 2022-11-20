@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
 import styled from "styled-components";
 import Booking from "./Booking";
-import { get } from "../../../utils/fetch";
 import { UserContext } from "../../../context/User";
+import { post, get } from "../../../utils/fetch";
 import SuccessMessage from "../../Elements/SuccessMessage";
-import { post } from "../../../utils/fetch";
 
 const Bookings = () => {
   const { userInfo } = useContext(UserContext);
@@ -24,7 +23,6 @@ const Bookings = () => {
     );
 
     if (data.status === "ok") {
-      console.log(data);
       setBookings(data.bookings);
     } else {
       alert("Failed to fetch bookings");

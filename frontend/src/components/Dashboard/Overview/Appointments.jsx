@@ -37,9 +37,9 @@ const Appointments = () => {
 export default Appointments;
 
 const Wrapper = styled.div`
-  width: ${({role}) => role==='doctor' ? '33vw' : '100%'};
+  width: 33vw;
   min-width: 425px;
-  max-width: ${({role}) => role==='doctor' ? '500px' : '600px'};
+  max-width: 500px;
   min-height: ${({role}) => role==='doctor' ? '550px' : '600px'};
   background-color: #fff;
   padding: 1.25rem 1.5rem;
@@ -48,13 +48,13 @@ const Wrapper = styled.div`
   box-shadow: 0 10px 25px -15px #2525252e;
 
   @media (max-width: 1200px) {
-    width: ${({role}) => role==='doctor' ? '550px' : '100%'};
-    min-height: ${({role}) => role==='doctor' ? '275px' : '600px'};
+    width: 550px;
+    min-height: 275px;
     margin: 0.25rem 0 0;
   }
   @media (max-width: 860px) {
     width: 100%;
-    max-width: ${({role}) => role==='doctor' ? '400px' : '500px'};
+    max-width: 400px;
     min-width: 275px;
     padding: 1rem 1.25rem;
     margin: 0.25rem auto .5rem;

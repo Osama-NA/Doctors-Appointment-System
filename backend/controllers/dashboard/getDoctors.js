@@ -21,12 +21,14 @@ const getDoctors = async (req, res) => {
         doctors = doctors.map(doctor => {
             let speciality = specialities.filter(speciality => speciality.doctor_id === doctor.id)
 
-            return {
+            
+            return speciality.length === 0 ? doctor : {
                 ...doctor._doc,
                 speciality: speciality[0].speciality
             }
         })
-
+        
+        doctors = doctors.filter(doctor => doctor.speciality && doctor.speciality !== '')
         return res.json({ status: 'ok', doctors })
     }catch(error){
         return res.json({ status: 'error', error: 'Invalid token' })

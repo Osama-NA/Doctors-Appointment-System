@@ -1,11 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import TextField from "@mui/material/TextField";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import Button from "../../Buttons/Button";
 
-const Reschedule = ({ setShow }) => {
-  const [date, setDate] = useState();
+const Reschedule = ({ setShow, setRescheduledDate, rescheduleAppointment, rescheduledDate }) => {
+  const [date, setDate] = useState(null);
+
+  const handleRescheduleAppointment = () => {
+    if(!rescheduledDate){
+      alert('Please fill in the the appointment date')
+      return
+    }
+
+    if(rescheduledDate === 'Invalid Date'){
+      alert('Please select a valid date')
+      return
+    }
+    
+    rescheduleAppointment()
+  }
+
+  useEffect(() => {
+    if(date){
+      let formatedDate = date._d.toString()
+      formatedDate = formatedDate === 'Invalid Date' ? formatedDate : getFormatedDate(formatedDate)
+      setRescheduledDate(formatedDate)
+    }
+  }, [date, setRescheduledDate])
 
   return (
     <Wrapper>
@@ -16,6 +38,7 @@ const Reschedule = ({ setShow }) => {
         <DateTimePicker
           renderInput={(props) => <TextField {...props} />}
           value={date}
+          minDate={new Date()}
           onChange={(newValue) => setDate(newValue)}
         />
         <Buttons>
@@ -27,7 +50,7 @@ const Reschedule = ({ setShow }) => {
           <Button
             text="Reschedule"
             type="primary"
-            action={() => alert("Reschedule")}
+            action={handleRescheduleAppointment}
           />
         </Buttons>
       </Container>
@@ -36,6 +59,30 @@ const Reschedule = ({ setShow }) => {
 };
 
 export default Reschedule;
+
+const getFormatedDate = input => {
+  let formatedDate = input.substring(0, 24)
+  let day = formatedDate.substring(0, 16)
+  let hour = Number(formatedDate.substring(16, 18))
+  let minutesSeconds = formatedDate.substring(18, 24)
+
+  if(hour === 12){
+    formatedDate = day + hour + minutesSeconds + ' PM' 
+  }
+  else if(hour > 12){
+    hour = hour - 12
+    hour = hour < 10 ? `0${hour}` : hour
+    formatedDate = day + hour + minutesSeconds + ' PM' 
+  }
+  else if(hour === 0){
+    formatedDate = day + '12' + minutesSeconds + ' AM' 
+  }
+  else{
+    formatedDate += ' AM'
+  }
+  
+  return formatedDate
+} 
 
 const Wrapper = styled.div`
   position: fixed;

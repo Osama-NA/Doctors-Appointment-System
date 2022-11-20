@@ -9,10 +9,6 @@ const DoctorMenu = () => {
         path='/dashboard/doctor/overview'
       />
       <MenuItem
-        page="Doctors"
-        path='/dashboard/doctor/doctors'
-      />
-      <MenuItem
         page="Bookings"
         path='/dashboard/doctor/bookings'
       />

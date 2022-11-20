@@ -1,10 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
 import Button from "../../Buttons/Button";
 import Date from "../Appointments/Date";
+import ConfirmTab from "../../Elements/ConfirmTab";
 
 const Booking = ({ booking, cancelBooking, role, confirmBooking }) => {
+  const [showConfirmCancel, setShowConfirmCancel] = useState(false);
+  const [confirmCancelMessage, setConfirmCancelMessage] = useState('');
+
+  const handleCancelBooking = () => {
+    setShowConfirmCancel(true);
+    setConfirmCancelMessage(`
+      Are you sure you want to ${
+        role === "patient" ? "cancel" : "decline"
+      } this appointment?
+    `)
+  }
+
   return (
     <>
       <Wrapper className="booking">
@@ -24,17 +37,28 @@ const Booking = ({ booking, cancelBooking, role, confirmBooking }) => {
               <Button
                 type="danger"
                 text="Cancel Appointment"
-                action={cancelBooking}
+                action={handleCancelBooking}
               />
             </ButtonsWrapper>
           ) : (
             <ButtonsWrapper>
               <Button type="primary" text="Confirm" action={confirmBooking} />
-              <Button type="danger" text="Decline" action={cancelBooking} />
+              <Button type="danger" text="Decline" action={handleCancelBooking} />
             </ButtonsWrapper>
           )}
         </div>
       </Wrapper>
+
+      {showConfirmCancel && (
+        <ConfirmTab
+          setShow={setShowConfirmCancel}
+          promptText={confirmCancelMessage}
+          type='danger'
+          cta='Yes'
+          action={cancelBooking}
+          cancelText='No'
+        />
+      )}
     </>
   );
 };

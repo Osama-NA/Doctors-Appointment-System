@@ -2,43 +2,87 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
 import Button from "../../Buttons/Button";
-import Date from "./Date";
 import Reschedule from "./Reschedule";
+import Date from "./Date";
+import ConfirmTab from "../../Elements/ConfirmTab";
 
-const Appointment = () => {
-  const [showBookAppointment, setShowBookAppointment] = useState(false);
+const Appointment = ({
+  appointment,
+  cancelAppointment,
+  role,
+  setRescheduledDate,
+  rescheduleAppointment,
+  rescheduledDate
+}) => {
+  const [showRescheduleAppointment, setShowRescheduleAppointment] = useState(false);
+
+  const [showConfirmCancel, setShowConfirmCancel] = useState(false);
+  const [confirmCancelMessage, setConfirmCancelMessage] = useState("");
+
+  const handleCancelAppointment = () => {
+    setShowConfirmCancel(true);
+    setConfirmCancelMessage(`
+      Are you sure you want to ${
+        role === "patient" ? "cancel" : "decline"
+      } this appointment with ${appointment.user.username}, at ${
+      appointment.date
+    }?
+    `);
+  };
 
   return (
     <>
       <Wrapper className="appointment">
-        <img src={Img} alt="" />
+        <img
+          src={
+            appointment.user.profileImage ? appointment.user.profileImage : Img
+          }
+          alt=""
+        />
 
         <div className="info">
-          <h2>Kamala Emmanuelle</h2>
-          <p>
-            Lorem ipsum dol amet, consectetur adipiscing sum dol amet,
-            consectetur adipiscing sum dol amet, consectetur adipiscing elit,
-            sed do eiusmod tempor incididunt.
-          </p>
-
-          <Date setShowBookAppointment={setShowBookAppointment} allowReschedule={true} />
+          <h2>{appointment.user.username}</h2>
+          <p>Appointment reason: {appointment.reason}</p>
+ 
+          <Date
+            setRescheduledDate={setRescheduledDate}
+            date={appointment.date}
+            setShowRescheduleAppointment={setShowRescheduleAppointment}
+            allowReschedule={true}
+          />
           <ButtonsWrapper>
             <Button
               type="primary"
               text="Join Appointment"
               action={() => alert(1)}
             />
-            <Button type="secondary" text="Cancel" action={() => alert(2)} />
+            <Button
+              type="danger"
+              text="Cancel"
+              action={handleCancelAppointment}
+            />
           </ButtonsWrapper>
         </div>
       </Wrapper>
 
-      {
-        showBookAppointment&&
-        <Reschedule 
-           setShow={setShowBookAppointment} 
+      {showRescheduleAppointment && (
+        <Reschedule
+          setRescheduledDate={setRescheduledDate}
+          setShow={setShowRescheduleAppointment}
+          rescheduleAppointment={rescheduleAppointment}
+          rescheduledDate={rescheduledDate}
         />
-      }
+      )}
+      {showConfirmCancel && (
+        <ConfirmTab
+          setShow={setShowConfirmCancel}
+          promptText={confirmCancelMessage}
+          type="danger"
+          cta="Yes"
+          action={cancelAppointment}
+          cancelText="No"
+        />
+      )}
     </>
   );
 };
@@ -59,6 +103,7 @@ const Wrapper = styled.div`
   }
 
   .info {
+    width: 100%;
     padding-left: 1.5rem;
 
     h2 {

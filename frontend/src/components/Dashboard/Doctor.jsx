@@ -15,10 +15,11 @@ const Doctor = () => {
   const { userInfo } = useContext(UserContext)
 
   useEffect(() => {
-    if(userInfo.speciality === ''){
+    if(userInfo.speciality === '' || !userInfo.speciality){
       setShowAddSpeciality(true)
     }
 
+    return () => setShowAddSpeciality(false) 
   }, [userInfo.speciality])
   
   return (
