@@ -24,7 +24,7 @@ const Wrapper = styled.div`
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    object-fit: contain;
+    object-fit: cover;
     margin: 0.75rem 0 1rem;
   }
   input {

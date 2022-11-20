@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/User";
 import Appointment from "./Appointment";
 
-const Appointments = () => {
+const Appointments = ({appointments}) => {
   const navigate = useNavigate();
 
   const { userInfo } = useContext(UserContext);
@@ -12,7 +12,7 @@ const Appointments = () => {
   return (
     <Wrapper role={userInfo.role}>
       <Header>
-        <h2>Recent Appointments</h2>
+        <h2>New Appointments</h2>
         <button
           onClick={() => navigate(`/dashboard/${userInfo.role}/appointments`)}
         >
@@ -21,14 +21,15 @@ const Appointments = () => {
       </Header>
 
       <div className="flex flexColumn">
-        {true ? (
-          <>
-            <Appointment />
-            <Appointment />
-          </>
-        ) : (
-          <p className="no-results">No recent appointments found</p>
-        )}
+        {
+          appointments.length > 0 ? (
+            appointments.map((appointment) => {
+              return <Appointment key={appointment._id} appointment={appointment} />;
+            })
+          ) : (
+            <p className="no-results">No new appointments found</p>
+          )
+        }
       </div>
     </Wrapper>
   );

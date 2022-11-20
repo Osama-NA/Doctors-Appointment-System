@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const getOverviewContent = require('../controllers/dashboard/getOverviewContent');
 const getUserData = require('../controllers/dashboard/getUserData');
 const getDoctors = require('../controllers/dashboard/getDoctors');
 const getBookings = require('../controllers/dashboard/getBookings');
@@ -14,6 +15,7 @@ const confirmAppointment = require('../controllers/dashboard/confirmAppointment'
 const rescheduleAppointment = require('../controllers/dashboard/rescheduleAppointment');
 
 // GET
+router.get('/overview', getOverviewContent);
 router.get('/user', getUserData);
 router.get('/doctors', getDoctors);
 router.get('/bookings', getBookings);

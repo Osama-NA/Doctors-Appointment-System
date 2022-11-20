@@ -65,7 +65,7 @@ const Wrapper = styled.li`
     width: 75px;
     min-height: 75px;
     max-height: 75px;
-    object-fit: contain;
+    object-fit: cover;
     box-shadow: 0 3px 20px -12px rgb(0 0 0 / 0.125);
   }
 

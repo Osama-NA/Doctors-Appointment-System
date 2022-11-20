@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/User";
 import Booking from "./Booking";
 
-const Bookings = () => {
+const Bookings = ({ bookings, confirmBooking, role }) => {
   const navigate = useNavigate();
 
   const { userInfo } = useContext(UserContext);
@@ -12,21 +12,28 @@ const Bookings = () => {
   return (
     <Wrapper role={userInfo.role}>
       <Header>
-        <h2>New Bookings</h2>
-        <button onClick={() => navigate(`/dashboard/doctor/bookings`)}>
+        <h2>Recent Bookings</h2>
+        <button
+          onClick={() => navigate(`/dashboard/${userInfo.role}/bookings`)}
+        >
           view all
         </button>
       </Header>
 
       <div className="flex flexColumn">
-        {true ? (
-          <>
-            <Booking />
-            <Booking />
-            <Booking />
-          </>
+        {bookings.length > 0 ? (
+          bookings.map((booking) => {
+            return (
+              <Booking
+                key={booking._id}
+                booking={booking}
+                role={role}
+                confirmBooking={() => confirmBooking(booking._id)}
+              />
+            );
+          })
         ) : (
-          <p className="no-results">No new bookings found</p>
+          <p className="no-results">No recent bookings found</p>
         )}
       </div>
     </Wrapper>
@@ -39,7 +46,7 @@ const Wrapper = styled.div`
   width: 33vw;
   max-width: 500px;
   min-width: 425px;
-  min-height: ${({role}) => role==='doctor' ? '275px' : '600px'};
+  min-height: ${({ role }) => (role === "doctor" ? "275px" : "600px")};
   background-color: #fff;
   padding: 1.25rem 1.5rem;
   margin: 0.75rem 0;
@@ -56,7 +63,7 @@ const Wrapper = styled.div`
     max-width: 400px;
     min-width: 275px;
     padding: 1rem 1.25rem;
-    margin: 0.25rem auto .75rem;
+    margin: 0.25rem auto 0.75rem;
 
     .no-results {
       font-size: 12px;

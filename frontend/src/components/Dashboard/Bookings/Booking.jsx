@@ -75,7 +75,7 @@ const Wrapper = styled.div`
     border-radius: 50%;
     width: 75px;
     height: 75px;
-    object-fit: contain;
+    object-fit: cover;
   }
 
   .info {

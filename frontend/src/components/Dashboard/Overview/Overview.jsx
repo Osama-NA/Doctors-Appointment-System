@@ -1,31 +1,117 @@
-import React, { useContext } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import styled from "styled-components";
 import { UserContext } from "../../../context/User";
 import Appointments from "./Appointments";
 import Bookings from "./Bookings";
 import Reviews from "./Reviews";
+import { post, get } from "../../../utils/fetch";
+import { ProgressBar } from "react-loader-spinner";
+import SuccessMessage from "../../Elements/SuccessMessage";
+
+const defaultContent = {
+  bookings: [],
+  appointments: [],
+};
 
 const Overview = () => {
   const { userInfo } = useContext(UserContext);
 
-  return (
-    <Wrapper>
-      <h1>Welcome, {userInfo.username}</h1>
+  const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+  const [content, setContent] = useState(defaultContent);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
-      <Container>
-        {
-          userInfo.role === "patient" ? 
-          <div className="patient-bookings">
-            <Bookings />
-          </div> :
-          <div className="group">
-            <Bookings />
-            <Reviews />
-          </div>
-        }
-        <Appointments />
-      </Container>
-    </Wrapper>
+  const confirmBooking = async (bookingId) => {
+    setLoading(true);
+
+    const data = await post(
+      process.env.REACT_APP_API_HOST + "dashboard/confirm-appointment",
+      {
+        token: localStorage.getItem("token"),
+        appointment_id: bookingId,
+      }
+    );
+
+    setLoading(false);
+
+    if (data.status === "ok") {
+      setShowSuccessMessage(true);
+      setSuccessMessage("Booking successfully confirmed");
+      setRefresh(!refresh);
+    } else {
+      alert(data.error);
+    }
+  };
+
+  const getContent = useCallback(async () => {
+    const data = await get(
+      process.env.REACT_APP_API_HOST +
+        "dashboard/overview?id=" +
+        userInfo._id +
+        "&role=" +
+        userInfo.role
+    );
+
+    if (data.status === "ok") {
+      setContent({
+        bookings: data.content.bookings.filter((item, index) => index < 3),
+        appointments: data.content.appointments.filter((item, index) => index < 9)
+      });
+    } else {
+      alert("Failed to fetch content");
+    }
+  }, [userInfo._id, userInfo.role]);
+
+  useEffect(() => {
+    getContent();
+
+    return () => setContent(defaultContent);
+  }, [getContent, refresh]);
+
+  return (
+    <>
+      <Wrapper>
+        <h1>Welcome, {userInfo.username}</h1>
+
+        <Container>
+          {userInfo.role === "patient" ? (
+            <div className="patient-bookings">
+              <Bookings
+                bookings={content.bookings}
+                confirmBooking={confirmBooking}
+                role="patient"
+              />
+            </div>
+          ) : (
+            <div className="group">
+              <Bookings
+                bookings={content.bookings}
+                confirmBooking={confirmBooking}
+                role="doctor"
+              />
+              <Reviews />
+            </div>
+          )}
+          <Appointments appointments={content.appointments} />
+
+          <Loader>
+            <ProgressBar
+              height="60"
+              visible={loading}
+              borderColor="#000"
+              barColor="#2d59eb"
+            />
+          </Loader>
+        </Container>
+      </Wrapper>
+      {showSuccessMessage && (
+        <SuccessMessage
+          setShow={setShowSuccessMessage}
+          message={successMessage}
+        />
+      )}
+    </>
   );
 };
 
@@ -45,11 +131,12 @@ const Wrapper = styled.div`
 `;
 
 const Container = styled.div`
+  position: relative;
   width: 100%;
   display: flex;
   justify-content: center;
 
-  .patient-bookings{
+  .patient-bookings {
     margin-right: 1rem;
   }
   .group {
@@ -60,14 +147,32 @@ const Container = styled.div`
     align-items: center;
     flex-direction: column-reverse;
 
-    .group, .patient-bookings {
+    .group,
+    .patient-bookings {
       margin-right: 0;
     }
   }
 
   @media (max-width: 860px) {
-    .patient-bookings{
+    .patient-bookings {
       width: 100%;
     }
+  }
+`;
+
+const Loader = styled.div`
+  position: absolute;
+  bottom: -4.5rem;
+  left: 47.5%;
+
+  @media (max-width: 1200px) {
+    bottom: -4rem;
+    left: 44%;
+  }
+  @media (max-width: 860px) {
+    bottom: -4rem;
+  }
+  @media (max-width: 460px) {
+    left: 40%;
   }
 `;

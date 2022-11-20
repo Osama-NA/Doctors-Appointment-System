@@ -4,10 +4,12 @@ import Booking from "./Booking";
 import { UserContext } from "../../../context/User";
 import { post, get } from "../../../utils/fetch";
 import SuccessMessage from "../../Elements/SuccessMessage";
+import Loader from "../../Elements/Loader";
 
 const Bookings = () => {
   const { userInfo } = useContext(UserContext);
 
+  const [loading, setLoading] = useState(false);
   const [bookings, setBookings] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -30,6 +32,8 @@ const Bookings = () => {
   }, [userInfo._id, userInfo.role]);
 
   const confirmBooking = async (bookingId) => {
+    setLoading(true)
+
     const data = await post(
       process.env.REACT_APP_API_HOST + "dashboard/confirm-appointment",
       {
@@ -37,6 +41,8 @@ const Bookings = () => {
         appointment_id: bookingId,
       }
     );
+
+    setLoading(false)
 
     if (data.status === "ok") {
       setShowSuccessMessage(true);
@@ -48,6 +54,8 @@ const Bookings = () => {
   };
 
   const cancelBooking = async (bookingId) => {
+    setLoading(true)
+
     const data = await post(
       process.env.REACT_APP_API_HOST + "dashboard/delete-appointment",
       {
@@ -56,6 +64,7 @@ const Bookings = () => {
       }
     );
 
+    setLoading(false)
     if (data.status === "ok") {
       setShowSuccessMessage(true);
       setSuccessMessage(
@@ -80,7 +89,7 @@ const Bookings = () => {
       <Wrapper>
         <h1>Bookings</h1>
 
-        <Container>
+        <Container itemsLength={bookings.length}>
           {bookings.length > 0 ? (
             bookings.map((booking) => {
               return (
@@ -94,8 +103,10 @@ const Bookings = () => {
               );
             })
           ) : (
-            <p className="no-results">No new Bookings found</p>
+            <p className="no-results">No bookings found</p>
           )}
+          
+          <Loader visible={loading} />
         </Container>
       </Wrapper>
 
@@ -123,6 +134,7 @@ const Wrapper = styled.div`
   }
 `;
 const Container = styled.div`
+  position: relative;
   width: 100%;
   max-width: 600px;
   min-height: 600px;
@@ -135,7 +147,7 @@ const Container = styled.div`
   .booking:nth-child(1) {
     padding: 0.25rem 0 1.5rem;
   }
-  .booking:nth-last-child(1) {
+  .booking:nth-child(${({itemsLength}) => itemsLength}) {
     border-bottom: none;
   }
   .no-results {

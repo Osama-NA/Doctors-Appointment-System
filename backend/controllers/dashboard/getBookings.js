@@ -1,19 +1,15 @@
 require("dotenv").config();
-const jwt = require("jsonwebtoken");
 const userModel = require("../../models/user.model");
 const appointmentModel = require("../../models/appointment.model");
 
 const getBookings = async (req, res) => {
-    const token = req.headers['x-access-token'];
-    const secret = process.env.JWT_SECRET_TOKEN;
     const { id, role } = req.query;
     
-    if(!token || !id || !role){
+    if( !id || !role){
         return res.json({ status: 'error', error: 'Missing data' })
     }
 
     try{
-        jwt.verify(token, secret);
         let bookings = []
         let users = await userModel.find()
 

@@ -2,9 +2,9 @@ require("dotenv").config();
 const appointmentModel = require("../../models/appointment.model");
 
 const deleteAppointment = async (req, res) => {
-  const { appointment_id, token, date } = req.body;
+  const { appointment_id, date } = req.body;
 
-  if (!appointment_id || !token || !date ){
+  if (!appointment_id || !date ){
     return res.json({ status: "error", error: "Missing data" });
   }
 

@@ -15,7 +15,9 @@ const ConfirmTab = ({promptText, action, type, cta, setShow, cancelText, seconda
                 type='secondary'
                 action={() => {
                   setShow(false)
-                  secondaryAction()
+                  if(secondaryAction){
+                    secondaryAction()
+                  }
                 }}
             />
             <Button 
@@ -41,6 +43,7 @@ const Wrapper = styled.div`
   display: grid;
   place-items: center;
   padding: 0 1.5rem;
+  z-index: 1;
 `;
 
 const CloseOverlay = styled.div`

@@ -7,7 +7,7 @@ import Img from "../../../assets/img/dashboard/profile-img.jpg";
 import Button from "../../Buttons/Button";
 import ConfirmUpdate from "./ConfirmUpdate";
 import SuccessMessage from "../../Elements/SuccessMessage";
-import { ProgressBar } from "react-loader-spinner";
+import Loader from "../../Elements/Loader";
 import { post } from "../../../utils/fetch";
 
 const defaultInput = {
@@ -23,7 +23,7 @@ const Profile = () => {
   const [imageFile, setImageFile] = useState(null);
   const [imageSrc, setImageSrc] = useState(Img);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
 
   const { userInfo } = useContext(UserContext);
 
@@ -32,26 +32,26 @@ const Profile = () => {
   };
 
   const getPasswordResetLink = async () => {
-    setLoading(true)
+    setLoading(true);
 
     const data = await post(
       process.env.REACT_APP_API_HOST + "auth/password-reset-link",
       { email: userInfo.email }
     );
-    
+
     setLoading(false);
 
     if (data.status === "ok") {
-      setSuccessMessage('A password reset link has been sent to your email.')
-      setShowSuccessMessage(true)
+      setSuccessMessage("A password reset link has been sent to your email.");
+      setShowSuccessMessage(true);
     } else {
       alert(data.error);
     }
-  }
+  };
 
   const handleUpdate = (e) => {
     e.preventDefault();
-    setShowConfirmUpdate(true)
+    setShowConfirmUpdate(true);
   };
 
   useEffect(() => {
@@ -94,24 +94,19 @@ const Profile = () => {
               onChange={(e) => handleInput(e)}
             />
           )}
-          <p className="password-reset" onClick={getPasswordResetLink}>Get password reset link</p>
+          <p className="password-reset" onClick={getPasswordResetLink}>
+            Get password reset link
+          </p>
           <Button text="Update" type="primary" />
-          
-        <Loader>
-          <ProgressBar
-            height="60"
-            visible={loading}
-            borderColor="#000"
-            barColor="#2d59eb"
-          />
-        </Loader>
+
+          <Loader visible={loading} />
         </Container>
       </Wrapper>
 
       {ShowConfirmUpdate && (
         <ConfirmUpdate
           setShow={setShowConfirmUpdate}
-          input={{...input, img: imageFile}}
+          input={{ ...input, img: imageFile }}
           refresh={refresh}
           setRefresh={setRefresh}
           setShowSuccessMessage={setShowSuccessMessage}
@@ -173,13 +168,13 @@ const Container = styled.form`
     align-self: flex-end;
     margin: 0.25rem 0 1rem;
   }
-  .password-reset{
+  .password-reset {
     cursor: pointer;
     font-weight: 600;
     color: #2d59eb;
-    transition: all .25s ease;
+    transition: all 0.25s ease;
 
-    &:hover{
+    &:hover {
       color: #2248c5;
     }
   }
@@ -192,7 +187,9 @@ const Container = styled.form`
     padding: 1rem 1.25rem;
     margin: 0.25rem auto;
 
-    label, .no-results, .password-reset {
+    label,
+    .no-results,
+    .password-reset {
       font-size: 12px;
     }
     input {
@@ -205,17 +202,3 @@ const Container = styled.form`
     }
   }
 `;
-
-const Loader = styled.div`
-  position: absolute;
-  bottom: -4.5rem;
-  left: 44%;
-  
-  @media (max-width: 860px){
-    bottom: -4rem;
-    left: 42%;
-  }
-  @media (max-width: 460px){
-    left: 40%;
-  }
-`

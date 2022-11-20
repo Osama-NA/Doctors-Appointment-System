@@ -70,7 +70,7 @@ const Wrapper = styled.header`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  z-index: 0;
+  z-index: 1;
   
   @media (max-width: 860px){
     box-shadow: 0 5px 25px -10px #2525252e;

@@ -23,7 +23,7 @@ const DoctorsSearch = ({setFilteredDoctors, doctors}) => {
       <input
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
-        placeholder="Search doctors"
+        placeholder="Search doctor name or speciality"
       />
       <FontAwesomeIcon icon={faMagnifyingGlass} />
     </Wrapper>

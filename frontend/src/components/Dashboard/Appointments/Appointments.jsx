@@ -4,10 +4,12 @@ import Appointment from "./Appointment";
 import { UserContext } from "../../../context/User";
 import { post, get } from "../../../utils/fetch";
 import SuccessMessage from "../../Elements/SuccessMessage";
+import Loader from "../../Elements/Loader";
 
 const Appointments = () => {
   const { userInfo } = useContext(UserContext);
 
+  const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [rescheduledDate, setRescheduledDate] = useState();
@@ -37,6 +39,8 @@ const Appointments = () => {
   }, [getAppointmens, refresh]);
 
   const cancelAppointment = async (appointmentId) => {
+    setLoading(true)
+
     const data = await post(
       process.env.REACT_APP_API_HOST + "dashboard/delete-appointment",
       {
@@ -44,6 +48,8 @@ const Appointments = () => {
         appointment_id: appointmentId,
       }
     );
+
+    setLoading(false)
 
     if (data.status === "ok") {
       setShowSuccessMessage(true);
@@ -55,6 +61,8 @@ const Appointments = () => {
   };
 
   const rescheduleAppointment = async (appointmentId) => {
+    setLoading(true)
+
     const data = await post(
       process.env.REACT_APP_API_HOST + "dashboard/reschedule-appointment",
       {
@@ -63,6 +71,8 @@ const Appointments = () => {
         date: rescheduledDate
       }
     );
+
+    setLoading(false)
 
     if (data.status === "ok") {
       setShowSuccessMessage(true);
@@ -75,17 +85,17 @@ const Appointments = () => {
 
   return (
     <>
-      <Wrapper>
+      <Wrapper >
         <h1>Appointments</h1>
 
-        <Container>
+        <Container itemsLength={appointments.length}>
           {appointments.length > 0 ? (
             appointments.map((appointment) => {
               return (
                 <Appointment
                   key={appointment._id}
                   appointment={appointment}
-                  cancelBooking={() => cancelAppointment(appointment._id)}
+                  cancelAppointment={() => cancelAppointment(appointment._id)}
                   role={userInfo.role}
                   setRescheduledDate={setRescheduledDate}
                   rescheduleAppointment={() => rescheduleAppointment(appointment._id)}
@@ -94,8 +104,10 @@ const Appointments = () => {
               );
             })
           ) : (
-            <p className="no-results">No recent appointments found</p>
+            <p className="no-results">No appointments found</p>
           )}
+          
+          <Loader visible={loading} />
         </Container>
       </Wrapper>
       
@@ -136,7 +148,7 @@ const Container = styled.div`
   .appointment:nth-child(1) {
     padding: 0.25rem 0 1.5rem;
   }
-  .appointment:nth-last-child(1) {
+  .appointment:nth-child(${({itemsLength}) => itemsLength}) {
     border-bottom: none;
   }
   .no-results {
