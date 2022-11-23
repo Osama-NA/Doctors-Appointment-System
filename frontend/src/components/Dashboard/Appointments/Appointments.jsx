@@ -5,16 +5,20 @@ import { UserContext } from "../../../context/User";
 import { post, get } from "../../../utils/fetch";
 import SuccessMessage from "../../Elements/SuccessMessage";
 import Loader from "../../Elements/Loader";
+import ChatTab from "../Chat/ChatTab";
 
 const Appointments = () => {
   const { userInfo } = useContext(UserContext);
 
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const [showChatTab, setShowChatTab] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [rescheduledDate, setRescheduledDate] = useState();
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [channelId, setChannelId] = useState("");
+  const [appointmentData, setAppointmentData] = useState({})
 
   const getAppointmens = useCallback(async () => {
     const data = await get(
@@ -38,6 +42,11 @@ const Appointments = () => {
     return () => setAppointments([]);
   }, [getAppointmens, refresh]);
 
+  const handleJoinAppointment = (appointmentId) => {
+    setChannelId(appointmentId);
+    setShowChatTab(true);
+  };
+  
   const cancelAppointment = async (appointmentId) => {
     setLoading(true)
 
@@ -100,6 +109,8 @@ const Appointments = () => {
                   setRescheduledDate={setRescheduledDate}
                   rescheduleAppointment={() => rescheduleAppointment(appointment._id)}
                   rescheduledDate={rescheduledDate}
+                  handleJoinAppointment={handleJoinAppointment}
+                  setAppointment={setAppointmentData}
                 />
               );
             })
@@ -116,6 +127,9 @@ const Appointments = () => {
           setShow={setShowSuccessMessage}
           message={successMessage}
         />
+      )}
+      {showChatTab && (
+        <ChatTab channelId={channelId} setShowChatTab={setShowChatTab} appointment={appointmentData} />
       )}
     </>
   );

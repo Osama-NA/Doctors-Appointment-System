@@ -5,10 +5,18 @@ import { UserContext } from "../context/User";
 import jwt from 'jwt-decode';
 import { useNavigate } from "react-router-dom";
 import { get } from "../utils/fetch";
+import PubNub from 'pubnub';
+import { PubNubProvider } from 'pubnub-react';
 
 import TopNavbar from '../components/Dashboard/Nav/TopNavbar';
 import Patient from '../components/Dashboard/Patient';
 import Doctor from '../components/Dashboard/Doctor';
+
+const pubnub = new PubNub({
+  publishKey: process.env.REACT_APP_PUBNUB_PUBLISH_KEY,
+  subscribeKey: process.env.REACT_APP_PUBNUB_SUBSCRIBE_KEY,
+  uuid: process.env.REACT_APP_PUBNUB_UNIQUE_ID
+});
 
 const Dashboard = () => {
   const navigate = useNavigate()
@@ -60,13 +68,15 @@ const Dashboard = () => {
   }, [getUserData, isAuthenticatedUser, navigate, userInfo.token])
 
   return (
-    <Wrapper>
-      <TopNavbar />
-      <Routes>
-          <Route path="/patient/*" element={<Patient />} />
-          <Route path="/doctor/*" element={<Doctor />} />
-      </Routes>
-    </Wrapper>
+    <PubNubProvider client={pubnub}>
+      <Wrapper>
+        <TopNavbar />
+        <Routes>
+            <Route path="/patient/*" element={<Patient />} />
+            <Route path="/doctor/*" element={<Doctor />} />
+        </Routes>
+      </Wrapper>
+    </PubNubProvider>
   )
 }
 

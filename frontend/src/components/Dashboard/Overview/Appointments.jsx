@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/User";
 import Appointment from "./Appointment";
 
-const Appointments = ({appointments}) => {
+const Appointments = ({ appointments, handleJoinAppointment, setAppointment }) => {
   const navigate = useNavigate();
 
   const { userInfo } = useContext(UserContext);
@@ -21,15 +21,20 @@ const Appointments = ({appointments}) => {
       </Header>
 
       <div className="flex flexColumn">
-        {
-          appointments.length > 0 ? (
-            appointments.map((appointment) => {
-              return <Appointment key={appointment._id} appointment={appointment} />;
-            })
-          ) : (
-            <p className="no-results">No new appointments found</p>
-          )
-        }
+        {appointments.length > 0 ? (
+          appointments.map((appointment) => {
+            return (
+              <Appointment
+                key={appointment._id}
+                appointment={appointment}
+                handleJoinAppointment={handleJoinAppointment}
+                setAppointment={setAppointment}
+              />
+            );
+          })
+        ) : (
+          <p className="no-results">No new appointments found</p>
+        )}
       </div>
     </Wrapper>
   );
@@ -41,7 +46,7 @@ const Wrapper = styled.div`
   width: 33vw;
   min-width: 425px;
   max-width: 500px;
-  min-height: ${({role}) => role==='doctor' ? '550px' : '600px'};
+  min-height: ${({ role }) => (role === "doctor" ? "550px" : "600px")};
   background-color: #fff;
   padding: 1.25rem 1.5rem;
   margin: 0.75rem 0;
@@ -58,7 +63,7 @@ const Wrapper = styled.div`
     max-width: 400px;
     min-width: 275px;
     padding: 1rem 1.25rem;
-    margin: 0.25rem auto .5rem;
+    margin: 0.25rem auto 0.5rem;
 
     .no-results {
       font-size: 12px;

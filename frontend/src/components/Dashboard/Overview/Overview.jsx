@@ -7,6 +7,7 @@ import Reviews from "./Reviews";
 import { post, get } from "../../../utils/fetch";
 import { ProgressBar } from "react-loader-spinner";
 import SuccessMessage from "../../Elements/SuccessMessage";
+import ChatTab from "../Chat/ChatTab";
 
 const defaultContent = {
   bookings: [],
@@ -21,6 +22,9 @@ const Overview = () => {
   const [content, setContent] = useState(defaultContent);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [channelId, setChannelId] = useState("");
+  const [showChatTab, setShowChatTab] = useState(false);
+  const [appointmentData, setAppointmentData] = useState({})
 
   const confirmBooking = async (bookingId) => {
     setLoading(true);
@@ -44,6 +48,11 @@ const Overview = () => {
     }
   };
 
+  const handleJoinAppointment = (appointmentId) => {
+    setChannelId(appointmentId);
+    setShowChatTab(true);
+  };
+
   const getContent = useCallback(async () => {
     const data = await get(
       process.env.REACT_APP_API_HOST +
@@ -56,7 +65,9 @@ const Overview = () => {
     if (data.status === "ok") {
       setContent({
         bookings: data.content.bookings.filter((item, index) => index < 3),
-        appointments: data.content.appointments.filter((item, index) => index < 9)
+        appointments: data.content.appointments.filter(
+          (item, index) => index < 9
+        ),
       });
     } else {
       alert("Failed to fetch content");
@@ -93,7 +104,11 @@ const Overview = () => {
               <Reviews />
             </div>
           )}
-          <Appointments appointments={content.appointments} />
+          <Appointments
+            appointments={content.appointments}
+            handleJoinAppointment={handleJoinAppointment}
+            setAppointment={setAppointmentData}
+          />
 
           <Loader>
             <ProgressBar
@@ -110,6 +125,9 @@ const Overview = () => {
           setShow={setShowSuccessMessage}
           message={successMessage}
         />
+      )}
+      {showChatTab && (
+        <ChatTab channelId={channelId} setShowChatTab={setShowChatTab} appointment={appointmentData} />
       )}
     </>
   );

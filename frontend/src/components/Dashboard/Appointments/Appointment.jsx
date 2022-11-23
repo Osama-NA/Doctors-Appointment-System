@@ -12,9 +12,12 @@ const Appointment = ({
   role,
   setRescheduledDate,
   rescheduleAppointment,
-  rescheduledDate
+  rescheduledDate,
+  handleJoinAppointment,
+  setAppointment,
 }) => {
-  const [showRescheduleAppointment, setShowRescheduleAppointment] = useState(false);
+  const [showRescheduleAppointment, setShowRescheduleAppointment] =
+    useState(false);
 
   const [showConfirmCancel, setShowConfirmCancel] = useState(false);
   const [confirmCancelMessage, setConfirmCancelMessage] = useState("");
@@ -43,7 +46,7 @@ const Appointment = ({
         <div className="info">
           <h2>{appointment.user.username}</h2>
           <p>Appointment reason: {appointment.reason}</p>
- 
+
           <Date
             setRescheduledDate={setRescheduledDate}
             date={appointment.date}
@@ -54,7 +57,10 @@ const Appointment = ({
             <Button
               type="primary"
               text="Join Appointment"
-              action={() => alert(1)}
+              action={() => {
+                setAppointment(appointment);
+                handleJoinAppointment(appointment._id);
+              }}
             />
             <Button
               type="danger"

@@ -4,18 +4,27 @@ import Img from "../../../assets/img/dashboard/profile-img.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComments } from "@fortawesome/free-regular-svg-icons";
 
-const Appointment = ({ appointment }) => {
+const Appointment = ({ appointment, handleJoinAppointment, setAppointment }) => {
   return (
     <Wrapper>
       <img
-        src={appointment.user.profileImage ? appointment.user.profileImage : Img}
+        src={
+          appointment.user.profileImage ? appointment.user.profileImage : Img
+        }
         alt=""
       />
       <div className="info">
         <h3>{appointment.user.username}</h3>
         <p>{appointment.date}</p>
       </div>
-      <div className="join-btn">
+      <div
+        className="join-btn"
+        onClick={() => {
+            setAppointment(appointment)
+            handleJoinAppointment(appointment._id)
+          }
+        }
+      >
         <FontAwesomeIcon icon={faComments} />
       </div>
     </Wrapper>
