@@ -108,6 +108,8 @@ const Overview = () => {
             appointments={content.appointments}
             handleJoinAppointment={handleJoinAppointment}
             setAppointment={setAppointmentData}
+            refresh={refresh}
+            setRefresh={setRefresh}
           />
 
           <Loader>

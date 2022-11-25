@@ -3,8 +3,33 @@ import styled from "styled-components";
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComments } from "@fortawesome/free-regular-svg-icons";
+import { isAppointmentDate, getFormatedDate } from "../../../utils/date";
 
-const Appointment = ({ appointment, handleJoinAppointment, setAppointment }) => {
+const Appointment = ({
+  appointment,
+  handleJoinAppointment,
+  setAppointment,
+  autoCancelAppointment
+}) => {
+
+  const joinAppointment = () => {
+    let didAppointmentStart = isAppointmentDate(appointment);
+    if (!didAppointmentStart.status) {
+      if (didAppointmentStart.message === "early") {
+        alert("You can not join before " + appointment.date);
+      }
+      if (didAppointmentStart.message === "finished") {
+        let expiryTime = getFormatedDate(didAppointmentStart.expiryTime.toString())
+        alert("Session finished at " + expiryTime);
+        autoCancelAppointment()
+      }
+      return;
+    }
+
+    setAppointment(appointment);
+    handleJoinAppointment(appointment._id);
+  };
+
   return (
     <Wrapper>
       <img
@@ -17,16 +42,13 @@ const Appointment = ({ appointment, handleJoinAppointment, setAppointment }) => 
         <h3>{appointment.user.username}</h3>
         <p>{appointment.date}</p>
       </div>
+
       <div
-        className="join-btn"
-        onClick={() => {
-            setAppointment(appointment)
-            handleJoinAppointment(appointment._id)
-          }
-        }
-      >
-        <FontAwesomeIcon icon={faComments} />
-      </div>
+          className="join-btn"
+          onClick={() => joinAppointment()}
+        >
+          <FontAwesomeIcon icon={faComments} />
+        </div>
     </Wrapper>
   );
 };

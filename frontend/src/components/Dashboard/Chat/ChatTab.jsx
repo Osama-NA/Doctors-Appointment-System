@@ -1,26 +1,28 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
-import { UserContext } from "../../../context/User";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import styled from "styled-components";
 import Header from "./Header";
 import Footer from "./Footer";
 import Chat from "./Chat";
 import { usePubNub } from "pubnub-react";
+import { isAppointmentDate, getFormatedDate } from "../../../utils/date";
 
 const ChatTab = ({ channelId, setShowChatTab, appointment }) => {
-  const { userInfo } = useContext(UserContext);
+  const chatRef = useRef(null);
 
   const pubnub = usePubNub();
   const [channels] = useState([channelId]);
   const [messages, addMessage] = useState([]);
   const [message, setMessage] = useState("");
+  const [expiryTime, setExpiryTime] = useState();
 
-  const handleMessage = (event) => {
+  const handleMessage = useCallback((event) => {
     const message = event.message;
     if (typeof message === "string" || message.hasOwnProperty("text")) {
       const text = message.text || message;
       addMessage((messages) => [...messages, text]);
+      goToRecentMessages();
     }
-  };
+  }, []);
 
   const sendMessage = useCallback(
     (message) => {
@@ -33,9 +35,7 @@ const ChatTab = ({ channelId, setShowChatTab, appointment }) => {
     [channels, pubnub]
   );
 
-  useEffect(() => {
-    pubnub.addListener({ message: handleMessage });
-    pubnub.subscribe({ channels });
+  const getMessages = useCallback(() => {
     pubnub.fetchMessages(
       {
         channels: channels,
@@ -47,16 +47,45 @@ const ChatTab = ({ channelId, setShowChatTab, appointment }) => {
             return message.message;
           });
           addMessage(oldMessages);
+          goToRecentMessages();
         }
       }
     );
-  }, [pubnub, channels, channelId, sendMessage, userInfo.username]);
+  }, [channelId, channels, pubnub]);
+
+  const goToRecentMessages = () => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    pubnub.addListener({ message: handleMessage });
+    pubnub.subscribe({ channels });
+  }, [pubnub, channels, handleMessage]);
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      getMessages();
+    }
+  }, [getMessages, messages.length]);
+
+  useEffect(() => {
+    let didAppointmentStart = isAppointmentDate(appointment);
+    if (!didAppointmentStart.status) return;
+
+    setExpiryTime(getFormatedDate(didAppointmentStart.expiryTime));
+  }, [appointment]);
 
   return (
     <Wrapper>
       <Container>
-        <Header setShowChatTab={setShowChatTab} appointment={appointment} />
-        <Chat messages={messages} channelId={channelId} />
+        <Header
+          setShowChatTab={setShowChatTab}
+          appointment={appointment}
+          expiryTime={expiryTime}
+        />
+        <Chat messages={messages} channelId={channelId} chatRef={chatRef} />
         <Footer
           sendMessage={sendMessage}
           message={message}

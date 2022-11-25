@@ -69,6 +69,22 @@ const Appointments = () => {
     }
   };
 
+  const autoCancelAppointment = async (appointmentId) => {
+    const data = await post(
+      process.env.REACT_APP_API_HOST + "dashboard/delete-appointment",
+      {
+        token: localStorage.getItem("token"),
+        appointment_id: appointmentId,
+      }
+    );
+
+    if (data.status === "ok") {
+      setRefresh(!refresh);
+    } else {
+      alert(data.error);
+    }
+  }
+
   const rescheduleAppointment = async (appointmentId) => {
     setLoading(true)
 
@@ -95,7 +111,7 @@ const Appointments = () => {
   return (
     <>
       <Wrapper >
-        <h1>Appointments</h1>
+        <h1>Scheduled Appointments</h1>
 
         <Container itemsLength={appointments.length}>
           {appointments.length > 0 ? (
@@ -111,6 +127,7 @@ const Appointments = () => {
                   rescheduledDate={rescheduledDate}
                   handleJoinAppointment={handleJoinAppointment}
                   setAppointment={setAppointmentData}
+                  autoCancelAppointment={() => autoCancelAppointment(appointment._id)}
                 />
               );
             })

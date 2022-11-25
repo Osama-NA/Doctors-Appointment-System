@@ -7,6 +7,8 @@ import { UserContext } from "../../../context/User";
 import { ProgressBar } from "react-loader-spinner";
 import { post } from "../../../utils/fetch";
 import SuccessMessage from '../../Elements/SuccessMessage'
+import { getFormatedDate, isAppointmentDate } from "../../../utils/date";
+
 
 const BookAppointment = ({ setShow, doctorId }) => {
   const { userInfo } = useContext(UserContext);
@@ -31,7 +33,14 @@ const BookAppointment = ({ setShow, doctorId }) => {
     }
 
     formatedDate = getFormatedDate(formatedDate)
+
+    let isAvailableDate = isAppointmentDate({date: formatedDate})
     
+    if(isAvailableDate.message !== 'early'){
+      alert('Please select an available date and time')
+      return
+    }
+
     bookAppointment(formatedDate)
   }
 
@@ -108,30 +117,6 @@ const BookAppointment = ({ setShow, doctorId }) => {
 };
 
 export default BookAppointment;
-
-const getFormatedDate = input => {
-  let formatedDate = input.substring(0, 24)
-  let day = formatedDate.substring(0, 16)
-  let hour = Number(formatedDate.substring(16, 18))
-  let minutesSeconds = formatedDate.substring(18, 24)
-
-  if(hour === 12){
-    formatedDate = day + hour + minutesSeconds + ' PM' 
-  }
-  else if(hour > 12){
-    hour = hour - 12
-    hour = hour < 10 ? `0${hour}` : hour
-    formatedDate = day + hour + minutesSeconds + ' PM' 
-  }
-  else if(hour === 0){
-    formatedDate = day + '12' + minutesSeconds + ' AM' 
-  }
-  else{
-    formatedDate += ' AM'
-  }
-  
-  return formatedDate
-} 
 
 const Wrapper = styled.div`
   position: fixed;

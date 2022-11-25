@@ -3,6 +3,7 @@ import styled from "styled-components";
 import TextField from "@mui/material/TextField";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import Button from "../../Buttons/Button";
+import { getFormatedDate } from "../../../utils/date";
 
 const Reschedule = ({ setShow, setRescheduledDate, rescheduleAppointment, rescheduledDate }) => {
   const [date, setDate] = useState(null);
@@ -59,30 +60,6 @@ const Reschedule = ({ setShow, setRescheduledDate, rescheduleAppointment, resche
 };
 
 export default Reschedule;
-
-const getFormatedDate = input => {
-  let formatedDate = input.substring(0, 24)
-  let day = formatedDate.substring(0, 16)
-  let hour = Number(formatedDate.substring(16, 18))
-  let minutesSeconds = formatedDate.substring(18, 24)
-
-  if(hour === 12){
-    formatedDate = day + hour + minutesSeconds + ' PM' 
-  }
-  else if(hour > 12){
-    hour = hour - 12
-    hour = hour < 10 ? `0${hour}` : hour
-    formatedDate = day + hour + minutesSeconds + ' PM' 
-  }
-  else if(hour === 0){
-    formatedDate = day + '12' + minutesSeconds + ' AM' 
-  }
-  else{
-    formatedDate += ' AM'
-  }
-  
-  return formatedDate
-} 
 
 const Wrapper = styled.div`
   position: fixed;

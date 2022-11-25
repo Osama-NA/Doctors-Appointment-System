@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
 
-const Header = ({setShowChatTab, appointment}) => {
+const Header = ({setShowChatTab, appointment, expiryTime}) => {
   return (
     <Wrapper>
       <div className="user">
@@ -12,7 +12,10 @@ const Header = ({setShowChatTab, appointment}) => {
           }
           alt=""
         />
-        <h3>{appointment.user.username}</h3>
+        <div>
+          <h3>{appointment.user.username}</h3>
+          <p>{expiryTime}</p>
+        </div>
       </div>
       <button onClick={() => setShowChatTab(false)}>Leave</button>
     </Wrapper>

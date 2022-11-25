@@ -87,7 +87,7 @@ const Bookings = () => {
   return (
     <>
       <Wrapper>
-        <h1>Bookings</h1>
+        <h1>Recent Bookings</h1>
 
         <Container itemsLength={bookings.length}>
           {bookings.length > 0 ? (

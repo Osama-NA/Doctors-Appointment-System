@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
 import Button from "../../Buttons/Button";
 import Reschedule from "./Reschedule";
 import Date from "./Date";
 import ConfirmTab from "../../Elements/ConfirmTab";
+import { getFormatedDate, isAppointmentDate } from "../../../utils/date";
 
 const Appointment = ({
   appointment,
@@ -15,12 +16,14 @@ const Appointment = ({
   rescheduledDate,
   handleJoinAppointment,
   setAppointment,
+  autoCancelAppointment,
 }) => {
   const [showRescheduleAppointment, setShowRescheduleAppointment] =
     useState(false);
 
   const [showConfirmCancel, setShowConfirmCancel] = useState(false);
   const [confirmCancelMessage, setConfirmCancelMessage] = useState("");
+  const [appointmentStarted, setAppointmentStarted] = useState("");
 
   const handleCancelAppointment = () => {
     setShowConfirmCancel(true);
@@ -32,6 +35,31 @@ const Appointment = ({
     }?
     `);
   };
+
+  const joinAppointment = () => {
+    let didAppointmentStart = isAppointmentDate(appointment);
+    if (!didAppointmentStart.status) {
+      if (didAppointmentStart.message === "early") {
+        alert("You can not join before " + appointment.date);
+      }
+      if (didAppointmentStart.message === "finished") {
+        let expiryTime = getFormatedDate(didAppointmentStart.expiryTime.toString())
+        alert("Session finished at " + expiryTime);
+        autoCancelAppointment()
+      }
+      return;
+    }
+
+    setAppointment(appointment);
+    handleJoinAppointment(appointment._id);
+  };
+
+  useEffect(() => {
+    let didAppointmentStart = isAppointmentDate(appointment);
+    if (!didAppointmentStart.status) return;
+
+    setAppointmentStarted(true);
+  }, [appointment]);
 
   return (
     <>
@@ -47,26 +75,29 @@ const Appointment = ({
           <h2>{appointment.user.username}</h2>
           <p>Appointment reason: {appointment.reason}</p>
 
-          <Date
-            setRescheduledDate={setRescheduledDate}
-            date={appointment.date}
-            setShowRescheduleAppointment={setShowRescheduleAppointment}
-            allowReschedule={true}
-          />
+          {appointmentStarted ? (
+            <p className="started">Appointment started</p>
+          ) : (
+            <Date
+              setRescheduledDate={setRescheduledDate}
+              date={appointment.date}
+              setShowRescheduleAppointment={setShowRescheduleAppointment}
+              allowReschedule={true}
+            />
+          )}
           <ButtonsWrapper>
             <Button
               type="primary"
-              text="Join Appointment"
-              action={() => {
-                setAppointment(appointment);
-                handleJoinAppointment(appointment._id);
-              }}
+              text="Join"
+              action={() => joinAppointment()}
             />
-            <Button
-              type="danger"
-              text="Cancel"
-              action={handleCancelAppointment}
-            />
+            {!appointmentStarted && (
+              <Button
+                type="danger"
+                text="Cancel"
+                action={handleCancelAppointment}
+              />
+            )}
           </ButtonsWrapper>
         </div>
       </Wrapper>
@@ -122,6 +153,11 @@ const Wrapper = styled.div`
       line-height: 20px;
       margin: 0.25rem 0;
     }
+    .started {
+      font-weight: 600;
+      color: #2d59eb;
+      margin: 0 0 1rem;
+    }
   }
 
   @media (max-width: 860px) {
@@ -129,7 +165,8 @@ const Wrapper = styled.div`
     flex-direction: column;
 
     img {
-      width: 60px;
+      max-width: 60px;
+      min-width: 60px;
       height: 60px;
     }
 
@@ -153,11 +190,17 @@ const ButtonsWrapper = styled.div`
   display: flex;
   justify-self: flex-end;
 
+  button {
+    min-width: 97px;
+  }
   button:nth-child(1) {
     margin-right: 0.5rem;
   }
 
   @media (max-width: 860px) {
+    button {
+      min-width: 75px;
+    }
     button:nth-child(1) {
       margin-right: 0.35rem;
     }

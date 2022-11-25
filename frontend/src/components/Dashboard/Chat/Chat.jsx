@@ -2,9 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import Message from "./Message";
 
-const Chat = ({ messages, channelId }) => {
+const Chat = ({ messages, channelId, chatRef }) => {
   return (
-    <Wrapper>
+    <Wrapper ref={chatRef}>
       {messages.map((message, i) => {
         return (
           <Message

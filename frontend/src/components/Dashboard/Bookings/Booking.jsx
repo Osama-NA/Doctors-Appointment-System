@@ -36,7 +36,7 @@ const Booking = ({ booking, cancelBooking, role, confirmBooking }) => {
             <ButtonsWrapper>
               <Button
                 type="danger"
-                text="Cancel Appointment"
+                text="Cancel Booking"
                 action={handleCancelBooking}
               />
             </ButtonsWrapper>
