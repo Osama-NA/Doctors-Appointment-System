@@ -8,6 +8,8 @@ import { post, get } from "../../../utils/fetch";
 import { ProgressBar } from "react-loader-spinner";
 import SuccessMessage from "../../Elements/SuccessMessage";
 import ChatTab from "../Chat/ChatTab";
+import ReviewTab from "../../Elements/ReviewTab";
+import { getFormatedDate, isAppointmentDate } from "../../../utils/date";
 
 const defaultContent = {
   bookings: [],
@@ -24,7 +26,8 @@ const Overview = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [channelId, setChannelId] = useState("");
   const [showChatTab, setShowChatTab] = useState(false);
-  const [appointmentData, setAppointmentData] = useState({})
+  const [appointment, setAppointment] = useState({});
+  const [showReviewTab, setShowReviewTab] = useState(false);
 
   const confirmBooking = async (bookingId) => {
     setLoading(true);
@@ -53,6 +56,42 @@ const Overview = () => {
     setShowChatTab(true);
   };
 
+  const autoCancelAppointment = async (appointmentId) => {
+    const data = await post(
+      process.env.REACT_APP_API_HOST + "dashboard/delete-appointment",
+      {
+        token: localStorage.getItem("token"),
+        appointment_id: appointmentId,
+      }
+    );
+
+    if (data.status === "ok") {
+      setRefresh(!refresh);
+    } else {
+      alert(data.error);
+    }
+  };
+
+  const joinAppointment = (appointment) => {
+    let didAppointmentStart = isAppointmentDate(appointment);
+    if (!didAppointmentStart.status) {
+      if (didAppointmentStart.message === "early") {
+        alert("You can not join before " + appointment.date);
+      }
+      if (didAppointmentStart.message === "finished") {
+        let expiryTime = getFormatedDate(
+          didAppointmentStart.expiryTime.toString()
+        );
+        alert("Session finished at " + expiryTime);
+        autoCancelAppointment(appointment._id);
+      }
+      return;
+    }
+
+    setAppointment(appointment);
+    handleJoinAppointment(appointment._id);
+  };
+
   const getContent = useCallback(async () => {
     const data = await get(
       process.env.REACT_APP_API_HOST +
@@ -63,12 +102,27 @@ const Overview = () => {
     );
 
     if (data.status === "ok") {
-      setContent({
-        bookings: data.content.bookings.filter((item, index) => index < 3),
-        appointments: data.content.appointments.filter(
-          (item, index) => index < 9
-        ),
-      });
+      let userContent =
+        userInfo.role === "doctor"
+          ? {
+              bookings: data.content.bookings.filter(
+                (item, index) => index < 3
+              ),
+              appointments: data.content.appointments.filter(
+                (item, index) => index < 9
+              ),
+              reviews: data.content.reviews.filter((item, index) => index < 2),
+            }
+          : {
+              bookings: data.content.bookings.filter(
+                (item, index) => index < 3
+              ),
+              appointments: data.content.appointments.filter(
+                (item, index) => index < 9
+              ),
+            };
+
+      setContent(userContent);
     } else {
       alert("Failed to fetch content");
     }
@@ -101,15 +155,15 @@ const Overview = () => {
                 confirmBooking={confirmBooking}
                 role="doctor"
               />
-              <Reviews />
+              <Reviews reviews={content.reviews} />
             </div>
           )}
           <Appointments
             appointments={content.appointments}
             handleJoinAppointment={handleJoinAppointment}
-            setAppointment={setAppointmentData}
-            refresh={refresh}
-            setRefresh={setRefresh}
+            setAppointment={setAppointment}
+            autoCancelAppointment={autoCancelAppointment}
+            joinAppointment={joinAppointment}
           />
 
           <Loader>
@@ -129,7 +183,21 @@ const Overview = () => {
         />
       )}
       {showChatTab && (
-        <ChatTab channelId={channelId} setShowChatTab={setShowChatTab} appointment={appointmentData} />
+        <ChatTab
+          channelId={channelId}
+          setShowChatTab={setShowChatTab}
+          appointment={appointment}
+          setShowReviewTab={setShowReviewTab}
+          autoCancelAppointment={autoCancelAppointment}
+        />
+      )}
+      {showReviewTab && (
+        <ReviewTab
+          setShow={setShowReviewTab}
+          appointment={appointment}
+          setRefresh={setRefresh}
+          refresh={refresh}
+        />
       )}
     </>
   );
@@ -174,7 +242,8 @@ const Container = styled.div`
   }
 
   @media (max-width: 860px) {
-    .patient-bookings {
+    .patient-bookings,
+    .group {
       width: 100%;
     }
   }

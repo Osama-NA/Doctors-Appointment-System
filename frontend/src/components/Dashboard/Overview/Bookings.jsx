@@ -57,6 +57,7 @@ const Wrapper = styled.div`
   @media (max-width: 1200px) {
     width: 550px;
     min-height: 275px;
+    margin-bottom: .75rem;
   }
   @media (max-width: 860px) {
     width: 100%;

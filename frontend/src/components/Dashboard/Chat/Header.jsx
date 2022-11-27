@@ -1,8 +1,19 @@
-import React from "react";
+import React, {  useContext } from "react";
 import styled from "styled-components";
+import { UserContext } from "../../../context/User";
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
 
-const Header = ({setShowChatTab, appointment, expiryTime}) => {
+const Header = ({setShowChatTab, appointment, setShowConfirmLeave}) => {
+  const { userInfo } = useContext(UserContext);
+
+  const handleLeave = () => {
+    if(userInfo.role === 'patient'){
+      setShowConfirmLeave(true)
+    }else{
+      setShowChatTab(false)
+    }
+  }
+
   return (
     <Wrapper>
       <div className="user">
@@ -12,12 +23,9 @@ const Header = ({setShowChatTab, appointment, expiryTime}) => {
           }
           alt=""
         />
-        <div>
-          <h3>{appointment.user.username}</h3>
-          <p>{expiryTime}</p>
-        </div>
+        <h3>{appointment.user.username}</h3>
       </div>
-      <button onClick={() => setShowChatTab(false)}>Leave</button>
+      <button onClick={handleLeave}>Leave</button>
     </Wrapper>
   );
 };

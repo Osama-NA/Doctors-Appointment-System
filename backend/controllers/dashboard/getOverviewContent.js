@@ -1,6 +1,7 @@
 require("dotenv").config();
 const userModel = require("../../models/user.model");
 const appointmentModel = require("../../models/appointment.model");
+const reviewModel = require("../../models/review.model");
 
 const getOverviewContent = async (req, res) => {
     const { id, role } = req.query;
@@ -10,6 +11,7 @@ const getOverviewContent = async (req, res) => {
     }
 
     try{
+        let reviews = []
         let bookings = []
         let appointments = []
         let users = await userModel.find()
@@ -34,6 +36,16 @@ const getOverviewContent = async (req, res) => {
                     user: bookedBy
                 }
             })
+            
+            reviews = await reviewModel.find({review_for: id}); 
+            reviews = reviews.map(review => {
+                let reviewedBy = users.filter(user => user.id === review.reviewed_by)[0]
+                
+                return {
+                    ...review._doc,
+                    reviewed_by: reviewedBy.username
+                }
+            })
         }else{
             appointments = await appointmentModel.find({booked_by: id, confirmed: true});
             appointments = appointments.map( appointment => {
@@ -56,7 +68,16 @@ const getOverviewContent = async (req, res) => {
             })
         }
 
-        return res.json({ status: 'ok', content: {appointments, bookings} })
+        let content = role === 'doctor' ? {
+            appointments,
+            bookings,
+            reviews
+        } : {
+            appointments,
+            bookings
+        }
+
+        return res.json({ status: 'ok', content })
     }catch(error){
         console.log(error)
         return res.json({ status: 'error', error: 'Invalid token' })

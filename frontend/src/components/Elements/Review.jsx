@@ -2,7 +2,7 @@ import React from 'react'
 import styled from "styled-components";
 import ReviewStars from './ReviewStars'
 
-const Review = ({name, reviewBy, rate, review}) => {
+const Review = ({reviewBy, rate, review}) => {
   return (
     <Wrapper className='review'>
       <ReviewHeader>

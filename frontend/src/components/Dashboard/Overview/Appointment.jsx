@@ -1,34 +1,17 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComments } from "@fortawesome/free-regular-svg-icons";
-import { isAppointmentDate, getFormatedDate } from "../../../utils/date";
+import { isAppointmentDate } from "../../../utils/date";
 
-const Appointment = ({
-  appointment,
-  handleJoinAppointment,
-  setAppointment,
-  autoCancelAppointment
-}) => {
+const Appointment = ({ appointment, joinAppointment }) => {
+  const [appointmentStatus, setAppointmentStatus] = useState("");
 
-  const joinAppointment = () => {
+  useEffect(() => {
     let didAppointmentStart = isAppointmentDate(appointment);
-    if (!didAppointmentStart.status) {
-      if (didAppointmentStart.message === "early") {
-        alert("You can not join before " + appointment.date);
-      }
-      if (didAppointmentStart.message === "finished") {
-        let expiryTime = getFormatedDate(didAppointmentStart.expiryTime.toString())
-        alert("Session finished at " + expiryTime);
-        autoCancelAppointment()
-      }
-      return;
-    }
-
-    setAppointment(appointment);
-    handleJoinAppointment(appointment._id);
-  };
+    setAppointmentStatus(didAppointmentStart.message);
+  }, [appointment]);
 
   return (
     <Wrapper>
@@ -43,12 +26,11 @@ const Appointment = ({
         <p>{appointment.date}</p>
       </div>
 
-      <div
-          className="join-btn"
-          onClick={() => joinAppointment()}
-        >
+      {appointmentStatus === "joined" && (
+        <div className="join-btn" onClick={() => joinAppointment()}>
           <FontAwesomeIcon icon={faComments} />
         </div>
+      )}
     </Wrapper>
   );
 };
@@ -109,7 +91,8 @@ const Wrapper = styled.div`
     margin-top: 0.75rem;
 
     img {
-      width: 40px;
+      max-width: 40px;
+      min-width: 40px;
       height: 40px;
       margin-right: 0.75rem;
     }

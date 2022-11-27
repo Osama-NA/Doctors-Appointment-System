@@ -81,7 +81,8 @@ const Wrapper = styled.div`
     margin-top: 0.75rem;
 
     img {
-      width: 40px;
+      max-width: 40px;
+      min-width: 40px;
       height: 40px;
       margin-right: 0.75rem;
     }

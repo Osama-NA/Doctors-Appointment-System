@@ -3,28 +3,11 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/User";
 import Appointment from "./Appointment";
-import { post } from "../../../utils/fetch";
 
-const Appointments = ({ appointments, handleJoinAppointment, setAppointment, setRefresh, refresh }) => {
+const Appointments = ({ appointments, handleJoinAppointment, setAppointment, autoCancelAppointment, joinAppointment }) => {
   const navigate = useNavigate();
 
   const { userInfo } = useContext(UserContext);
-
-  const autoCancelAppointment = async (appointmentId) => {
-    const data = await post(
-      process.env.REACT_APP_API_HOST + "dashboard/delete-appointment",
-      {
-        token: localStorage.getItem("token"),
-        appointment_id: appointmentId,
-      }
-    );
-
-    if (data.status === "ok") {
-      setRefresh(!refresh);
-    } else {
-      alert(data.error);
-    }
-  }
 
   return (
     <Wrapper role={userInfo.role}>
@@ -47,6 +30,7 @@ const Appointments = ({ appointments, handleJoinAppointment, setAppointment, set
                 handleJoinAppointment={handleJoinAppointment}
                 setAppointment={setAppointment}
                 autoCancelAppointment={() => autoCancelAppointment(appointment._id)}
+                joinAppointment={() => joinAppointment(appointment)}
               />
             );
           })

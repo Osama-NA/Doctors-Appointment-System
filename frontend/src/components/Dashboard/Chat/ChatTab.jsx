@@ -4,16 +4,16 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Chat from "./Chat";
 import { usePubNub } from "pubnub-react";
-import { isAppointmentDate, getFormatedDate } from "../../../utils/date";
+import ConfirmTab from "../../Elements/ConfirmTab";
 
-const ChatTab = ({ channelId, setShowChatTab, appointment }) => {
+const ChatTab = ({ channelId, setShowChatTab, appointment, setShowReviewTab, autoCancelAppointment }) => {
   const chatRef = useRef(null);
 
   const pubnub = usePubNub();
   const [channels] = useState([channelId]);
   const [messages, addMessage] = useState([]);
   const [message, setMessage] = useState("");
-  const [expiryTime, setExpiryTime] = useState();
+  const [showConfirmLeave, setShowConfirmLeave] = useState(false);
 
   const handleMessage = useCallback((event) => {
     const message = event.message;
@@ -70,20 +70,14 @@ const ChatTab = ({ channelId, setShowChatTab, appointment }) => {
     }
   }, [getMessages, messages.length]);
 
-  useEffect(() => {
-    let didAppointmentStart = isAppointmentDate(appointment);
-    if (!didAppointmentStart.status) return;
-
-    setExpiryTime(getFormatedDate(didAppointmentStart.expiryTime));
-  }, [appointment]);
-
   return (
+    <>
     <Wrapper>
       <Container>
         <Header
           setShowChatTab={setShowChatTab}
           appointment={appointment}
-          expiryTime={expiryTime}
+          setShowConfirmLeave={setShowConfirmLeave}
         />
         <Chat messages={messages} channelId={channelId} chatRef={chatRef} />
         <Footer
@@ -94,6 +88,20 @@ const ChatTab = ({ channelId, setShowChatTab, appointment }) => {
         />
       </Container>
     </Wrapper>
+      {showConfirmLeave && (
+        <ConfirmTab
+          setShow={setShowConfirmLeave}
+          promptText={`You will not be able to join this session again. Are you sure you want to leave?`}
+          type="danger"
+          cta="Leave"
+          action={() => {
+            autoCancelAppointment(appointment._id)
+            setShowReviewTab(true)
+            setShowChatTab(false)
+          }}
+        />
+      )}
+    </>
   );
 };
 

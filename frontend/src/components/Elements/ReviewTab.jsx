@@ -1,102 +1,72 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import TextField from "@mui/material/TextField";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import Button from "../../Buttons/Button";
-import { UserContext } from "../../../context/User";
+import SuccessMessage from "./SuccessMessage";
+import SelectRating from "./SelectRating";
 import { ProgressBar } from "react-loader-spinner";
-import { post } from "../../../utils/fetch";
-import SuccessMessage from "../../Elements/SuccessMessage";
-import { getFormatedDate, isAppointmentDate } from "../../../utils/date";
+import Button from "../Buttons/Button";
+import { post } from "../../utils/fetch";
 
-const BookAppointment = ({ setShow, doctorId }) => {
-  const { userInfo } = useContext(UserContext);
-
+const ReviewTab = ({ appointment, setShow, refresh, setRefresh }) => {
   const [loading, setLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [date, setDate] = useState(null);
-  const [message, setMessage] = useState();
-  const [displayedDate, setDisplayedDate] = useState();
+  const [review, setReview] = useState("");
+  const [rating, setRating] = useState("");
 
-  const handleBooking = () => {
-    if (!date || !message) {
+  const handleSubmit = async  () => {
+    if (!rating || !review) {
       alert("Please fill in the required fields");
       return;
     }
-
-    let formatedDate = date._d.toString();
-
-    if (formatedDate === "Invalid Date") {
-      alert("Please select a valid date");
-      return;
-    }
-
-    formatedDate = getFormatedDate(formatedDate);
-
-    let isAvailableDate = isAppointmentDate({ date: formatedDate });
-
-    if (isAvailableDate.message !== "early") {
-      alert("Please select an available date and time");
-      return;
-    }
-
-    bookAppointment(formatedDate);
-  };
-
-  const bookAppointment = async (formatedDate) => {
+    
     setLoading(true);
 
     const data = await post(
-      process.env.REACT_APP_API_HOST + "dashboard/book-appointment",
+      process.env.REACT_APP_API_HOST + "dashboard/review-doctor",
       {
-        reason: message,
-        date: formatedDate,
-        bookedDoctor: doctorId,
-        bookedBy: userInfo._id,
+        reviewBy: appointment.booked_by,
+        reviewFor: appointment.booked_for,
+        rating,
+        review
       }
     );
 
     setLoading(false);
-    setMessage("");
-    setDate(null);
+    setReview('');
+    setRating('');
 
     if (data.status === "ok") {
-      setDisplayedDate(formatedDate);
+      setRefresh(!refresh)
       setShowSuccessMessage(true);
     } else {
       alert(data.error);
     }
-  };
+  }
 
   return (
     <>
       <Wrapper>
-        <CloseOverlay onClick={() => setShow(false)}></CloseOverlay>
-
         <Container>
-          <label>What do you need help with?</label>
+          <h2>Review {appointment.user.username}</h2>
+          <label>Write a review</label>
           <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            value={review}
+            onChange={(e) => setReview(e.target.value)}
             required
           />
-          <label>Select appointment date</label>
-          <DateTimePicker
-            renderInput={(props) => <TextField {...props} />}
-            value={date}
-            minDate={new Date()}
-            onChange={(newValue) => setDate(newValue)}
-          />
+          <Rating>
+            <label>Rate your experience</label>
+            <SelectRating setRating={setRating} rating={rating} />
+          </Rating>
           <Buttons>
             <Button
-              text="Cancel"
+              text="Ignore"
               type="secondary"
               action={() => setShow(false)}
             />
             <Button
-              text="Confirm Booking"
+              text="Submit Review"
               type="primary"
-              action={handleBooking}
+              action={handleSubmit}
             />
           </Buttons>
 
@@ -114,14 +84,14 @@ const BookAppointment = ({ setShow, doctorId }) => {
       {showSuccessMessage && (
         <SuccessMessage
           setShow={setShow}
-          message={"Appointment successfully booked at " + displayedDate}
+          message="Review submitted successfully"
         />
       )}
     </>
   );
 };
 
-export default BookAppointment;
+export default ReviewTab;
 
 const Wrapper = styled.div`
   position: fixed;
@@ -136,15 +106,6 @@ const Wrapper = styled.div`
   z-index: 1;
 `;
 
-const CloseOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-`;
-
 const Container = styled.div`
   position: relative;
   width: 450px;
@@ -155,6 +116,11 @@ const Container = styled.div`
   box-shadow: 0 5px 25px -10px #2525252e;
   border-radius: 10px;
 
+  h2 {
+    font-size: 22px;
+    line-height: 26px;
+    margin-bottom: 0.5rem;
+  }
   label {
     font-weight: 600;
   }
@@ -165,7 +131,7 @@ const Container = styled.div`
     padding: 0.75rem 1.25rem;
     font-size: 16px;
     border-radius: 5px;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
     resize: vertical;
     max-height: 200px;
     min-height: 50px;
@@ -176,6 +142,11 @@ const Container = styled.div`
     max-width: 300px;
     padding: 1rem 1.25rem;
 
+    h2 {
+      font-size: 16px;
+      line-height: 20px;
+      margin-bottom: 0.25rem;
+    }
     label {
       font-size: 12px;
     }
@@ -185,6 +156,12 @@ const Container = styled.div`
       margin-bottom: 1rem;
     }
   }
+`;
+
+const Rating = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const Buttons = styled.div`

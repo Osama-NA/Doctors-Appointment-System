@@ -87,7 +87,6 @@ const DoctorsList = styled.ul`
   @media (max-width: 860px){
     .no-results{
       font-size: 12px;
-      text-align: center;
     }
   }
   @media (max-width: 620px){

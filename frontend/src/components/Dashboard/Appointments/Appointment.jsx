@@ -14,8 +14,7 @@ const Appointment = ({
   setRescheduledDate,
   rescheduleAppointment,
   rescheduledDate,
-  handleJoinAppointment,
-  setAppointment,
+  joinAppointment,
   autoCancelAppointment,
 }) => {
   const [showRescheduleAppointment, setShowRescheduleAppointment] =
@@ -23,7 +22,8 @@ const Appointment = ({
 
   const [showConfirmCancel, setShowConfirmCancel] = useState(false);
   const [confirmCancelMessage, setConfirmCancelMessage] = useState("");
-  const [appointmentStarted, setAppointmentStarted] = useState("");
+  const [appointmentStatus, setAppointmentStatus] = useState("");
+  const [expiryTime, setExpiryTime] = useState();
 
   const handleCancelAppointment = () => {
     setShowConfirmCancel(true);
@@ -36,29 +36,12 @@ const Appointment = ({
     `);
   };
 
-  const joinAppointment = () => {
-    let didAppointmentStart = isAppointmentDate(appointment);
-    if (!didAppointmentStart.status) {
-      if (didAppointmentStart.message === "early") {
-        alert("You can not join before " + appointment.date);
-      }
-      if (didAppointmentStart.message === "finished") {
-        let expiryTime = getFormatedDate(didAppointmentStart.expiryTime.toString())
-        alert("Session finished at " + expiryTime);
-        autoCancelAppointment()
-      }
-      return;
-    }
-
-    setAppointment(appointment);
-    handleJoinAppointment(appointment._id);
-  };
-
   useEffect(() => {
     let didAppointmentStart = isAppointmentDate(appointment);
+    setAppointmentStatus(didAppointmentStart.message);
     if (!didAppointmentStart.status) return;
 
-    setAppointmentStarted(true);
+    setExpiryTime(getFormatedDate(didAppointmentStart.expiryTime));
   }, [appointment]);
 
   return (
@@ -75,8 +58,13 @@ const Appointment = ({
           <h2>{appointment.user.username}</h2>
           <p>Appointment reason: {appointment.reason}</p>
 
-          {appointmentStarted ? (
-            <p className="started">Appointment started</p>
+          {appointmentStatus === "joined" ? (
+            <>
+              <p className="started">Appointment started</p>
+              <p className="finish">Ends at {expiryTime}</p>
+            </>
+          ) : appointmentStatus === "finished" ? (
+            <p className="finish">Session ended</p>
           ) : (
             <Date
               setRescheduledDate={setRescheduledDate}
@@ -86,16 +74,23 @@ const Appointment = ({
             />
           )}
           <ButtonsWrapper>
-            <Button
-              type="primary"
-              text="Join"
-              action={() => joinAppointment()}
-            />
-            {!appointmentStarted && (
+            {appointmentStatus === "early" ? (
               <Button
                 type="danger"
-                text="Cancel"
+                text="Cancel Appointment"
                 action={handleCancelAppointment}
+              />
+            ) : appointmentStatus === "finished" ? (
+              <Button
+                type="danger"
+                text="Delete Appointment"
+                action={() => autoCancelAppointment(appointment._id)}
+              />
+            ) : (
+              <Button
+                type="primary"
+                text="Join Appointment"
+                action={() => joinAppointment(appointment)}
               />
             )}
           </ButtonsWrapper>
@@ -106,7 +101,7 @@ const Appointment = ({
         <Reschedule
           setRescheduledDate={setRescheduledDate}
           setShow={setShowRescheduleAppointment}
-          rescheduleAppointment={rescheduleAppointment}
+          rescheduleAppointment={() => rescheduleAppointment(appointment._id)}
           rescheduledDate={rescheduledDate}
         />
       )}
@@ -116,7 +111,7 @@ const Appointment = ({
           promptText={confirmCancelMessage}
           type="danger"
           cta="Yes"
-          action={cancelAppointment}
+          action={() => cancelAppointment(appointment._id)}
           cancelText="No"
         />
       )}
@@ -153,9 +148,15 @@ const Wrapper = styled.div`
       line-height: 20px;
       margin: 0.25rem 0;
     }
-    .started {
+    .started,
+    .finish {
       font-weight: 600;
+    }
+    .started {
       color: #2d59eb;
+    }
+    .finish {
+      color: #f95f5f;
       margin: 0 0 1rem;
     }
   }
@@ -175,8 +176,8 @@ const Wrapper = styled.div`
       padding-top: 0.5rem;
 
       h2 {
-        font-size: 18px;
-        line-height: 22px;
+        font-size: 16px;
+        line-height: 20px;
       }
       p {
         font-size: 12px;

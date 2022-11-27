@@ -106,8 +106,8 @@ const Wrapper = styled.div`
       padding-top: 0.5rem;
 
       h2 {
-        font-size: 18px;
-        line-height: 22px;
+        font-size: 16px;
+        line-height: 20px;
       }
       p {
         font-size: 12px;

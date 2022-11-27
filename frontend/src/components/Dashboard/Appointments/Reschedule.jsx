@@ -18,8 +18,9 @@ const Reschedule = ({ setShow, setRescheduledDate, rescheduleAppointment, resche
       alert('Please select a valid date')
       return
     }
-    
-    rescheduleAppointment()
+
+    console.log(date)
+    // rescheduleAppointment()
   }
 
   useEffect(() => {

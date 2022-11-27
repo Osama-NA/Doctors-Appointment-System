@@ -4,8 +4,10 @@ import Appointment from "./Appointment";
 import { UserContext } from "../../../context/User";
 import { post, get } from "../../../utils/fetch";
 import SuccessMessage from "../../Elements/SuccessMessage";
+import ReviewTab from "../../Elements/ReviewTab";
 import Loader from "../../Elements/Loader";
 import ChatTab from "../Chat/ChatTab";
+import { getFormatedDate, isAppointmentDate } from "../../../utils/date";
 
 const Appointments = () => {
   const { userInfo } = useContext(UserContext);
@@ -18,7 +20,8 @@ const Appointments = () => {
   const [rescheduledDate, setRescheduledDate] = useState();
   const [successMessage, setSuccessMessage] = useState("");
   const [channelId, setChannelId] = useState("");
-  const [appointmentData, setAppointmentData] = useState({})
+  const [appointment, setAppointment] = useState({});
+  const [showReviewTab, setShowReviewTab] = useState(false);
 
   const getAppointmens = useCallback(async () => {
     const data = await get(
@@ -46,9 +49,29 @@ const Appointments = () => {
     setChannelId(appointmentId);
     setShowChatTab(true);
   };
-  
+
+  const joinAppointment = (appointment) => {
+    let didAppointmentStart = isAppointmentDate(appointment);
+    if (!didAppointmentStart.status) {
+      if (didAppointmentStart.message === "early") {
+        alert("You can not join before " + appointment.date);
+      }
+      if (didAppointmentStart.message === "finished") {
+        let expiryTime = getFormatedDate(
+          didAppointmentStart.expiryTime.toString()
+        );
+        alert("Session finished at " + expiryTime);
+        autoCancelAppointment(appointment._id);
+      }
+      return;
+    }
+
+    setAppointment(appointment);
+    handleJoinAppointment(appointment._id);
+  };
+
   const cancelAppointment = async (appointmentId) => {
-    setLoading(true)
+    setLoading(true);
 
     const data = await post(
       process.env.REACT_APP_API_HOST + "dashboard/delete-appointment",
@@ -58,7 +81,7 @@ const Appointments = () => {
       }
     );
 
-    setLoading(false)
+    setLoading(false);
 
     if (data.status === "ok") {
       setShowSuccessMessage(true);
@@ -83,21 +106,21 @@ const Appointments = () => {
     } else {
       alert(data.error);
     }
-  }
+  };
 
   const rescheduleAppointment = async (appointmentId) => {
-    setLoading(true)
+    setLoading(true);
 
     const data = await post(
       process.env.REACT_APP_API_HOST + "dashboard/reschedule-appointment",
       {
         token: localStorage.getItem("token"),
         appointment_id: appointmentId,
-        date: rescheduledDate
+        date: rescheduledDate,
       }
     );
 
-    setLoading(false)
+    setLoading(false);
 
     if (data.status === "ok") {
       setShowSuccessMessage(true);
@@ -110,35 +133,34 @@ const Appointments = () => {
 
   return (
     <>
-      <Wrapper >
+      <Wrapper>
         <h1>Scheduled Appointments</h1>
 
         <Container itemsLength={appointments.length}>
           {appointments.length > 0 ? (
-            appointments.map((appointment) => {
+            appointments.map(appointment => {
               return (
                 <Appointment
                   key={appointment._id}
                   appointment={appointment}
-                  cancelAppointment={() => cancelAppointment(appointment._id)}
+                  cancelAppointment={cancelAppointment}
                   role={userInfo.role}
                   setRescheduledDate={setRescheduledDate}
-                  rescheduleAppointment={() => rescheduleAppointment(appointment._id)}
+                  rescheduleAppointment={rescheduleAppointment}
                   rescheduledDate={rescheduledDate}
-                  handleJoinAppointment={handleJoinAppointment}
-                  setAppointment={setAppointmentData}
-                  autoCancelAppointment={() => autoCancelAppointment(appointment._id)}
+                  autoCancelAppointment={autoCancelAppointment}
+                  joinAppointment={joinAppointment}
                 />
               );
             })
           ) : (
             <p className="no-results">No appointments found</p>
           )}
-          
+
           <Loader visible={loading} />
         </Container>
       </Wrapper>
-      
+
       {showSuccessMessage && (
         <SuccessMessage
           setShow={setShowSuccessMessage}
@@ -146,7 +168,21 @@ const Appointments = () => {
         />
       )}
       {showChatTab && (
-        <ChatTab channelId={channelId} setShowChatTab={setShowChatTab} appointment={appointmentData} />
+        <ChatTab
+          channelId={channelId}
+          setShowChatTab={setShowChatTab}
+          appointment={appointment}
+          setShowReviewTab={setShowReviewTab}
+          autoCancelAppointment={autoCancelAppointment}
+        />
+      )}
+      {showReviewTab && (
+        <ReviewTab
+          setShow={setShowReviewTab}
+          appointment={appointment}
+          setRefresh={setRefresh}
+          refresh={refresh}
+        />
       )}
     </>
   );
@@ -179,7 +215,7 @@ const Container = styled.div`
   .appointment:nth-child(1) {
     padding: 0.25rem 0 1.5rem;
   }
-  .appointment:nth-child(${({itemsLength}) => itemsLength}) {
+  .appointment:nth-child(${({ itemsLength }) => itemsLength}) {
     border-bottom: none;
   }
   .no-results {

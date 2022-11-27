@@ -14,10 +14,10 @@ const ConfirmTab = ({promptText, action, type, cta, setShow, cancelText, seconda
                 text={cancelText ? cancelText : 'Cancel'}
                 type='secondary'
                 action={() => {
-                  setShow(false)
                   if(secondaryAction){
                     secondaryAction()
                   }
+                  setShow(false)
                 }}
             />
             <Button 

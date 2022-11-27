@@ -39,7 +39,7 @@ const Doctor = ({ doctor }) => {
         <Reviews 
           setShowReviews={setShowReviews}
           name={doctor.username}
-          reviews={[{}, {}]}
+          reviews={doctor.reviews}
         />
       }
     </>
@@ -108,8 +108,8 @@ const Wrapper = styled.li`
       max-height: 60px;
     }
     h2 {
-      font-size: 18px;
-      line-height: 22px;
+      font-size: 16px;
+      line-height: 20px;
       margin-top: 1rem;
     }
     p {

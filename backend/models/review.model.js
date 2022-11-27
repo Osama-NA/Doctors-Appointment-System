@@ -2,9 +2,10 @@ const mongoose = require('mongoose');
 
 const Review = new mongoose.Schema(
     {
-        reviewed_doctor: {type: String, required: true},
-        review_by: {type: String, required: true},
-        review: {type: String, required: true}
+        reviewed_by: {type: String, required: true},
+        review_for: {type: String, required: true},
+        review: {type: String, required: true},
+        rating: {type: Number, required: true},
     },{
         collection: 'review'
     }

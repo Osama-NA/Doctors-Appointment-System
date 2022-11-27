@@ -1,14 +1,11 @@
-import React, { useContext } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../../context/User";
 import Review from "../../Elements/Review";
 
-const Reviews = () => {
+const Reviews = ({ reviews }) => {
   const navigate = useNavigate();
-
-  const { userInfo } = useContext(UserContext);
-
+  
   return (
     <Wrapper>
       <Header>
@@ -19,23 +16,17 @@ const Reviews = () => {
       </Header>
 
       <div className="flex flexColumn">
-        {true ? (
-          <>
-            <Review
-              name={userInfo.username}
-              reviewBy="Morgaine Uchenna"
-              review={`The services that I receive from ${userInfo.username} is excellent. 
-            Dr. ${userInfo.username} and the staff are friendly and ensure that I am 
-            properly informed about my health and care.`}
-              rate={3}
-            />
-            <Review
-              name={userInfo.username}
-              reviewBy="Morgaine Uchenna"
-              review={`The services that I receive from ${userInfo.username} is excellent. `}
-              rate={3}
-            />
-          </>
+        {reviews && reviews.length > 0 ? (
+          reviews.map((review) => {
+            return (
+              <Review
+                key={review._id}
+                reviewBy={review.reviewed_by}
+                review={review.review}
+                rate={review.rating}
+              />
+            );
+          })
         ) : (
           <p className="no-results">You do not have any reviews yet</p>
         )}

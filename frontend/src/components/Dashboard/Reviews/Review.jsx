@@ -1,22 +1,23 @@
-import React, { useContext } from "react";
+import React from "react";
 import styled from "styled-components";
 import Review from "../../Elements/Review";
-import { UserContext } from "../../../context/User";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
-const ReviewContainer = ({setShowConfirmTab}) => {
-  const { userInfo } = useContext(UserContext);
+const ReviewContainer = ({setShowConfirmTab, review, setDeletedReview}) => {
+  const handleDelete = () => {
+    setDeletedReview(review)
+    setShowConfirmTab(true)
+  }
 
   return (
     <Wrapper>
       <Review
-        name={userInfo.username}
-        reviewBy="Morgaine Uchenna"
-        review={`The services that I receive from ${userInfo.username} is excellent. `}
-        rate={3}
+        reviewBy={review.reviewed_by}
+        review={review.review}
+        rate={review.rating}
       />
-      <FontAwesomeIcon icon={faTrashCan} className="delete" onClick={setShowConfirmTab} />
+      <FontAwesomeIcon icon={faTrashCan} className="delete" onClick={handleDelete} />
     </Wrapper>
   );
 };

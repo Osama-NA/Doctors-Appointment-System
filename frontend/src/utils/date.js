@@ -59,14 +59,14 @@ export const isAppointmentDate = (appointment) => {
     return {
       status: false,
       message: 'finished',
-      expiryTime: appointmentDate._d
+      expiryTime: appointmentDate._d.toString()
     };
   }
 
   return {
     status: true,
     message: 'joined',
-    expiryTime: appointmentDate._d
+    expiryTime: appointmentDate._d.toString()
   };
 };
 

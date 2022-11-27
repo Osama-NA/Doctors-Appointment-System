@@ -17,11 +17,8 @@ const ReviewStars = ({rate}) => {
 }
 
 const Star = ({rate, index}) => {
-    return rate >= index ?  <FilledStar /> : <BorderedStar />
+    return <FontAwesomeIcon icon={rate >= index ? faStarSolid : faStarRegular} />
 }
-
-const FilledStar = () => <FontAwesomeIcon icon={faStarSolid} />
-const BorderedStar = () => <FontAwesomeIcon icon={faStarRegular} />
 
 const Wrapper = styled.div`
     display: flex;
@@ -31,7 +28,8 @@ const Wrapper = styled.div`
         color: #FFBC3A;
         margin: 0 .1rem;
     }
-    @media (max-width: 460px) {
+
+    @media (max-width: 860px) {
         svg{
             width: 11px;
             margin: 0 .05rem;
