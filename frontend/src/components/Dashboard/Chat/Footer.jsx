@@ -1,31 +1,41 @@
-import React, { useContext } from 'react';
-import { UserContext } from "../../../context/User";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { UserContext } from "../../../context/User";
+// Icons
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 
-const Footer = ({sendMessage, message, setMessage}) => {
+const Footer = ({ sendMessage, message, setMessage }) => {
+  // Get user info state from user context
   const { userInfo } = useContext(UserContext);
 
+  // Handles sent message text
   const handleSend = () => {
-    if(message.trim().length > 0) {
-      sendMessage(`${userInfo.username}: ${message}`)
+    // Send message if not empty
+    if (message.trim().length > 0) {
+      // Add sender's name to sent message
+      sendMessage(`${userInfo.username}: ${message}`);
     }
-    setMessage('')
-  }
+
+    // Reset message input
+    setMessage("");
+  };
 
   return (
     <Wrapper>
-      <input 
-        type='text'
+      {/* MESSAGE INPUT FIELD */}
+      <input
+        type="text"
         placeholder="type your message"
         value={message}
-        onKeyPress={e => {
-          if (e.key !== 'Enter') return;
-          handleSend()
+        onKeyPress={(e) => {
+          if (e.key !== "Enter") return;
+          handleSend();
         }}
-        onChange={e => setMessage(e.target.value)}
+        onChange={(e) => setMessage(e.target.value)}
       />
+
+      {/* SEND MESSAGE BUTTON */}
       <button onClick={handleSend}>
         <FontAwesomeIcon icon={faPaperPlane} />
       </button>
@@ -43,18 +53,19 @@ const Wrapper = styled.footer`
   justify-content: space-between;
   padding: 0 1.25rem;
 
-  input{
+  input {
     width: 100%;
     font-size: 16px;
     padding: 1rem 1.75rem;
     border-radius: 30px;
     background-color: #f3f4fa;
   }
-  button, input{
+  button,
+  input {
     border: none;
     outline: none;
   }
-  button{
+  button {
     margin-left: 1.25rem;
     cursor: pointer;
     background-color: transparent;
@@ -64,40 +75,40 @@ const Wrapper = styled.footer`
     border-radius: 30px;
     color: #2d59eb;
     border: 1px solid #2d59eb;
-    transition: all .2s ease;
+    transition: all 0.2s ease;
 
-    svg{
+    svg {
       font-size: 16px;
       position: relative;
       left: -1px;
-      top: -.5px;
+      top: -0.5px;
     }
 
-    &:hover{
+    &:hover {
       background-color: #2d59eb;
       color: #fff;
     }
   }
-  
+
   @media (max-width: 860px) {
     height: 60px;
     padding: 0 1rem;
-  
-    input{
+
+    input {
       font-size: 12px;
-      padding: .81rem 1.25rem;
+      padding: 0.81rem 1.25rem;
     }
-    button{
+    button {
       margin-left: 1rem;
       height: 40px;
       width: 40px;
       min-width: 40px;
       border-radius: 30px;
-  
-      svg{
+
+      svg {
         font-size: 12px;
         left: -1px;
-        top: -.5px;
+        top: -0.5px;
       }
     }
   }

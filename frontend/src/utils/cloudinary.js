@@ -1,4 +1,6 @@
 
+// Uploads the received image to cloudinary and 
+// returns the image url that is hosted on cloudinary CDN
 export const getImageUrlFromCloudinary = async image => {
     const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
 

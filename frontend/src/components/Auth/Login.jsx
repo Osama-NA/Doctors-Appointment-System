@@ -1,11 +1,12 @@
 import React, { useState, useContext } from "react";
-import FullButton from "../Buttons/FullButton";
-import Input from "./Input";
-import SelectRole from "./SelectRole";
-import { post } from "../../utils/fetch";
 import { UserContext } from "../../context/User";
+import { post } from "../../utils/fetch";
 import { useNavigate } from "react-router-dom";
+// Components
 import { ProgressBar } from "react-loader-spinner";
+import FullButton from "../Buttons/FullButton";
+import SelectRole from "./SelectRole";
+import Input from "./Input";
 
 const defaultFormData = {
   email: "",
@@ -13,14 +14,16 @@ const defaultFormData = {
 };
 
 const Login = () => {
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState(defaultFormData);
-  const [role, setRole] = useState("");
-
   const navigate = useNavigate();
 
+  const [role, setRole] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState(defaultFormData);
+
+  // Getting user info state setter from user context
   const { setUserInfo } = useContext(UserContext);
 
+  // Form input on change handler
   const handleInput = (e, field) => {
     setFormData({ ...formData, [field]: e.target.value });
   };
@@ -30,6 +33,7 @@ const Login = () => {
 
     if (!validInput()) return;
 
+    // login user if valid input
     loginIn();
   };
 
@@ -54,21 +58,29 @@ const Login = () => {
 
     const { email, password } = formData;
 
+    // API post request
     const data = await post(process.env.REACT_APP_API_HOST + "auth/sign-in", {
       role,
       email,
       password,
     });
 
+    // Reset states
+    setRole("");
     setLoading(false);
     setFormData(defaultFormData);
 
+    // Handle API response
     if (data.status === "ok") {
+      // Add token to user data
       let userInfo = data.user;
       userInfo.token = data.token;
+
+      // Save user data in user context
       setUserInfo(userInfo);
 
-      navigate(`/dashboard/${role}/overview`)
+      // Redirect user to dashboard
+      navigate(`/dashboard/${role}/overview`);
     } else {
       alert(data.error);
     }
@@ -77,6 +89,8 @@ const Login = () => {
   return (
     <div className="page">
       <h1>Login</h1>
+
+      {/* FORM */}
       <form onSubmit={handleFormSubmit}>
         <SelectRole role={role} setRole={setRole} />
         <Input
@@ -97,6 +111,8 @@ const Login = () => {
         />
         <FullButton title="Login" />
       </form>
+
+      {/* ALT BUTTONS */}
       <button
         className="alt-buttons"
         style={{ marginTop: "1rem" }}
@@ -111,6 +127,7 @@ const Login = () => {
         Don't have an account?
       </button>
 
+      {/* LOADER */}
       <div className="loader">
         <ProgressBar
           height="60"

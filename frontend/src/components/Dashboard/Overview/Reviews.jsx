@@ -8,6 +8,7 @@ const Reviews = ({ reviews }) => {
   
   return (
     <Wrapper>
+    {/* HEADING */}
       <Header>
         <h2>Reviews</h2>
         <button onClick={() => navigate(`/dashboard/doctor/reviews`)}>
@@ -15,6 +16,7 @@ const Reviews = ({ reviews }) => {
         </button>
       </Header>
 
+      {/* REVIEWS LIST CONTAINER */}
       <div className="flex flexColumn">
         {reviews && reviews.length > 0 ? (
           reviews.map((review) => {

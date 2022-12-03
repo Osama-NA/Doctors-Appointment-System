@@ -1,4 +1,3 @@
-require("dotenv").config();
 const userModel = require("../../models/user.model");
 const reviewModel = require("../../models/review.model");
 
@@ -10,10 +9,12 @@ const getReviews = async (req, res) => {
     }
 
     try{
+        // Get doctor reviews
         let reviews = await reviewModel.find({review_for: id}); 
         let users = await userModel.find()
         
         reviews = reviews.map(review => {
+            // Adding the data(username) of each patient that submitted a doctor review
             let reviewedBy = users.filter(user => user.id === review.reviewed_by)[0]
             
             return {

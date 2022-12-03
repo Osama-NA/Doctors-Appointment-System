@@ -11,6 +11,7 @@ const signIn = async (req, res) => {
     return res.json({ status: "error", error: "Missing fields" });
   }
 
+  // Check if user email with given role is registered
   let user = await userModel.findOne({ email, role });
 
   if (!user) {
@@ -20,8 +21,8 @@ const signIn = async (req, res) => {
     });
   }
 
+  // Check is given password matches user passwod
   const isCorrectPassword = await bcrypt.compare(password, user.password);
-
   if (!isCorrectPassword) {
     return res.json({ status: "error", error: "Incorrect password" });
   }
@@ -30,8 +31,8 @@ const signIn = async (req, res) => {
     const secret = process.env.JWT_SECRET_TOKEN;
     const token = jwt.sign({ email }, secret);
 
+    // If user signing in is a doctor, add the doctor speciality to the user data returned to client side (frontend)
     let doctor = undefined
-    
     if (user.role === "doctor") {
       const speciality = await specialityModel.findOne({ doctor_id: user.id });
 

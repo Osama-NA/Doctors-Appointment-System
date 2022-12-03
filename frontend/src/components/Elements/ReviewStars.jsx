@@ -1,40 +1,43 @@
-import React from 'react'
+import React from "react";
 import styled from "styled-components";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faStar as faStarRegular} from '@fortawesome/free-regular-svg-icons'
-import { faStar as faStarSolid} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
+import { faStar as faStarSolid } from "@fortawesome/free-solid-svg-icons";
 
-const ReviewStars = ({rate}) => {
+const stars = [1, 2, 3, 4, 5];
+
+const ReviewStars = ({ rate }) => {
   return (
-    <Wrapper className='review-stars'>
-        <Star rate={rate} index={1} />
-        <Star rate={rate} index={2} />
-        <Star rate={rate} index={3} />
-        <Star rate={rate} index={4} />
-        <Star rate={rate} index={5} />
+    // DOCTOR RATING STARS
+    <Wrapper className="review-stars">
+      {stars.map((star, i) => (
+        <Star rate={rate} index={star} key={i} />
+      ))}
     </Wrapper>
-  )
-}
+  );
+};
 
-const Star = ({rate, index}) => {
-    return <FontAwesomeIcon icon={rate >= index ? faStarSolid : faStarRegular} />
-}
+const Star = ({ rate, index }) => {
+  // if rate >= index: filled star
+  // if rate < index: outlined star
+  return <FontAwesomeIcon icon={rate >= index ? faStarSolid : faStarRegular} />;
+};
 
 const Wrapper = styled.div`
-    display: flex;
-    
-    svg{
-        width: 13px;
-        color: #FFBC3A;
-        margin: 0 .1rem;
-    }
+  display: flex;
 
-    @media (max-width: 860px) {
-        svg{
-            width: 11px;
-            margin: 0 .05rem;
-        }
-    }
-`
+  svg {
+    width: 13px;
+    color: #ffbc3a;
+    margin: 0 0.1rem;
+  }
 
-export default ReviewStars
+  @media (max-width: 860px) {
+    svg {
+      width: 11px;
+      margin: 0 0.05rem;
+    }
+  }
+`;
+
+export default ReviewStars;

@@ -1,83 +1,90 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
 import styled from "styled-components";
+import { getFormatedDate, isAppointmentDate } from "../../../utils/date";
 import { UserContext } from "../../../context/User";
+import { post, get } from "../../../utils/fetch";
+// Components
+import SuccessMessage from "../../Elements/SuccessMessage";
+import { ProgressBar } from "react-loader-spinner";
+import ReviewTab from "../../Elements/ReviewTab";
 import Appointments from "./Appointments";
+import ChatTab from "../Chat/ChatTab";
 import Bookings from "./Bookings";
 import Reviews from "./Reviews";
-import { post, get } from "../../../utils/fetch";
-import { ProgressBar } from "react-loader-spinner";
-import SuccessMessage from "../../Elements/SuccessMessage";
-import ChatTab from "../Chat/ChatTab";
-import ReviewTab from "../../Elements/ReviewTab";
-import { getFormatedDate, isAppointmentDate } from "../../../utils/date";
 
+// Default content state
 const defaultContent = {
   bookings: [],
   appointments: [],
+  reviews: [],
 };
 
 const Overview = () => {
+  // Get user info state from user context
   const { userInfo } = useContext(UserContext);
 
-  const [loading, setLoading] = useState(false);
-  const [refresh, setRefresh] = useState(false);
-  const [content, setContent] = useState(defaultContent);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showReviewTab, setShowReviewTab] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  const [channelId, setChannelId] = useState("");
+  const [content, setContent] = useState(defaultContent);
   const [showChatTab, setShowChatTab] = useState(false);
   const [appointment, setAppointment] = useState({});
-  const [showReviewTab, setShowReviewTab] = useState(false);
+  const [channelId, setChannelId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
+  // Updates booking status to confirmed in database
   const confirmBooking = async (bookingId) => {
     setLoading(true);
 
+    // API post request
     const data = await post(
       process.env.REACT_APP_API_HOST + "dashboard/confirm-appointment",
-      {
-        token: localStorage.getItem("token"),
-        appointment_id: bookingId,
-      }
+      { appointment_id: bookingId }
     );
 
+    // Reset state
     setLoading(false);
 
+    // Handle API response
     if (data.status === "ok") {
       setShowSuccessMessage(true);
       setSuccessMessage("Booking successfully confirmed");
+      // Refresh overview page
       setRefresh(!refresh);
     } else {
       alert(data.error);
     }
   };
 
-  const handleJoinAppointment = (appointmentId) => {
-    setChannelId(appointmentId);
-    setShowChatTab(true);
-  };
-
+  // Delete appointment from database
   const autoCancelAppointment = async (appointmentId) => {
+    // API post request
     const data = await post(
       process.env.REACT_APP_API_HOST + "dashboard/delete-appointment",
-      {
-        token: localStorage.getItem("token"),
-        appointment_id: appointmentId,
-      }
+      { appointment_id: appointmentId }
     );
 
+    // Handle API response
     if (data.status === "ok") {
+      // Refresh overview page
       setRefresh(!refresh);
     } else {
       alert(data.error);
     }
   };
 
+  // Join appointment chat
   const joinAppointment = (appointment) => {
     let didAppointmentStart = isAppointmentDate(appointment);
+
+    // Check if appointment started | finished | yet to start
     if (!didAppointmentStart.status) {
       if (didAppointmentStart.message === "early") {
         alert("You can not join before " + appointment.date);
       }
+
+      // Delete appointment by default from database if finished
       if (didAppointmentStart.message === "finished") {
         let expiryTime = getFormatedDate(
           didAppointmentStart.expiryTime.toString()
@@ -85,14 +92,28 @@ const Overview = () => {
         alert("Session finished at " + expiryTime);
         autoCancelAppointment(appointment._id);
       }
+
       return;
     }
 
+    // Set appointment to join
     setAppointment(appointment);
-    handleJoinAppointment(appointment._id);
+    // Set appointment id as chat channel id to allow
+    // the patient and doctor join the same room
+    setChannelId(appointment._id);
+    // Open chat tab to join user chat room
+    setShowChatTab(true);
   };
 
+  // Get overview content from database
+  // In appointments, if role = patient, returns appointments booked by patient
+  // In appointments, if role = doctor, returns appointments booked for doctor
+  // In bookings, if role = patient, returns bookings booked by patient
+  // In bookings, if role = doctor, returns bookings booked for doctor
+  // Reviews is displayed only if role = doctor
   const getContent = useCallback(async () => {
+    // API get request
+    // user id and role must be passed as a query in the get request url
     const data = await get(
       process.env.REACT_APP_API_HOST +
         "dashboard/overview?id=" +
@@ -101,27 +122,36 @@ const Overview = () => {
         userInfo.role
     );
 
+    // Handle API response
     if (data.status === "ok") {
       let userContent =
         userInfo.role === "doctor"
           ? {
+              // return bookings, appointments, and reviews if role = doctor
+              // only firt 3 bookings are displayed
               bookings: data.content.bookings.filter(
                 (item, index) => index < 3
               ),
+              // only firt 9 appointments are displayed
               appointments: data.content.appointments.filter(
                 (item, index) => index < 9
               ),
+              // only firt 2 reviews are displayed
               reviews: data.content.reviews.filter((item, index) => index < 2),
             }
           : {
+              // return bookings, and appointments if role = patient
               bookings: data.content.bookings.filter(
+                // only firt 3 bookings are displayed
                 (item, index) => index < 3
               ),
               appointments: data.content.appointments.filter(
+                // only firt 9 appointments are displayed
                 (item, index) => index < 9
               ),
             };
 
+      // Update content state
       setContent(userContent);
     } else {
       alert("Failed to fetch content");
@@ -129,8 +159,10 @@ const Overview = () => {
   }, [userInfo._id, userInfo.role]);
 
   useEffect(() => {
+    // Get overview content from database on component mount
     getContent();
 
+    // Clean up content state on component unmount
     return () => setContent(defaultContent);
   }, [getContent, refresh]);
 
@@ -139,9 +171,13 @@ const Overview = () => {
       <Wrapper>
         <h1>Welcome, {userInfo.username}</h1>
 
+        {/* CONTENT CONTAINER */}
+        {/* If role = patient, patient bookings and appointments are displayed */}
+        {/* If role = doctor, doctor bookings, reviews, and appointments are displayed */}
         <Container>
           {userInfo.role === "patient" ? (
             <div className="patient-bookings">
+              {/* BOOKINGS */}
               <Bookings
                 bookings={content.bookings}
                 confirmBooking={confirmBooking}
@@ -150,22 +186,25 @@ const Overview = () => {
             </div>
           ) : (
             <div className="group">
+              {/* BOOKINGS */}
               <Bookings
                 bookings={content.bookings}
                 confirmBooking={confirmBooking}
                 role="doctor"
               />
+
+              {/* REVIEWS */}
               <Reviews reviews={content.reviews} />
             </div>
           )}
+
+          {/* APPOINTMENTS */}
           <Appointments
             appointments={content.appointments}
-            handleJoinAppointment={handleJoinAppointment}
-            setAppointment={setAppointment}
-            autoCancelAppointment={autoCancelAppointment}
             joinAppointment={joinAppointment}
           />
 
+          {/* LOADER */}
           <Loader>
             <ProgressBar
               height="60"
@@ -176,12 +215,16 @@ const Overview = () => {
           </Loader>
         </Container>
       </Wrapper>
+
+      {/* SUCCESS MESSAGE CONTAINER */}
       {showSuccessMessage && (
         <SuccessMessage
           setShow={setShowSuccessMessage}
           message={successMessage}
         />
       )}
+
+      {/* APPOINTMENT CHAT CONTAINER */}
       {showChatTab && (
         <ChatTab
           channelId={channelId}
@@ -191,6 +234,8 @@ const Overview = () => {
           autoCancelAppointment={autoCancelAppointment}
         />
       )}
+
+      {/* DOCTOR REVIEW PROMPT CONTAINER */}
       {showReviewTab && (
         <ReviewTab
           setShow={setShowReviewTab}

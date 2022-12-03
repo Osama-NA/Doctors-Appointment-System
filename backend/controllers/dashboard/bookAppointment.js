@@ -1,4 +1,3 @@
-require("dotenv").config();
 const appointmentModel = require("../../models/appointment.model");
 
 const bookAppointment = async (req, res) => {
@@ -9,6 +8,7 @@ const bookAppointment = async (req, res) => {
   }
 
   try {
+    // Adding new appointment
     const appointment = await appointmentModel.create({
         reason,
         date,

@@ -1,57 +1,21 @@
-import React, { useState, useContext } from "react";
-import { UserContext } from "../../../context/User";
+import React from "react";
 import styled from "styled-components";
-import Input from "./Input";
+// Components
 import Button from "../../Buttons/Button";
-import { getImageUrlFromCloudinary } from "../../../utils/cloudinary";
-import { post } from "../../../utils/fetch";
+import Input from "./Input";
 
-const ConfirmUpdate = ({ setImageFile, setSuccessMessage, setLoading, setShow, input, refresh, setRefresh, setShowSuccessMessage }) => {
-  const [password, setPassword] = useState("");
-
-  const { setUserInfo } = useContext(UserContext);
-
-  const handleConfirm = async () => {
-    if(password.trim().length === 0){
-      alert('Please enter your password')
-      return
-    }
-    
-    setLoading(true)
-
-    let newInfo = {
-      id: input._id,
-      username: input.username,
-      speciality: input.speciality,
-      confirmPassword: password,
-    };
-
-    if (typeof input.img === "object" && input.img !== null) {
-      newInfo.profileImage = await getImageUrlFromCloudinary(input.img);
-    }
-
-    const data = await post(
-      process.env.REACT_APP_API_HOST + "dashboard/update-user",
-      newInfo
-    );
-
-    if (data.status === "ok") {
-      setImageFile(null)
-      setUserInfo(data.user)
-      setSuccessMessage('Profile successfully updated')
-      setShowSuccessMessage(true);
-      setRefresh(!refresh);
-    } else {
-      alert(data.error);
-    }
-    setLoading(false)
-    setShow(false)
-  };
-
+const ConfirmUpdate = ({
+  updateUser,
+  setPassword,
+  password,
+  setShow,
+}) => {
   return (
     <Wrapper>
+      {/* CLOSE OVERLAY ( HIDES COMPONENT ON CLICK ) */}
       <CloseOverlay onClick={() => setShow(false)}></CloseOverlay>
 
+      {/* CONFIRM PROFILE UDPDATE CONTAINER */}
       <Container>
         <Input
           label="Enter the password to update your profile"
@@ -65,7 +29,7 @@ const ConfirmUpdate = ({ setImageFile, setSuccessMessage, setLoading, setShow, i
             type="secondary"
             action={() => setShow(false)}
           />
-          <Button text="Confirm" type="primary" action={handleConfirm} />
+          <Button text="Confirm" type="primary" action={updateUser} />
         </Buttons>
       </Container>
     </Wrapper>

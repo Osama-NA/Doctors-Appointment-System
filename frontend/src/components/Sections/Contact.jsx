@@ -1,39 +1,138 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import { post } from "../../utils/fetch";
 // Assets
 import ContactImg1 from "../../assets/img/contact/1.png";
 import ContactImg2 from "../../assets/img/contact/2.png";
 import ContactImg3 from "../../assets/img/contact/3.png";
+// Components
+import SuccessMessage from "../Elements/SuccessMessage";
+import Loader from "../Elements/Loader";
+
+const defaultState = {
+  name: "",
+  email: "",
+  subject: "",
+  message: "",
+};
 
 export default function Contact() {
+  const [loading, setLoading] = useState(false);
+  const [formInput, setFormInput] = useState(defaultState);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+  // Form input on change handler
+  const handleInput = (e) =>
+    setFormInput({ ...formInput, [e.target.name]: e.target.value });
+
+  // Handling contact form submittion
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const { name, email, subject, message } = formInput;
+    if (!name || !email || !message || !subject) {
+      alert("Please fill in all the required fields");
+      return;
+    }
+
+    // Submit contact form if valid data
+    submitContactForm();
+  };
+
+  const submitContactForm = async () => {
+    setLoading(true);
+
+    // API post request
+    const data = await post(
+      process.env.REACT_APP_API_HOST + "home/contact-form",
+      formInput
+    );
+
+    // Handle response
+    if (data.status === "ok") {
+      setShowSuccessMessage(true);
+    } else {
+      alert(data.error);
+    }
+
+    // Reset states
+    setLoading(false);
+    setFormInput(defaultState);
+  };
+
   return (
-    <Wrapper id="contact">
-      <div className="lightBg">
+    <>
+      <Wrapper id="contact" className="lightBg">
         <div className="container">
+          {/* HEADING */}
           <HeaderInfo>
             <h1 className="font40 extraBold">We're here to help.</h1>
             <p className="font13">
-              Get in touch with us by submitting the form below and we will get back to you soon.
+              Get in touch with us by submitting the form below and we will get
+              back to you soon.
             </p>
           </HeaderInfo>
+
           <div className="row" style={{ paddingBottom: "60px" }}>
-            <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-              <Form>
-                <label className="font13">First name:</label>
-                <input type="text" id="fname" name="fname" />
+            {/* CONTACT FORM */}
+            <div
+              className="col-xs-12 col-sm-12 col-md-6 col-lg-6"
+              style={{ position: "relative" }}
+            >
+              <Form onSubmit={handleSubmit}>
+                <label className="font13">Name:</label>
+                <input
+                  type="text"
+                  id="fname"
+                  name="name"
+                  value={formInput.name}
+                  onChange={(e) => handleInput(e)}
+                />
                 <label className="font13">Email:</label>
-                <input type="text" id="email" name="email"  />
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formInput.email}
+                  onChange={(e) => handleInput(e)}
+                />
                 <label className="font13">Subject:</label>
-                <input type="text" id="subject" name="subject"  />
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  value={formInput.subject}
+                  onChange={(e) => handleInput(e)}
+                />
                 <label className="font13">Message:</label>
-                <textarea rows="4" cols="50" type="text" id="message" name="message"/>
+                <textarea
+                  rows="4"
+                  cols="50"
+                  type="text"
+                  id="message"
+                  name="message"
+                  value={formInput.message}
+                  onChange={(e) => handleInput(e)}
+                />
+                <SumbitWrapper>
+                  <ButtonInput
+                    type="submit"
+                    value="Send Message"
+                    className="pointer animate radius8"
+                  />
+                </SumbitWrapper>
               </Form>
-              <SumbitWrapper>
-                <ButtonInput type="submit" value="Send Message" className="pointer animate radius8"  />
-              </SumbitWrapper>
+
+              {/* LOADER */}
+              <Loader visible={loading} />
             </div>
+
+            {/* IMAGES */}
             <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6 flex images">
-              <div style={{ width: "50%" }} className="flexNullCenter flexColumn">
+              <div
+                style={{ width: "50%" }}
+                className="flexNullCenter flexColumn"
+              >
                 <ContactImgBox>
                   <img src={ContactImg1} alt="office" className="radius6" />
                 </ContactImgBox>
@@ -49,28 +148,36 @@ export default function Contact() {
             </div>
           </div>
         </div>
-      </div>
-    </Wrapper>
+      </Wrapper>
+      
+      {/* SUCCESS MESSAGE CONTAINER */}
+      {showSuccessMessage && (
+        <SuccessMessage
+          setShow={setShowSuccessMessage}
+          message="Message successfully sent"
+        />
+      )}
+    </>
   );
 }
 
 const Wrapper = styled.section`
   width: 100%;
-  
+
   @media (max-width: 991px) {
-    .images{
+    .images {
       display: none;
     }
   }
 `;
 const HeaderInfo = styled.div`
   padding: 70px 0 0;
-  p{
+  p {
     max-width: 500px;
   }
   @media (max-width: 860px) {
     text-align: center;
-    p{
+    p {
       margin: 0 auto;
     }
   }
@@ -79,12 +186,13 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   padding: 25px 0;
-  label{
+  label {
     width: 100%;
     max-width: 500px;
     font-weight: 600;
   }
-  input,
+  input[type="text"],
+  input[type="email"],
   textarea {
     font-size: 14px;
     font-weight: 400;
@@ -108,27 +216,27 @@ const Form = styled.form`
   }
 `;
 const ButtonInput = styled.input`
-border: 1px solid #2d59eb;
-background-color: #2d59eb;
-padding: .8rem 1.4rem;
-outline: none;         
-border-radius:10px;                                                                                                                                                                                                                
-color: #fff; 
+  border: 1px solid #2d59eb;
+  background-color: #2d59eb;
+  padding: 0.8rem 1.4rem;
+  outline: none;
+  border-radius: 10px;
+  color: #fff;
 
-:hover {
-  background-color: #2248c5;
-  border: 1px solid #2248c5;
-}
+  :hover {
+    background-color: #2248c5;
+    border: 1px solid #2248c5;
+  }
 
-@media (max-width: 860px){
-  font-size: 12px;
-  padding: .7rem 1.2rem;
-  outline: none;         
-}
+  @media (max-width: 860px) {
+    font-size: 12px;
+    padding: 0.7rem 1.2rem;
+    outline: none;
+  }
 `;
 const ContactImgBox = styled.div`
-  max-width: 180px; 
-  align-self: flex-end; 
+  max-width: 180px;
+  align-self: flex-end;
   margin: 10px 30px 10px 0;
 `;
 const SumbitWrapper = styled.div`
@@ -140,12 +248,3 @@ const SumbitWrapper = styled.div`
     justify-content: center;
   }
 `;
-
-
-
-
-
-
-
-
-

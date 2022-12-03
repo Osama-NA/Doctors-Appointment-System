@@ -1,38 +1,44 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+// Assets
+import Dots from "../../assets/svg/Dots";
+import HeaderImage from "../../assets/img/header-img.jpg";
 // Components
 import FullButton from "../Buttons/FullButton";
-// Assets
-import HeaderImage from "../../assets/img/header-img.jpg";
-import Dots from "../../assets/svg/Dots";
 
 export default function Header() {
   const navigate = useNavigate();
 
   return (
     <Wrapper id="home" className="container flexSpaceCenter">
+      {/* ABOUT TEXT */}
       <LeftSide className="flexCenter">
         <div>
           <HeaderH1 className="extraBold font60">
             Get better connected to healthcare.
           </HeaderH1>
-          <HeaderP className="font13 semiBold" >
+          <HeaderP className="font13 semiBold">
             <p>
               Find a doctor, make an appointment, and clear up any health
               concerns. We want people to be able to easily discover the right
               doctor and schedule an appointment.
             </p>
             <p>
-              We also assist doctors in better managing their practices
-              and developing their internet reputation.
+              We also assist doctors in better managing their practices and
+              developing their internet reputation.
             </p>
           </HeaderP>
           <BtnWrapper>
-            <FullButton title="Get Started" action={() => navigate('/auth/register')} />
+            <FullButton
+              title="Get Started"
+              action={() => navigate("/auth/register")}
+            />
           </BtnWrapper>
         </div>
       </LeftSide>
+
+      {/* IMAGE */}
       <RightSide>
         <ImageWrapper>
           <Img
@@ -41,8 +47,7 @@ export default function Header() {
             alt="office"
             style={{ zIndex: 9 }}
           />
-          <DotsWrapper>
-            <Dots />
+          <DotsWrapper><Dots />
           </DotsWrapper>
         </ImageWrapper>
         <GreyDiv className="lightBg"></GreyDiv>
@@ -104,23 +109,23 @@ const HeaderP = styled.div`
   line-height: 1.35rem;
   padding: 15px 0 25px;
 
-  p:nth-child(1){
+  p:nth-child(1) {
     padding-bottom: 15px;
     max-width: 550px;
   }
-  p:nth-child(2){
+  p:nth-child(2) {
     max-width: 400px;
   }
   @media (max-width: 860px) {
     text-align: center;
     padding: 10px 0 25px;
 
-    p:nth-child(1){
+    p:nth-child(1) {
       margin: auto;
       max-width: 70%;
       padding-bottom: 10px;
     }
-    p:nth-child(2){
+    p:nth-child(2) {
       margin: auto;
       max-width: 50%;
     }
@@ -128,11 +133,11 @@ const HeaderP = styled.div`
   @media (max-width: 560px) {
     padding: 5px 0 20px;
 
-    p:nth-child(1){
+    p:nth-child(1) {
       padding-bottom: 5px;
       max-width: 90%;
     }
-    p:nth-child(2){
+    p:nth-child(2) {
       max-width: 85%;
     }
   }

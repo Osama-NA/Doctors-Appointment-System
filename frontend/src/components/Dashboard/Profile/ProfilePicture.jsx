@@ -4,7 +4,10 @@ import styled from "styled-components";
 const ProfilePicture = ({ imageSrc, setImageFile }) => {
   return (
     <Wrapper>
+      {/* PROFILE IMAGE */}
       <img src={imageSrc} alt="" />
+
+      {/* IMAGE SELECT INPUT FIELD */}
       <input
         type="file"
         accept="image/png, image/jpeg"

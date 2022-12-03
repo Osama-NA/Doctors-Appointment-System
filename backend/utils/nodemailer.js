@@ -3,6 +3,7 @@ const nodemailer = require('nodemailer');
 const EMAIL = process.env.EMAIL;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 
+// Email transporter using Outlook as host
 const transporter = nodemailer.createTransport({
     host: "smtp-mail.outlook.com",
     port: "587",
@@ -21,12 +22,16 @@ const options = (from, to, subject, text) => {
     return {from, to, subject, text}
 }
 
-const sendMail = (options) => {
+// Options is an object in the format:
+// {from: '', to: '', subject: '', text: ''}
+const sendMail = (mailOptions) => {
     try {
-        transporter.sendMail(options, (error, response) => {
-            if (error) console.log(error);
+        transporter.sendMail(mailOptions, (error, response) => {
+            if (error){
+                console.log(error);
+            } 
 
-            console.log(response);
+            console.log(response)
         })
         
         return {status: 'ok'};
@@ -39,3 +44,5 @@ module.exports = {
     options,
     sendMail
 }
+
+// For more informationg about nodemailer see https://nodemailer.com/about/

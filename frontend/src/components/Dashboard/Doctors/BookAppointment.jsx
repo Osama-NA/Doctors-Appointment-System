@@ -1,51 +1,60 @@
 import React, { useState, useContext } from "react";
 import styled from "styled-components";
-import TextField from "@mui/material/TextField";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import Button from "../../Buttons/Button";
-import { UserContext } from "../../../context/User";
-import { ProgressBar } from "react-loader-spinner";
-import { post } from "../../../utils/fetch";
-import SuccessMessage from "../../Elements/SuccessMessage";
 import { getFormatedDate, isAppointmentDate } from "../../../utils/date";
+import { UserContext } from "../../../context/User";
+import { post } from "../../../utils/fetch";
+// Components
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import SuccessMessage from "../../Elements/SuccessMessage";
+import { ProgressBar } from "react-loader-spinner";
+import TextField from "@mui/material/TextField";
+import Button from "../../Buttons/Button";
 
 const BookAppointment = ({ setShow, doctorId }) => {
+  // Get user info state from user context
   const { userInfo } = useContext(UserContext);
 
-  const [loading, setLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [date, setDate] = useState(null);
-  const [message, setMessage] = useState();
   const [displayedDate, setDisplayedDate] = useState();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [date, setDate] = useState(null);
 
+  // Checks if booking data is valid
   const handleBooking = () => {
     if (!date || !message) {
       alert("Please fill in the required fields");
       return;
     }
 
+    // Get date string from date 'moment' object
     let formatedDate = date._d.toString();
-
     if (formatedDate === "Invalid Date") {
       alert("Please select a valid date");
       return;
     }
 
+    // Get formated date
     formatedDate = getFormatedDate(formatedDate);
+    // before format: Fri Dec 02 2022 01:09:00 GMT+0200 (Eastern European Standard Time)
+    // after format: Fri Dec 02 2022 01:09:00 AM
 
+    // Check if appointment date is available
     let isAvailableDate = isAppointmentDate({ date: formatedDate });
-
     if (isAvailableDate.message !== "early") {
       alert("Please select an available date and time");
       return;
     }
 
+    // Book appointment
     bookAppointment(formatedDate);
   };
 
+  // Create a new appointment in database
   const bookAppointment = async (formatedDate) => {
     setLoading(true);
 
+    // API post request
     const data = await post(
       process.env.REACT_APP_API_HOST + "dashboard/book-appointment",
       {
@@ -56,10 +65,12 @@ const BookAppointment = ({ setShow, doctorId }) => {
       }
     );
 
+    // Reset state
     setLoading(false);
     setMessage("");
     setDate(null);
 
+    // Handle API response
     if (data.status === "ok") {
       setDisplayedDate(formatedDate);
       setShowSuccessMessage(true);
@@ -71,15 +82,20 @@ const BookAppointment = ({ setShow, doctorId }) => {
   return (
     <>
       <Wrapper>
+        {/* CLOSE OVERLAY ( HIDES COMPONENT ON CLICK ) */}
         <CloseOverlay onClick={() => setShow(false)}></CloseOverlay>
 
+        {/* BOOKING CONTAINER */}
         <Container>
+          {/* MESSAGE */}
           <label>What do you need help with?</label>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             required
           />
+
+          {/* DATE AND TIME PICKER */}
           <label>Select appointment date</label>
           <DateTimePicker
             renderInput={(props) => <TextField {...props} />}
@@ -87,6 +103,8 @@ const BookAppointment = ({ setShow, doctorId }) => {
             minDate={new Date()}
             onChange={(newValue) => setDate(newValue)}
           />
+
+          {/* BUTTONS */}
           <Buttons>
             <Button
               text="Cancel"
@@ -100,6 +118,7 @@ const BookAppointment = ({ setShow, doctorId }) => {
             />
           </Buttons>
 
+          {/* LOADER */}
           <Loader>
             <ProgressBar
               height="60"
@@ -111,6 +130,7 @@ const BookAppointment = ({ setShow, doctorId }) => {
         </Container>
       </Wrapper>
 
+      {/* SUCCESS MESSAGE CONTAINER */}
       {showSuccessMessage && (
         <SuccessMessage
           setShow={setShow}

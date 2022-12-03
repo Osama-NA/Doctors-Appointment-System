@@ -1,4 +1,3 @@
-require("dotenv").config();
 const reviewModel = require("../../models/review.model");
 
 const reviewDoctor = async (req, res) => {
@@ -9,6 +8,7 @@ const reviewDoctor = async (req, res) => {
   }
 
   try {
+    // Adding a new doctor review to the review model
     await reviewModel.create({
         reviewed_by: reviewBy,
         review_for: reviewFor,

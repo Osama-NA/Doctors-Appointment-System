@@ -1,6 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 
+// There's 3 types of this button: 
+// primary: blue background
+// secondary: gray border and text
+// danger: red background
 const Button = ({ action, type, text }) => {
   return (
     <Wrapper className={type} onClick={action} type={type}>

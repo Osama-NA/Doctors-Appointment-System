@@ -1,45 +1,62 @@
 import React, { useEffect, useState, useContext } from "react";
 import styled from "styled-components";
 import { UserContext } from "../../../context/User";
-import PatientMenu from './PatientMenu'
-import DoctorMenu from './DoctorMenu'
+// Components
+import PatientMenu from "./PatientMenu";
+import DoctorMenu from "./DoctorMenu";
 
-const SideNavbar = ({showMenu, setShowMenu, signOut, username}) => {
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth)
+const SideNavbar = ({ showMenu, setShowMenu, signOut, username }) => {
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
-  const { userInfo } = useContext(UserContext)
+  // Get user info state from user context
+  const { userInfo } = useContext(UserContext);
 
+  // A resize event listener is added to the dom
+  // to handle screen width on screen resize
   useEffect(() => {
     window.addEventListener("resize", () => {
-      setScreenWidth(window.innerWidth)
+      setScreenWidth(window.innerWidth);
     });
 
+    // remove event listener on component unmount
     return () => {
-      window.removeEventListener("resize", () => setScreenWidth(window.innerWidth));
+      window.removeEventListener("resize", () =>
+        setScreenWidth(window.innerWidth)
+      );
     };
   }, [screenWidth]);
 
   return (
-    <Wrapper style={{
-      transform:  screenWidth < 861 ? `translateX(${showMenu ? '0%' : '-100%'})` : 'none'
-    }}>
-      {
-        screenWidth < 861  && showMenu &&
-        <CloseOverlay
-          onClick={() => setShowMenu(false)}
-        ></CloseOverlay>
-      }
+    <Wrapper
+      style={{
+        transform:
+          screenWidth < 861
+            ? `translateX(${showMenu ? "0%" : "-100%"})`
+            : "none",
+      }}
+    >
+      {/* CLOSE OVERLAY ( HIDES COMPONENT ON CLICK )  */}
+      {/* FOR MOBILE SCREEN ONLY */}
+      {screenWidth < 861 && showMenu && (
+        <CloseOverlay onClick={() => setShowMenu(false)}></CloseOverlay>
+      )}
 
+      {/* NAVIGAION MENU */}
       <PagesList>
-        {
-          userInfo.role === 'patient' ? 
-            <PatientMenu /> :
-            <DoctorMenu />
-        }
+        {userInfo.role === "patient" ? (
+          // Patient menu: Overview, Doctors, Bookings, Appointments, Profile
+          <PatientMenu />
+        ) : (
+          // Doctor menu: Overview, Bookings, Appointments, Reviews, Profile
+          <DoctorMenu />
+        )}
       </PagesList>
 
+      {/* FOOTER (FOR MOBILE) */}
       <footer className="username">
+        {/* USERNAME */}
         <h3>{username}</h3>
+        {/* SIGNOUT */}
         <p onClick={() => signOut()}>Sign out</p>
       </footer>
     </Wrapper>
@@ -62,7 +79,7 @@ const Wrapper = styled.nav`
   display: flex;
   flex-direction: column;
 
-  .username{
+  .username {
     display: none;
   }
 
@@ -70,19 +87,19 @@ const Wrapper = styled.nav`
     width: 200px;
     padding: 100px 1.5rem 1.5rem;
     box-shadow: 0 115px 25px -10px #2525252e;
-    
-    .username{
+
+    .username {
       width: 100%;
       display: flex;
       flex-direction: column;
       padding-top: 20px;
 
-      h3{
+      h3 {
         font-size: 16px;
         line-height: 26px;
         padding-bottom: 0rem;
       }
-      p{
+      p {
         font-size: 14px;
         cursor: pointer;
         color: #2d59eb;
@@ -99,7 +116,7 @@ const CloseOverlay = styled.div`
   width: 100vw;
   height: 100vh;
   background-color: #0e1a4338;
-`
+`;
 
 const PagesList = styled.ul`
   li {

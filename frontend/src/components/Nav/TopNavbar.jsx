@@ -1,56 +1,63 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { Link } from "react-scroll";
 import { useNavigate, useLocation } from "react-router-dom";
-// Components
-import Sidebar from "../Nav/Sidebar";
+import { Link } from "react-scroll";
+import styled from "styled-components";
 // Assets
 import LogoIcon from "../../assets/svg/Logo";
 import BurgerIcon from "../../assets/svg/BurgerIcon";
+// Components
+import Sidebar from "../Nav/Sidebar";
 
 export default function TopNavbar({ auth }) {
-  const [y, setY] = useState(window.scrollY);
+  const [scrollHeight, setScrollHeight] = useState(window.scrollY);
   const [sidebarOpen, toggleSidebar] = useState(false);
-  
-  const navigate = useNavigate()
 
-  const location = useLocation()
+  const navigate = useNavigate();
+  const location = useLocation();
 
+  // Adding on scroll event listener to handle nav height on scroll
   useEffect(() => {
-    window.addEventListener("scroll", () => setY(window.scrollY));
-    
-    return () => window.removeEventListener("scroll", () => setY());
-  }, [y]);
+    window.addEventListener("scroll", () => setScrollHeight(window.scrollY));
+
+    return () => window.removeEventListener("scroll", () => setScrollHeight());
+  }, []);
 
   return (
     <>
+      {/* Navigation sidebar */}
       <Sidebar
         sidebarOpen={sidebarOpen}
         toggleSidebar={toggleSidebar}
         auth={auth}
       />
+
+      {/* Header */}
       <Wrapper
         className="flexCenter animate whiteBg"
-        style={y > 100 ? { height: "60px" } : { height: "80px" }}
+        style={scrollHeight > 100 ? { height: "60px" } : { height: "80px" }}
       >
         <NavInner className="container flexSpaceCenter">
-          {
-            location.pathname === '/' ? (
-              <Link className="pointer flexNullCenter" to="home" smooth={true}>
-                <LogoIcon />
-                <h1 style={{ marginLeft: "15px" }} className="font20 extraBold">
-                  FindDoc
-                </h1>
-              </Link>
-            ) : (
-              <div onClick={() => navigate('/')} className="pointer flexNullCenter">
+          {/* LOGO */}
+          {location.pathname === "/" ? (
+            <Link className="pointer flexNullCenter" to="home" smooth={true}>
+              <LogoIcon />
+              <h1 style={{ marginLeft: "15px" }} className="font20 extraBold">
+                FindDoc
+              </h1>
+            </Link>
+          ) : (
+            <div
+              onClick={() => navigate("/")}
+              className="pointer flexNullCenter"
+            >
               <LogoIcon />
               <h1 style={{ marginLeft: "15px" }} className="font20 extraBold">
                 FindDoc
               </h1>
             </div>
-            )
-          }
+          )}
+
+          {/* MOBILE MENU BUTTON */}
           <BurderWrapper
             className="pointer"
             onClick={() => toggleSidebar(!sidebarOpen)}
@@ -58,6 +65,7 @@ export default function TopNavbar({ auth }) {
             <BurgerIcon />
           </BurderWrapper>
 
+          {/* HOME PAGE SECTIONS NAV MENU */}
           {!auth && (
             <UlWrapper className="flexNullCenter">
               <li className="semiBold font15 pointer">
@@ -111,16 +119,19 @@ export default function TopNavbar({ auth }) {
             </UlWrapper>
           )}
 
+          {/* AUTH PAGES NAV MENU */}
           <UlWrapperRight className="flexNullCenter">
-            <li className="semiBold font15 pointer" onClick={() => navigate('/auth/login')}>
-              <p>
-                Log in
-              </p>
+            <li
+              className="semiBold font15 pointer"
+              onClick={() => navigate("/auth/login")}
+            >
+              <p>Log in</p>
             </li>
-            <li className="semiBold font15 pointer flexCenter" onClick={() => navigate('/auth/register')}>
-              <p className="lightBg">
-                Register
-              </p>
+            <li
+              className="semiBold font15 pointer flexCenter"
+              onClick={() => navigate("/auth/register")}
+            >
+              <p className="lightBg">Register</p>
             </li>
           </UlWrapperRight>
         </NavInner>
@@ -159,8 +170,8 @@ const UlWrapper = styled.ul`
 `;
 const UlWrapperRight = styled.ul`
   p {
-    border-radius:10px;         
-    padding: .6rem 1.4rem;
+    border-radius: 10px;
+    padding: 0.6rem 1.4rem;
     transition: all 0.3s ease;
 
     &:hover {

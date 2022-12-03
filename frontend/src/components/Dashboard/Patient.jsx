@@ -1,14 +1,16 @@
 import React from 'react'
 import { Routes, Route } from "react-router-dom";
-import Overview from './Overview/Overview'
-import Doctors from './Doctors/Doctors'
+// Components
 import Appointments from './Appointments/Appointments'
+import Overview from './Overview/Overview'
 import Bookings from './Bookings/Bookings'
 import Profile from './Profile/Profile'
+import Doctors from './Doctors/Doctors'
 
 const Patient = () => {
   return (
     <div className='pages-wrapper'>
+      {/* PATIENT PAGES */}
       <Routes>
           <Route path="/" element={<Overview />} />
           <Route path="/overview" element={<Overview />} />

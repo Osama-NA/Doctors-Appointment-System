@@ -1,37 +1,42 @@
-import React from 'react'
+import React from "react";
 import styled from "styled-components";
+// Components
 import Button from "../Buttons/Button";
 
-const ConfirmTab = ({promptText, action, type, cta, setShow, cancelText, secondaryAction}) => {
+const ConfirmTab = ({
+  secondaryAction,
+  promptText,
+  cancelText,
+  setShow,
+  action,
+  type,
+  cta
+}) => {
   return (
     <Wrapper>
+      {/* CLOSE OVERLAY ( HIDES COMPONENT ON CLICK ) */}
       <CloseOverlay onClick={() => setShow(false)}></CloseOverlay>
 
+      {/* CONFIRM PROMPT CONTAINER */}
       <Container>
         <p>{promptText}</p>
         <Buttons>
-            <Button 
-                text={cancelText ? cancelText : 'Cancel'}
-                type='secondary'
-                action={() => {
-                  if(secondaryAction){
-                    secondaryAction()
-                  }
-                  setShow(false)
-                }}
-            />
-            <Button 
-                text={cta}
-                type={type}
-                action={action}
-            />
+          <Button
+            text={cancelText || "Cancel"}
+            type="secondary"
+            action={() => {
+              secondaryAction && secondaryAction();
+              setShow(false);
+            }}
+          />
+          <Button text={cta} type={type} action={action} />
         </Buttons>
       </Container>
     </Wrapper>
-  )
-}
+  );
+};
 
-export default ConfirmTab
+export default ConfirmTab;
 
 const Wrapper = styled.div`
   position: fixed;
@@ -68,14 +73,14 @@ const Container = styled.div`
     font-size: 18px;
     font-weight: 600;
   }
-  
+
   @media (max-width: 860px) {
     width: 100%;
     max-width: 300px;
     padding: 1rem 1.25rem;
-  
+
     p {
-        font-size: 14px;
+      font-size: 14px;
     }
   }
 `;
@@ -86,7 +91,7 @@ const Buttons = styled.div`
   justify-content: flex-end;
   margin-top: 1.25rem;
 
-  .secondary{
-    margin-right: .5rem;
+  .secondary {
+    margin-right: 0.5rem;
   }
-`
+`;

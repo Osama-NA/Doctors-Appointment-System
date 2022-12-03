@@ -6,57 +6,69 @@ import Date from "../Appointments/Date";
 import ConfirmTab from "../../Elements/ConfirmTab";
 
 const Booking = ({ booking, cancelBooking, role, confirmBooking }) => {
+  const [confirmCancelMessage, setConfirmCancelMessage] = useState("");
   const [showConfirmCancel, setShowConfirmCancel] = useState(false);
-  const [confirmCancelMessage, setConfirmCancelMessage] = useState('');
 
+  // Handles confirmation of booking cancel / decline
   const handleCancelBooking = () => {
     setShowConfirmCancel(true);
     setConfirmCancelMessage(`
       Are you sure you want to ${
         role === "patient" ? "cancel" : "decline"
       } this appointment?
-    `)
-  }
+    `);
+  };
 
   return (
     <>
+      {/* BOOKINGS CONTAINER */}
       <Wrapper className="booking">
+        {/* USER PROFILE IMAGE */}
         <img
           src={booking.user.profileImage ? booking.user.profileImage : Img}
           alt=""
         />
 
+        {/* USER INFO CONTAINER */}
         <div className="info">
           <h2>{booking.user.username}</h2>
           <p>Appointment reason: {booking.reason}</p>
 
           <Date allowReschedule={false} date={booking.date} />
 
-          {role === "patient" ? (
-            <ButtonsWrapper>
+          {/* BUTTONS */}
+          <ButtonsWrapper>
+            {role === "patient" ? (
+              // Show 'Cancel Booking' if patient
               <Button
                 type="danger"
                 text="Cancel Booking"
                 action={handleCancelBooking}
               />
-            </ButtonsWrapper>
-          ) : (
-            <ButtonsWrapper>
-              <Button type="primary" text="Confirm" action={confirmBooking} />
-              <Button type="danger" text="Decline" action={handleCancelBooking} />
-            </ButtonsWrapper>
-          )}
+            ) : (
+              // Show 'Confirm' and 'Decline' if doctor
+              <>
+                <Button type="primary" text="Confirm" action={confirmBooking} />
+                <Button
+                  type="danger"
+                  text="Decline"
+                  action={handleCancelBooking}
+                />
+              </>
+            )}
+          </ButtonsWrapper>
         </div>
       </Wrapper>
 
+      {/* CANCEL APPOINTMENT CONFIRMATION CONTAINER */}
       {showConfirmCancel && (
         <ConfirmTab
+          cta="Yes"
+          type="danger"
+          cancelText="No"
+          action={cancelBooking}
           setShow={setShowConfirmCancel}
           promptText={confirmCancelMessage}
-          type='danger'
-          cta='Yes'
-          action={cancelBooking}
-          cancelText='No'
         />
       )}
     </>

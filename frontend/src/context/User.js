@@ -1,10 +1,13 @@
 import React, { createContext, useEffect, useState } from "react";
 
+// Create user context
 const UserContext = createContext({});
 
+// Create context provider
 const UserContextProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState({});
 
+  // Update token and user id in local storage everytime user info is updated
   useEffect(() => {
     if(userInfo && userInfo.token){
       localStorage.setItem('token', userInfo.token)

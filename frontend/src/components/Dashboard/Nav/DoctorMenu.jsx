@@ -1,4 +1,5 @@
 import React from "react";
+// Components
 import MenuItem from "./MenuItem";
 
 const DoctorMenu = () => {

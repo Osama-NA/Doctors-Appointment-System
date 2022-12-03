@@ -1,79 +1,110 @@
-import React, {useState, useContext} from "react";
+import React, { useState, useContext } from "react";
 import styled from "styled-components";
-import { post } from "../../utils/fetch";
 import { UserContext } from "../../context/User";
+import { post } from "../../utils/fetch";
+// Components
+import SuccessMessage from "../Elements/SuccessMessage";
+import { ProgressBar } from "react-loader-spinner";
 import Input from "../Dashboard/Profile/Input";
 import Button from "../Buttons/Button";
-import { ProgressBar } from "react-loader-spinner";
 
-const AddSpeciality = ({setShow}) => {
+const AddSpeciality = ({ setShow }) => {
+  // Getting user info state getter and setter from user context
   const { userInfo, setUserInfo } = useContext(UserContext);
 
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [speciality, setSpeciality] = useState("");
   const [loading, setLoading] = useState(false);
-  const [speciality, setSpeciality] = useState('')
 
   const addSpeciality = async () => {
-    if(speciality.length < 5){
-      alert('Please add a speciality')
-      return
+    // Speciality must be at least 5 letters
+    if (speciality.length < 5) {
+      alert("Please add a speciality");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
-    const data = await post(process.env.REACT_APP_API_HOST + "dashboard/add-speciality", {
-      speciality,
-      doctor_id: userInfo._id,
-    });
+    // API post request
+    const data = await post(
+      process.env.REACT_APP_API_HOST + "dashboard/add-speciality",
+      {
+        speciality,
+        doctor_id: userInfo._id,
+      }
+    );
 
-    
-    setSpeciality('')
-    setLoading(false)
+    // Reset states
+    setSpeciality("");
+    setLoading(false);
 
-    if(data.status === 'ok'){
-      alert('Speciality added successfully')
-      let newUserInfo = userInfo
-      newUserInfo.speciality = data.speciality
-      setUserInfo(newUserInfo)
-      
-      setShow(false)
-    }
-    else{
-      alert(data.error)
+    // Handle response
+    if (data.status === "ok") {
+      // Add speciality to user data
+      let newUserInfo = userInfo;
+      newUserInfo.speciality = data.speciality;
 
-      if(data.status === 'continue'){
-        setShow(false)
+      // Save user data in user context
+      setUserInfo(newUserInfo);
+
+      setShowSuccessMessage(true);
+      // Remove component and success message from DOM (hide)
+      setTimeout(() => setShow(false), 2000);
+    } else {
+      alert(data.error);
+
+      // Close tab if speciality is already added
+      if (data.status === "continue") {
+        setShow(false);
       }
     }
-  }
+  };
 
   return (
-    <Wrapper>
-      <Container>
-        <h2>Welcome, {userInfo.username}. One last step to get started!</h2>
-        <p>This helps patients find the doctor best fit for their needs.</p>
-        <Input 
+    <>
+      <Wrapper>
+        {/* ADD SPECIALITY CONTAINER */}
+        <Container>
+          <h2>Welcome, {userInfo.username}. One last step to get started!</h2>
+          <p>This helps patients find the doctor best fit for their needs.</p>
+          <Input
             label="What is your speciality? (required)"
             type="text"
             value={speciality}
-            onChange={e => setSpeciality(e.target.value)}
+            onChange={(e) => setSpeciality(e.target.value)}
             required={true}
-        />
-        <Button text="Continue" type="primary" action={addSpeciality} disabled />
-
-        <Loader>
-          <ProgressBar
-            height="60"
-            visible={loading}
-            borderColor="#000"
-            barColor="#2d59eb"
           />
-        </Loader>
-      </Container>
-    </Wrapper>
-  )
-}
+          <Button
+            text="Continue"
+            type="primary"
+            action={addSpeciality}
+            disabled
+          />
 
-export default AddSpeciality
+          {/* LOADER */}
+          <Loader>
+            <ProgressBar
+              height="60"
+              visible={loading}
+              borderColor="#000"
+              barColor="#2d59eb"
+            />
+          </Loader>
+        </Container>
+      </Wrapper>
+
+      {/* SUCCESS MESSAGE CONTAINER */}
+      {showSuccessMessage && (
+        <SuccessMessage
+          setShow={setShowSuccessMessage}
+          message="Speciality added successfully"
+        />
+      )}
+    </>
+  );
+};
+
+export default AddSpeciality;
 
 const Wrapper = styled.div`
   position: fixed;
@@ -85,7 +116,8 @@ const Wrapper = styled.div`
   display: grid;
   place-items: center;
   padding: 0 1.5rem;
-`
+  z-index: 1;
+`;
 
 const Container = styled.div`
   position: relative;
@@ -97,19 +129,19 @@ const Container = styled.div`
   box-shadow: 0 5px 25px -10px #2525252e;
   border-radius: 10px;
 
-  h2{
+  h2 {
     font-size: 18px;
     line-height: 26px;
-    margin-bottom: .5rem;
+    margin-bottom: 0.5rem;
   }
-  p{
+  p {
     line-height: 24px;
-    margin-bottom: .5rem;
+    margin-bottom: 0.5rem;
   }
   label {
     font-weight: 600;
     line-height: 24px;
-    margin-bottom: .25rem;
+    margin-bottom: 0.25rem;
   }
   input {
     background-color: #eceff5;
@@ -130,15 +162,15 @@ const Container = styled.div`
     max-width: 435px;
     padding: 1rem 1.25rem;
 
-    h2{
+    h2 {
       font-size: 14px;
       line-height: 20px;
-      margin-bottom: .25rem;
+      margin-bottom: 0.25rem;
     }
-    p{
+    p {
       font-size: 12px;
       line-height: 18px;
-      margin-bottom: .1rem;
+      margin-bottom: 0.1rem;
     }
     label {
       font-size: 12px;
@@ -158,12 +190,12 @@ const Loader = styled.div`
   position: absolute;
   bottom: -4.5rem;
   left: 44%;
-  
-  @media (max-width: 860px){
+
+  @media (max-width: 860px) {
     bottom: -4rem;
     left: 41%;
   }
-  @media (max-width: 460px){
+  @media (max-width: 460px) {
     left: 39%;
   }
-`
+`;

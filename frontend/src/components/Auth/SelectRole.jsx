@@ -3,6 +3,7 @@ import React from "react";
 const PATIENT = 'patient'
 const DOCTOR = 'doctor'
 
+// User role radio buttons
 const SelectRole = ({role, setRole}) => {
   return (
     <>

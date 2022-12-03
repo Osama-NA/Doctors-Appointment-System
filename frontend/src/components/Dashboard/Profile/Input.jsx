@@ -1,21 +1,22 @@
-import React from 'react'
+import React from "react";
 import styled from "styled-components";
 
-const Input = ({label, type, value, onChange}) => {
+const Input = ({ label, type, value, onChange }) => {
   return (
     <Wrapper>
       <label>{label}</label>
-      <input 
+      <input
         type={type}
         value={value}
+        // Use label in lowercase letters as input field name
         name={label.toLowerCase()}
         onChange={onChange}
       />
     </Wrapper>
-  )
-}
+  );
+};
 
-export default Input
+export default Input;
 
 const Wrapper = styled.div`
   display: flex;

@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { post } from "../../utils/fetch";
+// Components
+import { ProgressBar } from "react-loader-spinner";
 import SuccessMessage from "./SuccessMessage";
 import SelectRating from "./SelectRating";
-import { ProgressBar } from "react-loader-spinner";
 import Button from "../Buttons/Button";
-import { post } from "../../utils/fetch";
 
 const ReviewTab = ({ appointment, setShow, refresh, setRefresh }) => {
-  const [loading, setLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [review, setReview] = useState("");
   const [rating, setRating] = useState("");
 
   const handleSubmit = async  () => {
+    // Check if valid data
     if (!rating || !review) {
       alert("Please fill in the required fields");
       return;
@@ -20,6 +22,7 @@ const ReviewTab = ({ appointment, setShow, refresh, setRefresh }) => {
     
     setLoading(true);
 
+    // API post request
     const data = await post(
       process.env.REACT_APP_API_HOST + "dashboard/review-doctor",
       {
@@ -30,13 +33,16 @@ const ReviewTab = ({ appointment, setShow, refresh, setRefresh }) => {
       }
     );
 
+    // Reset states
     setLoading(false);
     setReview('');
     setRating('');
 
+    // Handle API response
     if (data.status === "ok") {
-      setRefresh(!refresh)
       setShowSuccessMessage(true);
+      // Refresh current tab data
+      setRefresh(!refresh)
     } else {
       alert(data.error);
     }
@@ -45,18 +51,23 @@ const ReviewTab = ({ appointment, setShow, refresh, setRefresh }) => {
   return (
     <>
       <Wrapper>
+        {/* REVIEW CONTAINER */}
         <Container>
           <h2>Review {appointment.user.username}</h2>
+
           <label>Write a review</label>
           <textarea
             value={review}
             onChange={(e) => setReview(e.target.value)}
             required
           />
+
           <Rating>
             <label>Rate your experience</label>
+            {/* DOCTOR RATING BUTTONS */}
             <SelectRating setRating={setRating} rating={rating} />
           </Rating>
+
           <Buttons>
             <Button
               text="Ignore"
@@ -70,6 +81,7 @@ const ReviewTab = ({ appointment, setShow, refresh, setRefresh }) => {
             />
           </Buttons>
 
+          {/* LOADER */}
           <Loader>
             <ProgressBar
               height="60"
@@ -81,6 +93,7 @@ const ReviewTab = ({ appointment, setShow, refresh, setRefresh }) => {
         </Container>
       </Wrapper>
 
+      {/* SUCCESS MESSAGE CONTAINER */}
       {showSuccessMessage && (
         <SuccessMessage
           setShow={setShow}

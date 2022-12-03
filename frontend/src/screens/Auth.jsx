@@ -2,8 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import { Routes, Route } from "react-router-dom";
 // Pages
-import TopNavbar from "../components/Nav/TopNavbar";
 import Footer from "../components/Sections/Footer";
+import TopNavbar from "../components/Nav/TopNavbar";
 import Login from "../components/Auth/Login";
 import Register from "../components/Auth/Register";
 import ForgotPassword from "../components/Auth/ForgotPassword";
@@ -12,15 +12,24 @@ import ChangePassword from "../components/Auth/ChangePassword";
 const Auth = () => {
   return (
     <>
+      {/* Header / Navigation */}
+      {/* If auth=true the landing page navigation menu is hidden */}
       <TopNavbar auth={true} />
+
+      {/* Auth Page */}
       <Container>
         <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/change-password/:id/:token" element={<ChangePassword />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route
+            path="/change-password/:id/:token"
+            element={<ChangePassword />}
+          />
         </Routes>
       </Container>
+
+      {/* Footer */}
       <Footer />
     </>
   );
@@ -73,9 +82,9 @@ const Container = styled.div`
         font-size: 16px;
         margin-top: 0.5rem;
       }
-      .img-input{
+      .img-input {
         border-bottom: none;
-        padding: .5rem 0 0;
+        padding: 0.5rem 0 0;
       }
 
       .select-role-input {
@@ -99,7 +108,7 @@ const Container = styled.div`
       }
     }
 
-    .loader{
+    .loader {
       position: absolute;
       width: 100%;
       bottom: -4rem;
@@ -114,7 +123,7 @@ const Container = styled.div`
     .page {
       width: 100%;
       max-width: 500px;
-  
+
       h1 {
         font-size: 24px;
         padding-bottom: 0.25rem;
@@ -123,12 +132,12 @@ const Container = styled.div`
         margin-top: 0.5rem;
       }
       p {
-        padding-bottom: .5rem;
+        padding-bottom: 0.5rem;
       }
       form {
         padding: 1.25rem 1.5rem 1.5rem;
         border-radius: 15px;
-  
+
         input {
           font-size: 12px;
           margin-bottom: 1.25rem;
@@ -137,12 +146,12 @@ const Container = styled.div`
           font-size: 12px;
           margin-top: 0.25rem;
         }
-        label{
+        label {
           font-size: 12px;
         }
         .select-role-input {
           margin-bottom: 1rem;
-  
+
           label {
             margin-right: 1rem;
             height: 15px;

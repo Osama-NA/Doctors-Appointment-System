@@ -2,15 +2,18 @@ import React, { useContext } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/User";
+// Components
 import Appointment from "./Appointment";
 
-const Appointments = ({ appointments, handleJoinAppointment, setAppointment, autoCancelAppointment, joinAppointment }) => {
+const Appointments = ({ appointments, joinAppointment }) => {
   const navigate = useNavigate();
 
+  // Get user info state from user context
   const { userInfo } = useContext(UserContext);
 
   return (
     <Wrapper role={userInfo.role}>
+    {/* HEADING */}
       <Header>
         <h2>Scheduled Appointments</h2>
         <button
@@ -20,6 +23,7 @@ const Appointments = ({ appointments, handleJoinAppointment, setAppointment, aut
         </button>
       </Header>
 
+      {/* APPOINTMENTS LIST CONTAINER */}
       <div className="flex flexColumn">
         {appointments.length > 0 ? (
           appointments.map((appointment) => {
@@ -27,9 +31,6 @@ const Appointments = ({ appointments, handleJoinAppointment, setAppointment, aut
               <Appointment
                 key={appointment._id}
                 appointment={appointment}
-                handleJoinAppointment={handleJoinAppointment}
-                setAppointment={setAppointment}
-                autoCancelAppointment={() => autoCancelAppointment(appointment._id)}
                 joinAppointment={() => joinAppointment(appointment)}
               />
             );

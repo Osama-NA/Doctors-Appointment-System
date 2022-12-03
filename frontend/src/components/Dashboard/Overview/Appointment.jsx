@@ -1,31 +1,39 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import Img from "../../../assets/img/dashboard/profile-img.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// Assets
+import Img from "../../../assets/img/dashboard/profile-img.jpg";
+// Icons
 import { faComments } from "@fortawesome/free-regular-svg-icons";
 import { isAppointmentDate } from "../../../utils/date";
 
 const Appointment = ({ appointment, joinAppointment }) => {
   const [appointmentStatus, setAppointmentStatus] = useState("");
 
+  // Check appointment status on component mount
   useEffect(() => {
+    // Set appointment status
     let didAppointmentStart = isAppointmentDate(appointment);
     setAppointmentStatus(didAppointmentStart.message);
   }, [appointment]);
 
   return (
     <Wrapper>
+      {/* USER PROFILE IMAGE */}
       <img
         src={
           appointment.user.profileImage ? appointment.user.profileImage : Img
         }
         alt=""
       />
+
+      {/* USER INFO CONTAINER */}
       <div className="info">
         <h3>{appointment.user.username}</h3>
         <p>{appointment.date}</p>
       </div>
 
+      {/* JOIN APPOINTMENT */}
       {appointmentStatus === "joined" && (
         <div className="join-btn" onClick={() => joinAppointment()}>
           <FontAwesomeIcon icon={faComments} />

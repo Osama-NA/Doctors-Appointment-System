@@ -1,4 +1,3 @@
-require("dotenv").config();
 const userModel = require("../../models/user.model");
 const appointmentModel = require("../../models/appointment.model");
 
@@ -14,8 +13,10 @@ const getBookings = async (req, res) => {
         let users = await userModel.find()
 
         if(role === 'doctor'){
+            // Search for appointments booked for the doctor, with the 'confirmed' field set to false 
             bookings = await appointmentModel.find({booked_for: id, confirmed: false});
             bookings = bookings.map( booking => {
+                // Getting user data(image, username) of each patient that booked an appointment  
                 let bookedBy = users.filter(user => user.id === booking.booked_by)[0];
                 
                 return {
@@ -24,9 +25,10 @@ const getBookings = async (req, res) => {
                 }
             })
         }else{
+            // Search for appointments booked by the patient, with the 'confirmed' field set to false 
             bookings = await appointmentModel.find({booked_by: id, confirmed: false});
-
             bookings = bookings.map( booking => {
+                // Getting user data(image, username) of each doctor that the patient booked an appointment for
                 let bookedFor = users.filter(user => user.id === booking.booked_for)[0];
 
                 return {

@@ -7,20 +7,24 @@ import { faCheck } from "@fortawesome/free-solid-svg-icons";
 const Booking = ({ booking, confirmBooking, role }) => {
   return (
     <Wrapper>
+      {/* USER PROFILE IMAGE */}
       <img
         src={booking.user.profileImage ? booking.user.profileImage : Img}
         alt=""
       />
+
+      {/* USER INFO CONTAINER */}
       <div className="info">
         <h3>{booking.user.username}</h3>
         <p>{booking.date}</p>
       </div>
-      {
-        role === 'doctor' &&
+
+      {/* CONFIRM BOOKING (FOR DOCTORS) */}
+      {role === "doctor" && (
         <div className="confirm-btn" onClick={confirmBooking}>
           <FontAwesomeIcon icon={faCheck} />
         </div>
-      }
+      )}
     </Wrapper>
   );
 };

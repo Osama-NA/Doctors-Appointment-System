@@ -1,6 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 
+// There's 2 types of this button: 
+// default: blue background
+// bordered: gray border and text
 export default function FullButton({ title, action, border }) {
   return (
     <Wrapper

@@ -2,23 +2,32 @@ import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../../../context/User";
 import styled from "styled-components";
 
+// default message state
 const defaultState = {
   alignment: "flex-start",
   text: "",
   name: "",
 };
+
 const Message = ({ message }) => {
+  // Get user info state from user context
   const { userInfo } = useContext(UserContext);
 
   const [data, setData] = useState(defaultState);
 
   useEffect(() => {
+    // Split received messages to sender's name and message text
     let name = message.split(": ")[0];
     let text = message.split(": ")[1];
+
+    // Set message alignment to the opposte side of the other user's messages
     let alignment = name === userInfo.username ? "flex-end" : "flex-start";
-    name = name === userInfo.username ? 'You' : "flex-start";
+    name = name === userInfo.username ? "You" : "flex-start";
+
+    // Save message data
     setData({ alignment, text, name });
 
+    // Clean up message data on component unmount
     return () => setData(defaultState);
   }, [message, userInfo.username]);
 
@@ -30,9 +39,15 @@ const Message = ({ message }) => {
           data.alignment === "flex-start" ? "#f3f4fa" : "#e9f2ff",
       }}
     >
-      <h4 style={{ alignSelf: data.alignment }}>{
-        message.split(": ")[0] === userInfo.username ? 'You' : message.split(": ")[0]
-      }</h4>
+      {/* SENDER'S NAME */}
+      <h4 style={{ alignSelf: data.alignment }}>
+        {/* If sender is current user, show 'You' instead of sender's username */}
+        {message.split(": ")[0] === userInfo.username
+          ? "You"
+          : message.split(": ")[0]}
+      </h4>
+      {/* MESSAGE */}
+      {/* align message to the opposite side of the other user's messages */}
       <p
         style={{
           textAlign: data.alignment === "flex-start" ? "left" : "right",
@@ -51,10 +66,10 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-self: flex-start;
   border-radius: 10px;
-  padding: .6rem 1rem;
+  padding: 0.6rem 1rem;
   margin-bottom: 0.75rem;
 
-  h4{
+  h4 {
     font-size: 14px;
   }
   p {
@@ -63,7 +78,7 @@ const Wrapper = styled.div`
 
   @media (max-width: 860px) {
     border-radius: 7.5px;
-    padding: 0.5rem .8rem;
+    padding: 0.5rem 0.8rem;
     margin-bottom: 0.5rem;
 
     h4,

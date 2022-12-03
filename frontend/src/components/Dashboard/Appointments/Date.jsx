@@ -1,16 +1,19 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { UserContext } from "../../../context/User";
+// Icons
+import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 
 const Date = ({ setShowRescheduleAppointment, allowReschedule, date }) => {
+  // Get user info state from user context
   const { userInfo } = useContext(UserContext);
 
   return (
     <Wrapper>
       <p>{date}</p>
 
+      {/* RESCHEDULE APPOINTMENT BUTTON (FOR DOCTORS) */}
       {userInfo.role === "doctor" && allowReschedule && (
         <div
           className="reschedule"

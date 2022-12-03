@@ -1,7 +1,6 @@
-require("dotenv").config();
 const appointmentModel = require("../../models/appointment.model");
 
-const deleteAppointment = async (req, res) => {
+const rescheduleAppointment = async (req, res) => {
   const { appointment_id, date } = req.body;
 
   if (!appointment_id || !date ){
@@ -9,6 +8,7 @@ const deleteAppointment = async (req, res) => {
   }
 
   try {
+    // Updating appointment data using given appointment id
     await appointmentModel.updateOne({_id: appointment_id}, {$set: {date}});
 
     return res.json({ status: "ok" });
@@ -17,4 +17,4 @@ const deleteAppointment = async (req, res) => {
   }
 };
 
-module.exports = deleteAppointment;
+module.exports = rescheduleAppointment;

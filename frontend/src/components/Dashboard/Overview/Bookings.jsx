@@ -7,10 +7,12 @@ import Booking from "./Booking";
 const Bookings = ({ bookings, confirmBooking, role }) => {
   const navigate = useNavigate();
 
+  // Get user info state from user context
   const { userInfo } = useContext(UserContext);
 
   return (
     <Wrapper role={userInfo.role}>
+      {/* HEADING */}
       <Header>
         <h2>Recent Bookings</h2>
         <button
@@ -20,14 +22,15 @@ const Bookings = ({ bookings, confirmBooking, role }) => {
         </button>
       </Header>
 
+      {/* BOOKINGS LIST CONTAINER */}
       <div className="flex flexColumn">
         {bookings.length > 0 ? (
           bookings.map((booking) => {
             return (
               <Booking
+                role={role}
                 key={booking._id}
                 booking={booking}
-                role={role}
                 confirmBooking={() => confirmBooking(booking._id)}
               />
             );
@@ -57,7 +60,7 @@ const Wrapper = styled.div`
   @media (max-width: 1200px) {
     width: 550px;
     min-height: 275px;
-    margin-bottom: .75rem;
+    margin-bottom: 0.75rem;
   }
   @media (max-width: 860px) {
     width: 100%;

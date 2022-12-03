@@ -1,4 +1,3 @@
-require("dotenv").config();
 const appointmentModel = require("../../models/appointment.model");
 
 const confirmAppointment = async (req, res) => {
@@ -9,6 +8,7 @@ const confirmAppointment = async (req, res) => {
   }
 
   try {
+    // Setting appointment status to confirmed
     await appointmentModel.updateOne({_id: appointment_id}, {$set: {confirmed: true}});
 
     return res.json({ status: "ok" });

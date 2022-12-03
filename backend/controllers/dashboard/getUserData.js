@@ -1,4 +1,3 @@
-require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const specialityModel = require("../../models/speciality.model");
 const userModel = require("../../models/user.model");
@@ -13,10 +12,14 @@ const getUserData = async (req, res) => {
     }
 
     try{
+        // Verifying user authentication token
         jwt.verify(token, secret);
+        
+        // Getting user
         let user = await userModel.findOne({_id: id})
         let doctor = undefined
 
+        // If user is a doctor, add doctor speciality to returned user data
         if(user.role === 'doctor'){
             const speciality = await specialityModel.findOne({ doctor_id: id });
             

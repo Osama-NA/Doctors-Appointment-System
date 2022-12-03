@@ -1,29 +1,36 @@
-import React, {useState, useContext} from "react";
+import React, { useState, useContext } from "react";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { UserContext } from "../../../context/User";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from "react-router-dom";
-import SideNavbar from "./SideNavbar";
 // Assets
 import LogoIcon from "../../../assets/svg/Logo";
 import DefaultProfilePicture from "../../../assets/img/dashboard/profile-img.jpg";
+// Components
+import SideNavbar from "./SideNavbar";
 
 const TopNavbar = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const { setUserInfo, userInfo } = useContext(UserContext)
+  // Get user info state and setter from user context
+  const { setUserInfo, userInfo } = useContext(UserContext);
 
-  const [showMenu, setShowMenu] = useState(false)
+  const [showMenu, setShowMenu] = useState(false);
 
+  // On sign out click
   const signOut = () => {
-    localStorage.clear()
-    setUserInfo({})
-    navigate('/')
-  }
+    // Clear data stored in local storage (token, id)
+    localStorage.clear();
+    // Reset user info
+    setUserInfo({});
+    // Go to home page
+    navigate("/");
+  };
 
   return (
     <Wrapper>
+      {/* LOGO */}
       <Logo>
         <div onClick={() => navigate(`/dashboard/${userInfo.role}/overview`)}>
           <LogoIcon />
@@ -33,23 +40,34 @@ const TopNavbar = () => {
         </div>
       </Logo>
 
+      {/* TOP RIGHT USER DATA */}
       <User>
+        {/* MENU BUTTON */}
         <div className="menu-btn" onClick={() => setShowMenu(!showMenu)}>
           <FontAwesomeIcon icon={showMenu ? faXmark : faBars} />
         </div>
 
         <div className="username">
+          {/* USERNAME */}
           <h2>{userInfo.username}</h2>
+          {/* SIGNOUT BUTTON */}
           <p onClick={() => signOut()}>Sign out</p>
         </div>
 
+        {/* USER PROFILE IMAGE */}
         <div className="image">
-          <img src={
-            userInfo.profileImage ? userInfo.profileImage : DefaultProfilePicture
-          } alt="" />
+          <img
+            src={
+              userInfo.profileImage
+                ? userInfo.profileImage
+                : DefaultProfilePicture
+            }
+            alt=""
+          />
         </div>
       </User>
 
+      {/* SIDE NAVIGATION MENU */}
       <SideNavbar
         username={userInfo.username}
         showMenu={showMenu}
@@ -71,8 +89,8 @@ const Wrapper = styled.header`
   align-items: center;
   justify-content: space-between;
   z-index: 1;
-  
-  @media (max-width: 860px){
+
+  @media (max-width: 860px) {
     box-shadow: 0 5px 25px -10px #2525252e;
     background-color: #fff;
   }
@@ -90,7 +108,7 @@ const Logo = styled.div`
     align-items: center;
   }
 
-  @media (max-width: 860px){
+  @media (max-width: 860px) {
     width: auto;
     background-color: transparent;
     padding: 1rem 1.5rem;
@@ -107,7 +125,7 @@ const User = styled.div`
   box-shadow: 0 5px 25px -10px #2525252e;
   z-index: 2;
 
-  .menu-btn{
+  .menu-btn {
     display: none;
   }
   .username {
@@ -128,9 +146,9 @@ const User = styled.div`
       line-height: 0;
       font-weight: 600;
       color: #2d59eb;
-      transition: all .1s ease;
+      transition: all 0.1s ease;
 
-      &:hover{
+      &:hover {
         color: #2248c5;
       }
     }
@@ -149,21 +167,21 @@ const User = styled.div`
     }
   }
 
-  @media (max-width: 860px){
+  @media (max-width: 860px) {
     justify-content: flex-end;
     padding: 0;
     margin: 0rem 1.5rem;
     background-color: transparent;
     min-width: 80px;
     box-shadow: none;
-  
-    .menu-btn{
+
+    .menu-btn {
       cursor: pointer;
       display: grid;
       place-items: center;
       margin: 0 1rem;
 
-      svg{
+      svg {
         font-size: 19px;
       }
     }
@@ -177,4 +195,3 @@ const User = styled.div`
     }
   }
 `;
- 

@@ -1,14 +1,17 @@
 import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
+import { getImageUrlFromCloudinary } from "../../../utils/cloudinary";
 import { UserContext } from "../../../context/User";
-import Input from "./Input";
-import ProfilePicture from "./ProfilePicture";
-import Img from "../../../assets/img/dashboard/profile-img.jpg";
-import Button from "../../Buttons/Button";
-import ConfirmUpdate from "./ConfirmUpdate";
-import SuccessMessage from "../../Elements/SuccessMessage";
-import Loader from "../../Elements/Loader";
 import { post } from "../../../utils/fetch";
+// Assets
+import Img from "../../../assets/img/dashboard/profile-img.jpg";
+// Components
+import SuccessMessage from "../../Elements/SuccessMessage";
+import ProfilePicture from "./ProfilePicture";
+import ConfirmUpdate from "./ConfirmUpdate";
+import Loader from "../../Elements/Loader";
+import Button from "../../Buttons/Button";
+import Input from "./Input";
 
 const defaultInput = {
   username: "",
@@ -16,31 +19,38 @@ const defaultInput = {
 };
 
 const Profile = () => {
-  const [loading, setLoading] = useState(false);
-  const [refresh, setRefresh] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [ShowConfirmUpdate, setShowConfirmUpdate] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const [input, setInput] = useState(defaultInput);
   const [imageFile, setImageFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [imageSrc, setImageSrc] = useState(Img);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [password, setPassword] = useState("");
 
-  const { userInfo } = useContext(UserContext);
+  // Get user info state and setter from user context
+  const { userInfo, setUserInfo } = useContext(UserContext);
 
+  // Input fields handler
   const handleInput = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
+  // Sends password reset link to user
   const getPasswordResetLink = async () => {
     setLoading(true);
 
+    // API post request
     const data = await post(
       process.env.REACT_APP_API_HOST + "auth/password-reset-link",
       { email: userInfo.email }
     );
 
+    // Reset loader state
     setLoading(false);
 
+    // Handle API response
     if (data.status === "ok") {
       setSuccessMessage("A password reset link has been sent to your email.");
       setShowSuccessMessage(true);
@@ -49,21 +59,73 @@ const Profile = () => {
     }
   };
 
+  // Displays profile update confirmation tab
   const handleUpdate = (e) => {
     e.preventDefault();
+    setPassword('')
     setShowConfirmUpdate(true);
   };
 
+  // Update user handler
+  // This function is called after update confirmation
+  const updateUser = async () => {
+    if (password.trim().length === 0) {
+      alert("Please enter your password");
+      return;
+    }
+
+    setLoading(true);
+
+    // Updated user info object
+    let newInfo = {
+      id: input._id,
+      username: input.username,
+      speciality: input.speciality,
+      confirmPassword: password,
+    };
+
+    // Get image url from cloudinary if image is updated
+    if (typeof input.img === "object" && input.img !== null) {
+      newInfo.profileImage = await getImageUrlFromCloudinary(input.img);
+    }
+
+    // API post request
+    const data = await post(
+      process.env.REACT_APP_API_HOST + "dashboard/update-user",
+      newInfo
+    );
+
+    // Handle API response
+    if (data.status === "ok") {
+      setSuccessMessage("Profile successfully updated");
+      setShowSuccessMessage(true);
+      setImageFile(null); // Reset image file state
+      setUserInfo(data.user); // Store updatedd user data
+    } else {
+      alert(data.error);
+    }
+
+    // Reset state
+    setLoading(false);
+    setShowConfirmUpdate(false);
+
+    // Refresh profile page
+    setRefresh(!refresh);
+  };
+
+  // Runs everytime a new image is selected
   useEffect(() => {
+    // Create an object url of the uploaded image to display image preview
     if (imageFile) {
       setImageSrc(URL.createObjectURL(imageFile));
 
       return () => URL.revokeObjectURL(imageFile);
     } else {
-      setImageSrc(userInfo.profileImage ? userInfo.profileImage : Img);
+      setImageSrc(userInfo.profileImage || Img); // Use current image if no new image selected
     }
   }, [imageFile, userInfo.profileImage]);
 
+  // Set default input values on component mount or refresh
   useEffect(() => {
     if (userInfo.password) {
       let updatedInput = userInfo;
@@ -77,15 +139,19 @@ const Profile = () => {
         <h1>Profile</h1>
 
         <Container onSubmit={handleUpdate}>
+          {/* PROFILE IMAGE */}
           <label>Profile picture</label>
           <ProfilePicture imageSrc={imageSrc} setImageFile={setImageFile} />
 
+          {/* USERNAME */}
           <Input
             label="Username"
             type="text"
             value={input.username}
             onChange={(e) => handleInput(e)}
           />
+
+          {/* SPECIALITY (FOR DOCTORS) */}
           {userInfo.role === "doctor" && (
             <Input
               label="Speciality"
@@ -94,27 +160,31 @@ const Profile = () => {
               onChange={(e) => handleInput(e)}
             />
           )}
+
+          {/* PASSWORD RESET LINK */}
           <p className="password-reset" onClick={getPasswordResetLink}>
             Get password reset link
           </p>
+
+          {/* UPDATE BUTTON */}
           <Button text="Update" type="primary" />
 
+          {/* LOADER */}
           <Loader visible={loading} />
         </Container>
       </Wrapper>
 
+      {/* CONFIRM UPDATE PROFILE CONTAINER */}
       {ShowConfirmUpdate && (
         <ConfirmUpdate
           setShow={setShowConfirmUpdate}
-          input={{ ...input, img: imageFile }}
-          refresh={refresh}
-          setRefresh={setRefresh}
-          setShowSuccessMessage={setShowSuccessMessage}
-          setSuccessMessage={setSuccessMessage}
-          setLoading={setLoading}
-          setImageFile={setImageFile}
+          updateUser={updateUser}
+          setPassword={setPassword}
+          password={password}
         />
       )}
+
+      {/* SUCCESS MESSAGE CONTAINER */}
       {showSuccessMessage && (
         <SuccessMessage
           setShow={setShowSuccessMessage}

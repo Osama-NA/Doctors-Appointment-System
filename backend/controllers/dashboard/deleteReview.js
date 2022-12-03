@@ -1,4 +1,3 @@
-require("dotenv").config();
 const reviewModel = require("../../models/review.model");
 
 const deleteReview = async (req, res) => {
@@ -9,6 +8,7 @@ const deleteReview = async (req, res) => {
   }
 
   try {
+    // delete doctor review from review model
     await reviewModel.deleteOne({_id: review_id});
 
     return res.json({ status: "ok" });

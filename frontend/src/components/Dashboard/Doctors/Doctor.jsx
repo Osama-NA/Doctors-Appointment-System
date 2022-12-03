@@ -1,47 +1,55 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import Button from "../../Buttons/Button";
+// Assets
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
-import BookAppointment from './BookAppointment'
+// Components
+import BookAppointment from "./BookAppointment";
 import Reviews from "../../Elements/Reviews";
+import Button from "../../Buttons/Button";
 
 const Doctor = ({ doctor }) => {
-  const [showBookAppointment, setShowBookAppointment] = useState(false)
-  const [showReviews, setShowReviews] = useState(false)
+  const [showBookAppointment, setShowBookAppointment] = useState(false);
+  const [showReviews, setShowReviews] = useState(false);
 
   return (
     <>
       <Wrapper>
+        {/* DOCTOR INFO */}
         <img alt="" src={doctor.profileImage ? doctor.profileImage : Img}></img>
         <h2>{doctor.username}</h2>
         <p>{doctor.speciality}</p>
 
+        {/* BUTTONS */}
         <ButtonsWrapper>
           <Button
             type="primary"
             text="Book Appointment"
             action={() => setShowBookAppointment(true)}
           />
-          <Button type="secondary" text="Reviews" action={() => setShowReviews(true)} />
+          <Button
+            type="secondary"
+            text="Reviews"
+            action={() => setShowReviews(true)}
+          />
         </ButtonsWrapper>
       </Wrapper>
 
-      {
-        showBookAppointment &&
-        <BookAppointment  
+      {/* DOCTOR BOOKING CONTAINER */}
+      {showBookAppointment && (
+        <BookAppointment
           setShow={setShowBookAppointment}
           doctorId={doctor._id}
         />
-      }
-      
-      {
-        showReviews &&
-        <Reviews 
+      )}
+
+      {/* DOCTOR REVIEWS */}
+      {showReviews && (
+        <Reviews
           setShowReviews={setShowReviews}
           name={doctor.username}
           reviews={doctor.reviews}
         />
-      }
+      )}
     </>
   );
 };
@@ -133,8 +141,8 @@ const ButtonsWrapper = styled.div`
   button:nth-child(1) {
     margin-right: 0.5rem;
   }
-  
-  @media (max-width: 860px){
+
+  @media (max-width: 860px) {
     button:nth-child(1) {
       margin-right: 0.35rem;
     }

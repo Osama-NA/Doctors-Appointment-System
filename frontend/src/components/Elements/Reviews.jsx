@@ -1,14 +1,18 @@
 import React from "react";
 import styled from "styled-components";
+// Components
 import Review from "./Review";
 
 const Reviews = ({ setShowReviews, name, reviews }) => {
   return (
     <Wrapper>
+      {/* CLOSE OVERLAY ( HIDES COMPONENT ON CLICK ) */}
       <CloseOverlay onClick={() => setShowReviews(false)}></CloseOverlay>
 
       <Container>
+        {/* HEADING */}
         <Header>
+          {/* formatting name to one or two word(s) name depending on username's number of words */}
           <h1>
             {name.split(" ").length > 2
               ? name.split(" ")[0] + " " + name.split(" ")[1]
@@ -20,17 +24,19 @@ const Reviews = ({ setShowReviews, name, reviews }) => {
           </button>
         </Header>
 
+        {/* NUMBER OF REVIEWS  */}
         <NumberOfReviews>
           <p>{reviews.length} reviews</p>
           <div></div>
         </NumberOfReviews>
 
+        {/* REVIEWS LIST CONTAINER */}
         <ReviewsList>
           {reviews && reviews.length > 0 ? (
-            reviews.map((review) => {
+            reviews.map((review, i) => {
               return (
                 <Review
-                  key={review._id}
+                  key={review._id || i}
                   reviewBy={review.reviewed_by}
                   review={review.review}
                   rate={review.rating}

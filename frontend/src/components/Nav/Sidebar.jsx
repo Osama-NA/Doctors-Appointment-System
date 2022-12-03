@@ -1,39 +1,45 @@
 import React from "react";
 import styled from "styled-components";
-import { Link } from "react-scroll";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-scroll";
 // Assets
-import CloseIcon from "../../assets/svg/CloseIcon";
 import LogoIcon from "../../assets/svg/Logo";
+import CloseIcon from "../../assets/svg/CloseIcon";
 
 export default function Sidebar({ sidebarOpen, toggleSidebar, auth }) {
-  
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const handleMenuClick = (page) => {
-    navigate(`/auth/${page}`)
-    toggleSidebar(!sidebarOpen)
-  }
+  const handleNavigation = (page) => {
+    navigate(`/auth/${page}`);
+    toggleSidebar(!sidebarOpen);
+  };
 
   return (
     <Wrapper className="animate darkBg" sidebarOpen={sidebarOpen}>
+      {/* HEADER */}
       <SidebarHeader className="flexSpaceCenter">
-        <div  onClick={() => navigate('/')} className="pointer flexNullCenter">
+        {/* LOGO */}
+        <div onClick={() => navigate("/")} className="pointer flexNullCenter">
           <LogoIcon />
           <h1 className="whiteColor font20" style={{ marginLeft: "15px" }}>
             fanatic
           </h1>
         </div>
-        <CloseBtn onClick={() => toggleSidebar(!sidebarOpen)} className="animate pointer">
+        {/* CLOSE-ON-CLICK OVERLAY */}
+        <CloseBtn
+          onClick={() => toggleSidebar(!sidebarOpen)}
+          className="animate pointer"
+        >
           <CloseIcon />
         </CloseBtn>
       </SidebarHeader>
 
+      {/* NAV MENU */}
       <UlStyle className="flexNullCenter flexColumn">
-        {
-          !auth && (
-            <>
-            
+        {/* SHOW HOME PAGE SECTIONS MENU ONLY IF auth=true */}
+        {!auth && (
+          <>
+          {/* HOME PAGE SECTIONS NAV MENU */}
             <li className="semiBold font15 pointer">
               <Link
                 onClick={() => toggleSidebar(!sidebarOpen)}
@@ -90,18 +96,20 @@ export default function Sidebar({ sidebarOpen, toggleSidebar, auth }) {
                 Contact
               </Link>
             </li>
-            </>
-          )
-        }
-        <li className="semiBold font15 pointer" onClick={() => handleMenuClick('login')}>
-          <p className="whiteColor">
-            Log in
-          </p>
+          </>
+        )}
+        {/* AUTH PAGES NAV MENU */}
+        <li
+          className="semiBold font15 pointer"
+          onClick={() => handleNavigation("login")}
+        >
+          <p className="whiteColor">Log in</p>
         </li>
-        <li className="semiBold font15 pointer flexCenter" onClick={() => handleMenuClick('register')}>
-          <p className=" lightBg">
-            Register
-          </p>
+        <li
+          className="semiBold font15 pointer flexCenter"
+          onClick={() => handleNavigation("register")}
+        >
+          <p className=" lightBg">Register</p>
         </li>
       </UlStyle>
     </Wrapper>
@@ -135,8 +143,8 @@ const UlStyle = styled.ul`
     margin: 20px 0;
   }
   p {
-    border-radius:10px;        
-    padding: .5rem 1.2rem;
+    border-radius: 10px;
+    padding: 0.5rem 1.2rem;
     transition: all 0.3s ease;
 
     &:hover {

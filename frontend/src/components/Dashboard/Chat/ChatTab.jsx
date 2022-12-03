@@ -1,29 +1,45 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import styled from "styled-components";
+import { usePubNub } from "pubnub-react";
+// Components
+import ConfirmTab from "../../Elements/ConfirmTab";
 import Header from "./Header";
 import Footer from "./Footer";
 import Chat from "./Chat";
-import { usePubNub } from "pubnub-react";
-import ConfirmTab from "../../Elements/ConfirmTab";
 
-const ChatTab = ({ channelId, setShowChatTab, appointment, setShowReviewTab, autoCancelAppointment }) => {
+const ChatTab = ({
+  channelId,
+  setShowChatTab,
+  appointment,
+  setShowReviewTab,
+  autoCancelAppointment,
+}) => {
   const chatRef = useRef(null);
 
-  const pubnub = usePubNub();
-  const [channels] = useState([channelId]);
-  const [messages, addMessage] = useState([]);
-  const [message, setMessage] = useState("");
   const [showConfirmLeave, setShowConfirmLeave] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState("");
+  const [channels] = useState([channelId]);
+  const pubnub = usePubNub();
 
+  // Handles new messages
   const handleMessage = useCallback((event) => {
+    // Get message text from received event
     const message = event.message;
+
+    // Check if message found
     if (typeof message === "string" || message.hasOwnProperty("text")) {
+      // Add new message
       const text = message.text || message;
-      addMessage((messages) => [...messages, text]);
+      setMessages((messages) => [...messages, text]);
+
+      // Scroll to recent message
       goToRecentMessages();
     }
   }, []);
 
+  // Sending a message through PubNub channel
+  // PubNub React docs: https://www.pubnub.com/docs/sdks/react
   const sendMessage = useCallback(
     (message) => {
       if (message) {
@@ -35,6 +51,8 @@ const ChatTab = ({ channelId, setShowChatTab, appointment, setShowReviewTab, aut
     [channels, pubnub]
   );
 
+  // Get the last 100 messages of current PubNub channel
+  // PubNub React docs: https://www.pubnub.com/docs/sdks/react
   const getMessages = useCallback(() => {
     pubnub.fetchMessages(
       {
@@ -42,28 +60,37 @@ const ChatTab = ({ channelId, setShowChatTab, appointment, setShowReviewTab, aut
         count: 100,
       },
       (status, response) => {
+        // Handle fetching messages response
         if (status.statusCode === 200) {
+          // Get current channel old messages
           let oldMessages = response.channels[channelId].map((message) => {
             return message.message;
           });
-          addMessage(oldMessages);
+
+          // Add old messages to messages state
+          setMessages(oldMessages);
+          // Scroll to recent message
           goToRecentMessages();
         }
       }
     );
   }, [channelId, channels, pubnub]);
 
+  // Scrolls to bottom of messages container
   const goToRecentMessages = () => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
   };
 
+  // Configure PubNub channel and messages event listener
+  // PubNub React docs: https://www.pubnub.com/docs/sdks/react
   useEffect(() => {
     pubnub.addListener({ message: handleMessage });
     pubnub.subscribe({ channels });
   }, [pubnub, channels, handleMessage]);
 
+  // Get old messages on component mount
   useEffect(() => {
     if (messages.length === 0) {
       getMessages();
@@ -72,22 +99,29 @@ const ChatTab = ({ channelId, setShowChatTab, appointment, setShowReviewTab, aut
 
   return (
     <>
-    <Wrapper>
-      <Container>
-        <Header
-          setShowChatTab={setShowChatTab}
-          appointment={appointment}
-          setShowConfirmLeave={setShowConfirmLeave}
-        />
-        <Chat messages={messages} channelId={channelId} chatRef={chatRef} />
-        <Footer
-          sendMessage={sendMessage}
-          message={message}
-          setMessage={setMessage}
-          appointment={appointment}
-        />
-      </Container>
-    </Wrapper>
+      <Wrapper>
+        <Container>
+          {/* HEADING (USER INFO AND LEAVE CHAT BUTTON)*/}
+          <Header
+            setShowChatTab={setShowChatTab}
+            appointment={appointment}
+            setShowConfirmLeave={setShowConfirmLeave}
+          />
+
+          {/* CHAT MESSAGES */}
+          <Chat messages={messages} channelId={channelId} chatRef={chatRef} />
+
+          {/* CHAT FOOTER (MESSAGE INPUT FIELD AND SEND MESSAGE BUTTON) */}
+          <Footer
+            sendMessage={sendMessage}
+            message={message}
+            setMessage={setMessage}
+            appointment={appointment}
+          />
+        </Container>
+      </Wrapper>
+
+      {/* CONFIRM LEAVE CHAT CONTAINER */}
       {showConfirmLeave && (
         <ConfirmTab
           setShow={setShowConfirmLeave}
@@ -95,9 +129,9 @@ const ChatTab = ({ channelId, setShowChatTab, appointment, setShowReviewTab, aut
           type="danger"
           cta="Leave"
           action={() => {
-            autoCancelAppointment(appointment._id)
-            setShowReviewTab(true)
-            setShowChatTab(false)
+            autoCancelAppointment(appointment._id);
+            setShowReviewTab(true);
+            setShowChatTab(false);
           }}
         />
       )}

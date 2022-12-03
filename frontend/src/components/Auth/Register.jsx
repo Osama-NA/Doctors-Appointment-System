@@ -1,13 +1,14 @@
 import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
-import FullButton from "../Buttons/FullButton";
-import Input from "./Input";
-import SelectRole from "./SelectRole";
-import { post } from "../../utils/fetch";
-import { UserContext } from "../../context/User";
 import { useNavigate } from "react-router-dom";
-import { ProgressBar } from "react-loader-spinner";
 import { getImageUrlFromCloudinary } from "../../utils/cloudinary";
+import { UserContext } from "../../context/User";
+import { post } from "../../utils/fetch";
+// Components
+import { ProgressBar } from "react-loader-spinner";
+import FullButton from "../Buttons/FullButton";
+import SelectRole from "./SelectRole";
+import Input from "./Input";
 
 const defaultFormData = {
   email: "",
@@ -17,35 +18,40 @@ const defaultFormData = {
 };
 
 const Register = () => {
-  const [formData, setFormData] = useState(defaultFormData);
-  const [role, setRole] = useState("");
-  const [loading, setLoading] = useState(false)
-  const [imageFile, setImageFile] = useState()
-  const [imageSrc, setImageSrc] = useState()
-  const { setUserInfo } = useContext(UserContext);
-
   const navigate = useNavigate();
 
+  const [role, setRole] = useState("");
+  const [imageSrc, setImageSrc] = useState();
+  const [imageFile, setImageFile] = useState();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState(defaultFormData);
+
+  // Getting user info state setter from user context
+  const { setUserInfo } = useContext(UserContext);
+
+  // Form input on change handler
   const handleInput = (e, field) => {
     setFormData({ ...formData, [field]: e.target.value });
   };
 
+  // An object url of the uploaded image must be created to 
+  // display image preview everytime an image file is uploaded
   useEffect(() => {
-    if(imageFile){
-      setImageSrc(URL.createObjectURL(imageFile))
-    
-      return () => URL.revokeObjectURL(imageFile)
-    }else{
-      setImageSrc(null)
+    if (imageFile) {
+      setImageSrc(URL.createObjectURL(imageFile));
+
+      return () => URL.revokeObjectURL(imageFile);
+    } else {
+      setImageSrc(null);
     }
-  }, [imageFile])
-  
+  }, [imageFile]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validInput()) return;
 
+    // Register user if valid input
     registerUser();
   };
 
@@ -76,32 +82,43 @@ const Register = () => {
   };
 
   const registerUser = async () => {
-    setLoading(true)
+    setLoading(true);
 
     const { email, username, password } = formData;
-    
-    const profileImage = imageFile ?  await getImageUrlFromCloudinary(imageFile) : null
 
+    // Get profile image url from cloudinary if uploaded
+    const profileImage = imageFile
+      ? await getImageUrlFromCloudinary(imageFile)
+      : null;
+
+    // API post request
     const data = await post(process.env.REACT_APP_API_HOST + "auth/register", {
       role,
       email,
       username,
       password,
-      profileImage
+      profileImage,
     });
 
-    setLoading(false)
-    setFormData(defaultFormData)
-    setImageFile(null)
-    setImageSrc(null)
-    
-    if (data.status === "ok") {
-      let userInfo = data.user
-      userInfo.token = data.token
-      setUserInfo(userInfo)
+    // Reset states
+    setFormData(defaultFormData);
+    setImageFile(null);
+    setImageSrc(null);
+    setLoading(false);
+    setRole("");
 
-      navigate(`/dashboard/${role}/overview`)
-    }else{
+    // Handle API response
+    if (data.status === "ok") {
+      // Add token to user data
+      let userInfo = data.user;
+      userInfo.token = data.token;
+
+      // Save user data in user context
+      setUserInfo(userInfo);
+
+      // Redirect user to dashboard
+      navigate(`/dashboard/${role}/overview`);
+    } else {
       alert(data.error);
     }
   };
@@ -110,18 +127,17 @@ const Register = () => {
     <>
       <div className="page">
         <h1>Register</h1>
+        {/* FORM */}
         <form onSubmit={handleFormSubmit}>
           <Input
             label="Profile Image"
             type="file"
             required={false}
-            className='img-input'
-            onChange={e => setImageFile(e.target.files[0])}
+            className="img-input"
+            onChange={(e) => setImageFile(e.target.files[0])}
           />
-          {
-            imageSrc &&
-            <ImagePreview src={imageSrc} alt='' />
-          }
+          {/* PREVIEW IMAGE IF UPLOADED */}
+          {imageSrc && <ImagePreview src={imageSrc} alt="" />}
           <SelectRole role={role} setRole={setRole} />
           <Input
             label="Email"
@@ -164,7 +180,8 @@ const Register = () => {
         >
           Already have an account?
         </button>
-        
+
+        {/* LOADER */}
         <div className="loader">
           <ProgressBar
             height="60"
@@ -185,4 +202,4 @@ const ImagePreview = styled.img`
   height: 100%;
   margin-bottom: 1.25rem;
   border-radius: 50%;
-`
+`;

@@ -1,30 +1,41 @@
-import React, {  useContext } from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { UserContext } from "../../../context/User";
+// Assets
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
 
-const Header = ({setShowChatTab, appointment, setShowConfirmLeave}) => {
+const Header = ({ setShowChatTab, appointment, setShowConfirmLeave }) => {
+  // Get user info state from user context
   const { userInfo } = useContext(UserContext);
 
+  // Handle leave chat
   const handleLeave = () => {
-    if(userInfo.role === 'patient'){
-      setShowConfirmLeave(true)
-    }else{
-      setShowChatTab(false)
+    if (userInfo.role === "patient") {
+      // If patient, prompt user for confirmation, since patients
+      // can't join again after leaving chat. Then the patient is
+      // prompted for a doctor review and the appointment is deleted
+      setShowConfirmLeave(true);
+    } else {
+      // If doctor, close chat tab
+      setShowChatTab(false);
     }
-  }
+  };
 
   return (
     <Wrapper>
       <div className="user">
+        {/* USER PROFILE IMAGE */}
         <img
           src={
             appointment.user.profileImage ? appointment.user.profileImage : Img
           }
           alt=""
         />
+        {/* USERNAME */}
         <h3>{appointment.user.username}</h3>
       </div>
+
+      {/* LEAVE BUTTON */}
       <button onClick={handleLeave}>Leave</button>
     </Wrapper>
   );
@@ -72,22 +83,22 @@ const Wrapper = styled.header`
 
   @media (max-width: 860px) {
     height: 60px;
-    padding: .75rem 1rem;
+    padding: 0.75rem 1rem;
 
     .user {
       img {
         max-width: 40px;
         min-width: 40px;
         height: 40px;
-        margin-right: .75rem;
+        margin-right: 0.75rem;
       }
       h3 {
         font-size: 16px;
-        padding-top: .2rem;
+        padding-top: 0.2rem;
       }
     }
     button {
-      padding: 0.35rem .85rem;
+      padding: 0.35rem 0.85rem;
       font-size: 12px;
     }
   }

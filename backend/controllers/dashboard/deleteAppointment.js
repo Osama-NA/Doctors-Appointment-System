@@ -1,4 +1,3 @@
-require("dotenv").config();
 const appointmentModel = require("../../models/appointment.model");
 
 const deleteAppointment = async (req, res) => {
@@ -9,6 +8,7 @@ const deleteAppointment = async (req, res) => {
   }
 
   try {
+    // Delete appointment from appointment model 
     await appointmentModel.deleteOne({_id: appointment_id});
 
     return res.json({ status: "ok" });

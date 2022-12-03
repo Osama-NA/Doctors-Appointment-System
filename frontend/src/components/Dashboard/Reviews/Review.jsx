@@ -1,23 +1,32 @@
 import React from "react";
 import styled from "styled-components";
-import Review from "../../Elements/Review";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// Icons
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+// Components
+import Review from "../../Elements/Review";
 
-const ReviewContainer = ({setShowConfirmTab, review, setDeletedReview}) => {
+const ReviewContainer = ({ setShowConfirmTab, review, setDeletedReview }) => {
+  // Delete review handler
   const handleDelete = () => {
-    setDeletedReview(review)
-    setShowConfirmTab(true)
-  }
+    setDeletedReview(review);
+    setShowConfirmTab(true);
+  };
 
   return (
     <Wrapper>
+      {/* REVIEW */}
       <Review
         reviewBy={review.reviewed_by}
         review={review.review}
         rate={review.rating}
       />
-      <FontAwesomeIcon icon={faTrashCan} className="delete" onClick={handleDelete} />
+      {/* DELETE BUTTON ICON */}
+      <FontAwesomeIcon
+        icon={faTrashCan}
+        className="delete"
+        onClick={handleDelete}
+      />
     </Wrapper>
   );
 };

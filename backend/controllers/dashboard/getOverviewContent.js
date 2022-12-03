@@ -1,4 +1,3 @@
-require("dotenv").config();
 const userModel = require("../../models/user.model");
 const appointmentModel = require("../../models/appointment.model");
 const reviewModel = require("../../models/review.model");
@@ -16,7 +15,11 @@ const getOverviewContent = async (req, res) => {
         let appointments = []
         let users = await userModel.find()
 
+        // If user is a:
+        // doctor: return appointments for the doctor,  bookings for the doctor, doctor reviews
+        // patient: return appointments by the patient,  bookings by the patient
         if(role === 'doctor'){
+            // Get doctor appointmetns
             appointments = await appointmentModel.find({booked_for: id, confirmed: true});
             appointments = appointments.map( appointment => {
                 let bookedBy = users.filter(user => user.id === appointment.booked_by)[0];
@@ -27,6 +30,7 @@ const getOverviewContent = async (req, res) => {
                 }
             })
             
+            // Get doctor bookings
             bookings = await appointmentModel.find({booked_for: id, confirmed: false});
             bookings = bookings.map( booking => {
                 let bookedBy = users.filter(user => user.id === booking.booked_by)[0];
@@ -37,6 +41,7 @@ const getOverviewContent = async (req, res) => {
                 }
             })
             
+            // Get doctor reviews
             reviews = await reviewModel.find({review_for: id}); 
             reviews = reviews.map(review => {
                 let reviewedBy = users.filter(user => user.id === review.reviewed_by)[0]
@@ -47,6 +52,7 @@ const getOverviewContent = async (req, res) => {
                 }
             })
         }else{
+            // Get patient appointments
             appointments = await appointmentModel.find({booked_by: id, confirmed: true});
             appointments = appointments.map( appointment => {
                 let bookedFor = users.filter(user => user.id === appointment.booked_for)[0];
@@ -57,6 +63,7 @@ const getOverviewContent = async (req, res) => {
                 }
             })
             
+            // Get patient bookings
             bookings = await appointmentModel.find({booked_by: id, confirmed: false});
             bookings = bookings.map( (booking, i) => {
                 let bookedFor = users.filter(user => user.id === booking.booked_for)[0];

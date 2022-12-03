@@ -1,41 +1,57 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import TextField from "@mui/material/TextField";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import Button from "../../Buttons/Button";
 import { getFormatedDate } from "../../../utils/date";
+// Components
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import TextField from "@mui/material/TextField";
+import Button from "../../Buttons/Button";
 
-const Reschedule = ({ setShow, setRescheduledDate, rescheduleAppointment, rescheduledDate }) => {
+const Reschedule = ({
+  setShow,
+  setRescheduledDate,
+  rescheduleAppointment,
+  rescheduledDate,
+}) => {
   const [date, setDate] = useState(null);
 
+  // Appointment reschedule handler
   const handleRescheduleAppointment = () => {
-    if(!rescheduledDate){
-      alert('Please fill in the the appointment date')
-      return
+    if (!rescheduledDate) {
+      alert("Please fill in the the appointment date");
+      return;
     }
 
-    if(rescheduledDate === 'Invalid Date'){
-      alert('Please select a valid date')
-      return
+    if (rescheduledDate === "Invalid Date") {
+      alert("Please select a valid date");
+      return;
     }
 
-    console.log(date)
-    // rescheduleAppointment()
-  }
+    rescheduleAppointment();
+  };
 
+  // Handle date format on date update/change
   useEffect(() => {
-    if(date){
-      let formatedDate = date._d.toString()
-      formatedDate = formatedDate === 'Invalid Date' ? formatedDate : getFormatedDate(formatedDate)
-      setRescheduledDate(formatedDate)
+    // Format date if date is picked
+    if (date) {
+      let formatedDate = date._d.toString();
+      formatedDate =
+        formatedDate === "Invalid Date"
+          ? formatedDate
+          : getFormatedDate(formatedDate);
+
+      // Save formated date
+      setRescheduledDate(formatedDate);
     }
-  }, [date, setRescheduledDate])
+  }, [date, setRescheduledDate]);
 
   return (
     <Wrapper>
+      {/* CLOSE OVERLAY ( HIDES COMPONENT ON CLICK ) */}
       <CloseOverlay onClick={() => setShow(false)}></CloseOverlay>
 
+      {/* DATE AND TIME PICKER CONTAINER */}
       <Container>
+        {/* DATE AND TIME PICKER */}
         <label>Select appointment date</label>
         <DateTimePicker
           renderInput={(props) => <TextField {...props} />}
@@ -43,6 +59,8 @@ const Reschedule = ({ setShow, setRescheduledDate, rescheduleAppointment, resche
           minDate={new Date()}
           onChange={(newValue) => setDate(newValue)}
         />
+
+        {/* BUTTONS */}
         <Buttons>
           <Button
             text="Cancel"

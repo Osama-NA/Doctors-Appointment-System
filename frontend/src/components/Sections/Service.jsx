@@ -1,99 +1,110 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-// Components
-import ServiceBox from "../Elements/ServiceBox";
-import FullButton from "../Buttons/FullButton";
 import { Link } from "react-scroll";
 // Assets
 import AddImage1 from "../../assets/img/service/1.jpg";
 import AddImage2 from "../../assets/img/service/2.jpg";
 import AddImage3 from "../../assets/img/service/3.jpg";
 import AddImage4 from "../../assets/img/service/4.jpg";
+// Components
+import ServiceBox from "../Elements/ServiceBox";
+import FullButton from "../Buttons/FullButton";
 
 export default function Service() {
   const navigate = useNavigate();
 
   return (
     <Wrapper id="service">
-      <div className="whiteBg" style={{ padding: "60px 0" }}>
+      {/* HOW FINDDOC WORKS */}
+      <div className="container">
+        <HeaderInfo>
+          <h1 className="font40 extraBold">How FindDoc works?</h1>
+        </HeaderInfo>
+        <ServiceBoxRow className="flex">
+          <ServiceBoxWrapper>
+            <ServiceBox
+              step={1}
+              title="Register"
+              subtitle="To get started, click 'Register' in the navigation bar and fill in the required fields."
+            />
+          </ServiceBoxWrapper>
+          <ServiceBoxWrapper>
+            <ServiceBox
+              step={2}
+              title="Find a Doctor"
+              subtitle="Begin your search for the ideal doctor for your requirements."
+            />
+          </ServiceBoxWrapper>
+          <ServiceBoxWrapper>
+            <ServiceBox
+              step={3}
+              title="Book an Appointment"
+              subtitle="Select a day and time for your appointment and then click 'Book Appointment.'"
+            />
+          </ServiceBoxWrapper>
+          <ServiceBoxWrapper>
+            <ServiceBox
+              step={4}
+              title="Join Live Consultation"
+              subtitle="Once your appointment has been set, join the live chat consultation on the appointed day."
+            />
+          </ServiceBoxWrapper>
+        </ServiceBoxRow>
+      </div>
+
+      {/* FINDDOC MISSION */}
+      <div className="lightBg">
         <div className="container">
-          <HeaderInfo>
-            <h1 className="font40 extraBold">How FindDoc works?</h1>
-          </HeaderInfo>
-          <ServiceBoxRow className="flex">
-            <ServiceBoxWrapper>
-              <ServiceBox
-                step={1}
-                title="Register"
-                subtitle="To get started, click 'Register' in the navigation bar and fill in the required fields."
-              />
-            </ServiceBoxWrapper>
-            <ServiceBoxWrapper>
-              <ServiceBox
-                step={2}
-                title="Find a Doctor" 
-                subtitle="Begin your search for the ideal doctor for your requirements."
-              />
-            </ServiceBoxWrapper>
-            <ServiceBoxWrapper>
-              <ServiceBox
-                step={3}
-                title="Book an Appointment"
-                subtitle="Select a day and time for your appointment and then click 'Book Appointment.'"
-              />
-            </ServiceBoxWrapper>
-            <ServiceBoxWrapper>
-              <ServiceBox 
-                step={4} 
-                title="Join Live Consultation"
-                subtitle="Once your appointment has been set, join the live chat consultation on the appointed day." 
-              />
-            </ServiceBoxWrapper>
-          </ServiceBoxRow>
-        </div>
-        <div className="lightBg">
-          <div className="container">
-            <Advertising className="flexSpaceCenter">
-              <AddLeft>
-                <h4 className="font15 semiBold blueColor">Our mission</h4>
-                <h2 className="font40 extraBold">Simplifying healthcare needs.</h2>
-                <p className="font12">
-                  Our goal is to make access to high-quality care simple, friendly and transparent for consumers. We are building a world where we can all access healthcare that is convenient and affordable.
-                </p>
-                <ButtonsRow className="flexNullCenter">
-                  <div>
-                    <FullButton title="Get Started" action={() => navigate("/auth/register")} />
-                  </div>
-                  <div style={{ marginLeft: "10px" }}>
-                    <Link to="contact" spy={true} smooth={true} >
-                      <FullButton title="Get in Touch" border />
-                    </Link>
-                  </div>
-                </ButtonsRow>
-              </AddLeft>
-              <AddRight>
-                <AddRightInner>
-                  <div className="flexNullCenter">
-                    <AddImgWrapp1 className="flexCenter">
-                      <img src={AddImage1} alt="office" />
-                    </AddImgWrapp1>
-                    <AddImgWrapp2>
-                      <img src={AddImage2} alt="office" />
-                    </AddImgWrapp2>
-                  </div>
-                  <div className="flexNullCenter">
-                    <AddImgWrapp3>
-                      <img src={AddImage3} alt="office" />
-                    </AddImgWrapp3>
-                    <AddImgWrapp4>
-                      <img src={AddImage4} alt="office" />
-                    </AddImgWrapp4>
-                  </div>
-                </AddRightInner>
-              </AddRight>
-            </Advertising>
-          </div>
+          <Advertising className="flexSpaceCenter">
+            {/* INFO */}
+            <AddLeft>
+              <h4 className="font15 semiBold blueColor">Our mission</h4>
+              <h2 className="font40 extraBold">
+                Simplifying healthcare needs.
+              </h2>
+              <p className="font12">
+                Our goal is to make access to high-quality care simple, friendly
+                and transparent for consumers. We are building a world where we
+                can all access healthcare that is convenient and affordable.
+              </p>
+              <ButtonsRow className="flexNullCenter">
+                <div>
+                  <FullButton
+                    title="Get Started"
+                    action={() => navigate("/auth/register")}
+                  />
+                </div>
+                <div style={{ marginLeft: "10px" }}>
+                  <Link to="contact" spy={true} smooth={true}>
+                    <FullButton title="Get in Touch" border />
+                  </Link>
+                </div>
+              </ButtonsRow>
+            </AddLeft>
+
+            {/* SIDE IMAGES */}
+            <AddRight>
+              <AddRightInner>
+                <div className="flexNullCenter">
+                  <AddImgWrapp1 className="flexCenter">
+                    <img src={AddImage1} alt="office" />
+                  </AddImgWrapp1>
+                  <AddImgWrapp2>
+                    <img src={AddImage2} alt="office" />
+                  </AddImgWrapp2>
+                </div>
+                <div className="flexNullCenter">
+                  <AddImgWrapp3>
+                    <img src={AddImage3} alt="office" />
+                  </AddImgWrapp3>
+                  <AddImgWrapp4>
+                    <img src={AddImage4} alt="office" />
+                  </AddImgWrapp4>
+                </div>
+              </AddRightInner>
+            </AddRight>
+          </Advertising>
         </div>
       </div>
     </Wrapper>
@@ -101,6 +112,7 @@ export default function Service() {
 }
 
 const Wrapper = styled.section`
+  padding: 60px 0;
   width: 100%;
 `;
 const ServiceBoxRow = styled.div`
@@ -119,12 +131,14 @@ const ServiceBoxWrapper = styled.div`
   @media (max-width: 1010px) {
     width: 47.25%;
 
-    &:nth-child(1), :nth-child(2){
+    &:nth-child(1),
+    :nth-child(2) {
       padding: 60px 0 20px;
     }
   }
   @media (max-width: 860px) {
-    &:nth-child(1), :nth-child(2){
+    &:nth-child(1),
+    :nth-child(2) {
       padding: 40px 0 20px;
     }
     width: 100%;
@@ -160,8 +174,8 @@ const AddLeft = styled.div`
   p {
     padding-bottom: 1.5rem;
   }
-  h2{
-    padding: .25rem 0 .5rem;
+  h2 {
+    padding: 0.25rem 0 0.5rem;
     line-height: 3rem;
   }
   @media (max-width: 860px) {
@@ -170,7 +184,7 @@ const AddLeft = styled.div`
     text-align: center;
     h2 {
       line-height: 2.5rem;
-      padding: .25rem 0 .4rem;
+      padding: 0.25rem 0 0.4rem;
     }
     p {
       margin: 0 auto;
@@ -225,7 +239,7 @@ const AddImgWrapp2 = styled.div`
 `;
 const AddImgWrapp3 = styled.div`
   width: 25%;
-  margin: 40px 1% 0 34%; 
+  margin: 40px 1% 0 34%;
   img {
     width: 100%;
     height: auto;

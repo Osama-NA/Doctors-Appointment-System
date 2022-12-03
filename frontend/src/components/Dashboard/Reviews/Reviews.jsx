@@ -1,107 +1,120 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
 import styled from "styled-components";
-import Review from './Review'
-import ConfirmTab from "../../Elements/ConfirmTab";
 import { UserContext } from "../../../context/User";
-import Loader from "../../Elements/Loader";
 import { post, get } from "../../../utils/fetch";
+// Components
 import SuccessMessage from "../../Elements/SuccessMessage";
+import ConfirmTab from "../../Elements/ConfirmTab";
+import Loader from "../../Elements/Loader";
+import Review from "./Review";
 
 const Reviews = () => {
+  // Get user info state from user context
   const { userInfo } = useContext(UserContext);
 
-  const [showConfirmTab, setShowConfirmTab] = useState(false)
-  const [refresh, setRefresh] = useState(false);
-  const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [deletedReview, setDeletedReview] = useState({})
+  const [showConfirmTab, setShowConfirmTab] = useState(false);
+  const [deletedReview, setDeletedReview] = useState({});
+  const [refresh, setRefresh] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [reviews, setReviews] = useState([]);
 
+  // Delete review with passed id
+  const deleteReview = useCallback(
+    async (reviewId) => {
+      setLoading(true);
+
+      // API get request
+      const data = await post(
+        process.env.REACT_APP_API_HOST + "dashboard/delete-review",
+        {review_id: reviewId}
+      );
+
+      // Reset used states
+      setDeletedReview({});
+      setLoading(false);
+
+      // Handle API response
+      if (data.status === "ok") {
+        setShowSuccessMessage(true);
+        setRefresh(!refresh); // Refresh reviews page
+      } else {
+        alert("Failed to delete review");
+      }
+    },
+    [refresh]
+  );
+
+  // Get reviews from Database
   const getReviews = useCallback(async () => {
+    // API get request
+    // user id must be passed as a query in the get request url
     const data = await get(
-      process.env.REACT_APP_API_HOST +
-        "dashboard/reviews?id=" +
-        userInfo._id
+      process.env.REACT_APP_API_HOST + "dashboard/reviews?id=" + userInfo._id
     );
 
+    // Handle API response
     if (data.status === "ok") {
       setReviews(data.reviews);
     } else {
       alert("Failed to fetch reviews");
     }
-  }, [userInfo._id])
+  }, [userInfo._id]);
 
   useEffect(() => {
+    // Get doctor reviews from database on component mount
     getReviews();
 
-    return () => setReviews([]);
-  }, [getReviews, refresh]);
-
-  const deleteReview = useCallback(async (reviewId) => {
-    setLoading(true);
-
-    const data = await post(
-      process.env.REACT_APP_API_HOST +
-        "dashboard/delete-review",
-        {
-          token: localStorage.getItem("token"),
-          review_id: reviewId,
-        }
-    );
-
-    setDeletedReview({})
-    setLoading(false);
-
-    if (data.status === "ok") {
-      setShowSuccessMessage(true);
-      setRefresh(!refresh);
-    } else {
-      alert("Failed to delete review");
-    }
-  }, [refresh])
-
-  useEffect(() => {
-    getReviews();
-
+    // Clean up reviews state on component unmount
     return () => setReviews([]);
   }, [getReviews, refresh]);
 
   return (
     <>
-    <Wrapper>
-      <h1>Reviews</h1>
+      <Wrapper>
+        <h1>Reviews</h1>
 
-      <Container>
-        {reviews.length > 0 ? (
-          reviews.map(review => {
-           return <Review key={review._id} setShowConfirmTab={setShowConfirmTab} review={review} setDeletedReview={setDeletedReview} />
-          })
-        ) : (
-          <p className="no-results">You do not have any reviews yet</p>
-        )}
-        <Loader visible={loading} />
-      </Container>
-    </Wrapper>
+        {/* REVIEWS CONTAINER */}
+        <Container>
+          {reviews.length > 0 ? (
+            reviews.map((review) => {
+              return (
+                <Review
+                  key={review._id}
+                  setShowConfirmTab={setShowConfirmTab}
+                  review={review}
+                  setDeletedReview={setDeletedReview}
+                />
+              );
+            })
+          ) : (
+            <p className="no-results">You do not have any reviews yet</p>
+          )}
+          <Loader visible={loading} />
+        </Container>
+      </Wrapper>
 
-    {
-      showConfirmTab &&
-      <ConfirmTab 
-        setShow={setShowConfirmTab}
-        promptText='Are you sure you want to delete this review?'
-        type='danger'
-        cta='Delete'
-        action={() => {
-          deleteReview(deletedReview)
-          setShowConfirmTab(false)
-        }}
-      />
-    }
-    {showSuccessMessage && (
-      <SuccessMessage
-        setShow={setShowSuccessMessage}
-        message='Review successfully deleted'
-      />
-    )}
+      {/* CONFIRM DELETE REVIEW CONTAINER */}
+      {showConfirmTab && (
+        <ConfirmTab
+          setShow={setShowConfirmTab}
+          promptText="Are you sure you want to delete this review?"
+          type="danger"
+          cta="Delete"
+          action={() => {
+            deleteReview(deletedReview);
+            setShowConfirmTab(false);
+          }}
+        />
+      )}
+
+      {/* SUCCESS MESSAGE CONTAINER */}
+      {showSuccessMessage && (
+        <SuccessMessage
+          setShow={setShowSuccessMessage}
+          message="Review successfully deleted"
+        />
+      )}
     </>
   );
 };

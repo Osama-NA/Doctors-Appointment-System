@@ -1,14 +1,20 @@
 import React from 'react'
 import styled from "styled-components";
+// Components
 import ReviewStars from './ReviewStars'
 
 const Review = ({reviewBy, rate, review}) => {
   return (
     <Wrapper className='review'>
       <ReviewHeader>
+        {/* USERNAME OF USER REVIEWED BY */}
         <h3>{reviewBy}</h3>
+
+        {/* RATING STARS */}
         <ReviewStars rate={rate}/>
       </ReviewHeader>
+
+        {/* REVIEW */}
       <p>{review}</p>
     </Wrapper>
   )

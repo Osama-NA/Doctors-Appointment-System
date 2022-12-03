@@ -1,32 +1,34 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { getFormatedDate, isAppointmentDate } from "../../../utils/date";
+// Asssets
 import Img from "../../../assets/img/dashboard/profile-img.jpg";
+// Components
+import ConfirmTab from "../../Elements/ConfirmTab";
 import Button from "../../Buttons/Button";
 import Reschedule from "./Reschedule";
 import Date from "./Date";
-import ConfirmTab from "../../Elements/ConfirmTab";
-import { getFormatedDate, isAppointmentDate } from "../../../utils/date";
 
 const Appointment = ({
-  appointment,
-  cancelAppointment,
-  role,
-  setRescheduledDate,
   rescheduleAppointment,
+  autoCancelAppointment,
+  setRescheduledDate,
+  cancelAppointment,
   rescheduledDate,
   joinAppointment,
-  autoCancelAppointment,
+  appointment,
+  role,
 }) => {
   const [showRescheduleAppointment, setShowRescheduleAppointment] =
     useState(false);
-
   const [showConfirmCancel, setShowConfirmCancel] = useState(false);
   const [confirmCancelMessage, setConfirmCancelMessage] = useState("");
   const [appointmentStatus, setAppointmentStatus] = useState("");
   const [expiryTime, setExpiryTime] = useState();
 
+  // Handles confirmation of appointment cancellation
   const handleCancelAppointment = () => {
-    setShowConfirmCancel(true);
+    // Set prompt message to confirm cancelling an appointment
     setConfirmCancelMessage(`
       Are you sure you want to ${
         role === "patient" ? "cancel" : "decline"
@@ -34,19 +36,28 @@ const Appointment = ({
       appointment.date
     }?
     `);
+
+    // Show confirmation tab
+    setShowConfirmCancel(true);
   };
 
+  // Check appointment status on component mount
   useEffect(() => {
+    // Set appointment status
     let didAppointmentStart = isAppointmentDate(appointment);
     setAppointmentStatus(didAppointmentStart.message);
-    if (!didAppointmentStart.status) return;
 
-    setExpiryTime(getFormatedDate(didAppointmentStart.expiryTime));
+    // Set appointment end date, if appointment started
+    if (didAppointmentStart.status) {
+      setExpiryTime(getFormatedDate(didAppointmentStart.expiryTime));
+    }
   }, [appointment]);
 
   return (
     <>
+      {/* APPOINTMENT CONTAINER */}
       <Wrapper className="appointment">
+        {/* USER PROFILE IMAGE */}
         <img
           src={
             appointment.user.profileImage ? appointment.user.profileImage : Img
@@ -54,10 +65,12 @@ const Appointment = ({
           alt=""
         />
 
+        {/* USER INFO CONTAINER */}
         <div className="info">
           <h2>{appointment.user.username}</h2>
           <p>Appointment reason: {appointment.reason}</p>
 
+          {/* APPOINTMENT STATUS AND DATE */}
           {appointmentStatus === "joined" ? (
             <>
               <p className="started">Appointment started</p>
@@ -66,6 +79,7 @@ const Appointment = ({
           ) : appointmentStatus === "finished" ? (
             <p className="finish">Session ended</p>
           ) : (
+            // If appointment is yet to start, show appointment date
             <Date
               setRescheduledDate={setRescheduledDate}
               date={appointment.date}
@@ -73,20 +87,25 @@ const Appointment = ({
               allowReschedule={true}
             />
           )}
+
+          {/* BUTTONS */}
           <ButtonsWrapper>
+            {/* show 'Cancel Appointment' if appointment is yet to start */}
             {appointmentStatus === "early" ? (
               <Button
                 type="danger"
                 text="Cancel Appointment"
                 action={handleCancelAppointment}
               />
-            ) : appointmentStatus === "finished" ? (
+            ) : // show 'Delete Appointment' if appointment finished
+            appointmentStatus === "finished" ? (
               <Button
                 type="danger"
                 text="Delete Appointment"
                 action={() => autoCancelAppointment(appointment._id)}
               />
             ) : (
+              // show 'Join Appointment' if appointment started
               <Button
                 type="primary"
                 text="Join Appointment"
@@ -97,22 +116,25 @@ const Appointment = ({
         </div>
       </Wrapper>
 
+      {/* RESCHEDULE APPOINTMENT CONTAINER */}
       {showRescheduleAppointment && (
         <Reschedule
-          setRescheduledDate={setRescheduledDate}
-          setShow={setShowRescheduleAppointment}
-          rescheduleAppointment={() => rescheduleAppointment(appointment._id)}
           rescheduledDate={rescheduledDate}
+          setShow={setShowRescheduleAppointment}
+          setRescheduledDate={setRescheduledDate}
+          rescheduleAppointment={() => rescheduleAppointment(appointment._id)}
         />
       )}
+
+      {/* CANCEL APPOINTMENT CONFIRMATION CONTAINER */}
       {showConfirmCancel && (
         <ConfirmTab
+          cta="Yes"
+          type="danger"
+          cancelText="No"
           setShow={setShowConfirmCancel}
           promptText={confirmCancelMessage}
-          type="danger"
-          cta="Yes"
           action={() => cancelAppointment(appointment._id)}
-          cancelText="No"
         />
       )}
     </>

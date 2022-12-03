@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import FullButton from "../Buttons/FullButton";
-import Input from "./Input";
-import SuccessMessage from "../Elements/SuccessMessage";
 import { post } from "../../utils/fetch";
+// Components
+import Input from "./Input";
+import FullButton from "../Buttons/FullButton";
 import { ProgressBar } from "react-loader-spinner";
+import SuccessMessage from "../Elements/SuccessMessage";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
 
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -24,20 +25,25 @@ const ForgotPassword = () => {
     sendResetLink();
   };
 
+  // Send password reset link to user if email is registered
   const sendResetLink = async () => {
     setLoading(true);
 
+    // API post request
     const data = await post(
       process.env.REACT_APP_API_HOST + "auth/password-reset-link",
       { email }
     );
 
-    setLoading(false);
+    // Reset states
     setEmail("");
+    setLoading(false);
 
+    // Handle response
     if (data.status === "ok") {
-      setShowSuccessMessage(true)
-      setTimeout(() => setShowSuccessMessage(false), 3000)
+      setShowSuccessMessage(true);
+      // Hide success message after 3 seconds
+      setTimeout(() => setShowSuccessMessage(false), 3000);
     } else {
       alert(data.error);
     }
@@ -51,6 +57,7 @@ const ForgotPassword = () => {
           If an account linked to your email is found, a reset link will be sent
           to your email.
         </p>
+        {/* FORM */}
         <form onSubmit={handleFormSubmit}>
           <Input
             label="Email"
@@ -70,6 +77,7 @@ const ForgotPassword = () => {
           Back to login
         </button>
 
+        {/* LOADER */}
         <div className="loader">
           <ProgressBar
             height="60"
@@ -80,13 +88,13 @@ const ForgotPassword = () => {
         </div>
       </div>
 
-      {
-        showSuccessMessage && 
-        <SuccessMessage 
-          setShow={setShowSuccessMessage} 
-          message='Password reset link successfully sent to your email.'
+      {/* SUCCESS MESSAGE CONTAINER */}
+      {showSuccessMessage && (
+        <SuccessMessage
+          setShow={setShowSuccessMessage}
+          message="Password reset link successfully sent to your email."
         />
-      }
+      )}
     </>
   );
 };

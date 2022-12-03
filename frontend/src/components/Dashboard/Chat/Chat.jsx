@@ -1,10 +1,12 @@
 import React from "react";
 import styled from "styled-components";
+// Components
 import Message from "./Message";
 
 const Chat = ({ messages, channelId, chatRef }) => {
   return (
     <Wrapper ref={chatRef}>
+      {/* MESSAGES LIST */}
       {messages.map((message, i) => {
         return (
           <Message

@@ -1,24 +1,26 @@
-import React from 'react'
+import React from "react";
 import styled from "styled-components";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faXmark } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// Icons
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
-const SuccessMessage = ({setShow, message}) => {
+const SuccessMessage = ({ setShow, message }) => {
   return (
     <Wrapper>
-        <CloseOverlay
-            onClick={() => setShow(false)}
-        ></CloseOverlay>
+      {/* CLOSE OVERLAY( HIDES COMPONENT ON CLICK )*/}
+      <CloseOverlay onClick={() => setShow(false)}></CloseOverlay>
+
+      <Container>
+        <p>{message}</p>
         
-        <Container>
-            <p>{message}</p>
-            <div className='close-btn' onClick={() => setShow(false)}>
-                <FontAwesomeIcon icon={faXmark} />
-            </div>
-        </Container>
+        {/* CLOSE BUTTON */}
+        <div className="close-btn" onClick={() => setShow(false)}>
+          <FontAwesomeIcon icon={faXmark} />
+        </div>
+      </Container>
     </Wrapper>
-  )
-}
+  );
+};
 
 const Wrapper = styled.div`
   display: grid;
@@ -29,13 +31,13 @@ const Wrapper = styled.div`
   width: 100vw;
   height: 100vh;
   padding: 0 2rem;
-  background-color: rgb(8, 25, 51, .4);
+  background-color: rgb(8, 25, 51, 0.4);
   z-index: 1000;
 
   @media (max-width: 460px) {
     padding: 0 1rem;
   }
-`
+`;
 const CloseOverlay = styled.div`
   position: absolute;
   top: 0;
@@ -43,7 +45,7 @@ const CloseOverlay = styled.div`
   width: 100%;
   height: 100%;
   z-index: 1;
-`
+`;
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
@@ -52,53 +54,53 @@ const Container = styled.div`
   z-index: 2;
   overflow: hidden;
 
-  p{
+  p {
     font-size: 16px;
     line-height: 24px;
     font-weight: 600;
     padding-right: 1.5rem;
     padding: 1rem 1.5rem;
   }
-  .close-btn{
+  .close-btn {
     cursor: pointer;
     display: grid;
     place-items: center;
     background-color: #2d59eb;
     border-radius: 15px;
-    transition: all .2s ease;
+    transition: all 0.2s ease;
 
     padding: 1rem 1.5rem;
 
-    svg{
-        color: #fff;
-        padding: 0;
-        margin: 0;
-        font-size: 20px;
+    svg {
+      color: #fff;
+      padding: 0;
+      margin: 0;
+      font-size: 20px;
     }
 
-    &:hover{
-        background-color: #2248c5;
+    &:hover {
+      background-color: #2248c5;
     }
   }
 
   @media (max-width: 860px) {
     border-radius: 10px;
-  
-    p{
+
+    p {
       font-size: 12px;
       line-height: 20px;
       padding-right: 1.25rem;
-      padding: .75rem 1.25rem;
+      padding: 0.75rem 1.25rem;
     }
-    .close-btn{
+    .close-btn {
       border-radius: 10px;
-      padding: .75rem 1rem;
-  
-      svg{
-          font-size: 18px;
+      padding: 0.75rem 1rem;
+
+      svg {
+        font-size: 18px;
       }
     }
   }
-`
+`;
 
-export default SuccessMessage
+export default SuccessMessage;
