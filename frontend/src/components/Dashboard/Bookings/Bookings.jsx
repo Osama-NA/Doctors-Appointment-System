@@ -33,7 +33,7 @@ const Bookings = () => {
 
     // Handle API response
     if (data.status === "ok") {
-      setBookings(data.bookings);
+      setBookings(data.bookings.reverse());
     } else {
       alert("Failed to fetch bookings");
     }

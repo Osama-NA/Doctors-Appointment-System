@@ -85,8 +85,8 @@ const Profile = () => {
     };
 
     // Get image url from cloudinary if image is updated
-    if (typeof input.img === "object" && input.img !== null) {
-      newInfo.profileImage = await getImageUrlFromCloudinary(input.img);
+    if (typeof(imageFile) === "object" && imageFile !== null) {
+      newInfo.profileImage = await getImageUrlFromCloudinary(imageFile);
     }
 
     // API post request
@@ -95,19 +95,19 @@ const Profile = () => {
       newInfo
     );
 
+    // Reset state
+    setLoading(false);
+    setShowConfirmUpdate(false);
+    setImageFile(null); // Reset image file state
+
     // Handle API response
     if (data.status === "ok") {
       setSuccessMessage("Profile successfully updated");
       setShowSuccessMessage(true);
-      setImageFile(null); // Reset image file state
       setUserInfo(data.user); // Store updatedd user data
     } else {
       alert(data.error);
     }
-
-    // Reset state
-    setLoading(false);
-    setShowConfirmUpdate(false);
 
     // Refresh profile page
     setRefresh(!refresh);
@@ -154,7 +154,7 @@ const Profile = () => {
           {/* SPECIALITY (FOR DOCTORS) */}
           {userInfo.role === "doctor" && (
             <Input
-              label="Speciality"
+              label="Specialty"
               type="text"
               value={input.speciality}
               onChange={(e) => handleInput(e)}

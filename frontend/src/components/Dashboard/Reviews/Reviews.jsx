@@ -55,7 +55,7 @@ const Reviews = () => {
 
     // Handle API response
     if (data.status === "ok") {
-      setReviews(data.reviews);
+      setReviews(data.reviews.reverse());
     } else {
       alert("Failed to fetch reviews");
     }

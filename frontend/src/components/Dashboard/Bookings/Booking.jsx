@@ -85,7 +85,8 @@ const Wrapper = styled.div`
 
   img {
     border-radius: 50%;
-    width: 75px;
+    min-width: 75px;
+    max-width: 75px;
     height: 75px;
     object-fit: cover;
   }
@@ -109,7 +110,8 @@ const Wrapper = styled.div`
     flex-direction: column;
 
     img {
-      width: 60px;
+      max-width: 60px;
+      min-width: 60px;
       height: 60px;
     }
 

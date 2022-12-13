@@ -41,7 +41,7 @@ const Appointments = () => {
 
     // Handle API response
     if (data.status === "ok") {
-      setAppointments(data.appointments);
+      setAppointments(data.appointments.reverse());
     } else {
       alert("Failed to fetch appointments");
     }

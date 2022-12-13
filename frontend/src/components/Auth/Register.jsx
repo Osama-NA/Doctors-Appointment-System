@@ -199,7 +199,9 @@ export default Register;
 
 const ImagePreview = styled.img`
   max-width: 150px;
-  height: 100%;
+  min-width: 150px;
+  object-fit: cover;
+  height: 150px;
   margin-bottom: 1.25rem;
   border-radius: 50%;
 `;

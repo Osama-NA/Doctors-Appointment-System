@@ -131,24 +131,24 @@ const Overview = () => {
               // only firt 3 bookings are displayed
               bookings: data.content.bookings.filter(
                 (item, index) => index < 3
-              ),
+              ).reverse(),
               // only firt 9 appointments are displayed
               appointments: data.content.appointments.filter(
                 (item, index) => index < 9
-              ),
+              ).reverse(),
               // only firt 2 reviews are displayed
-              reviews: data.content.reviews.filter((item, index) => index < 2),
+              reviews: data.content.reviews.filter((item, index) => index < 2).reverse(),
             }
           : {
               // return bookings, and appointments if role = patient
               bookings: data.content.bookings.filter(
                 // only firt 3 bookings are displayed
                 (item, index) => index < 3
-              ),
+              ).reverse(),
               appointments: data.content.appointments.filter(
                 // only firt 9 appointments are displayed
                 (item, index) => index < 9
-              ),
+              ).reverse(),
             };
 
       // Update content state
