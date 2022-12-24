@@ -15,7 +15,6 @@ FindDoc also assist doctors in better managing their practices and developing th
 
 - Node.js
 - MongoDB
-- Mongoose
 
 ### Server side technologies
 
