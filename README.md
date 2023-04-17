@@ -1,4 +1,4 @@
-# Online Doctor Appointments Web Application
+# FindDoc | Doctor Appointments Web Application
 
 Find a doctor, make an appointment, and clear up any health concerns. FindDoc helps patients easily discover the right doctor and schedule an appointment.
 
