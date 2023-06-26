@@ -16,7 +16,7 @@ FindDoc also assist doctors in better managing their practices and developing th
 - Node.js
 - MongoDB
 
-### Server side technologies
+### Third party
 
 - Cloudinary
 - PubNub
