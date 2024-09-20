@@ -22,3 +22,8 @@ FindDoc also assist doctors in better managing their practices and developing th
 - PubNub
 - MongoDB Atlas
 - EmailJS
+
+### Demo accounts
+
+- Doctor => Email: ahmad@gmail.com Pass: asdf
+- Patient => Email: test@gmail.com Pass: qwer
